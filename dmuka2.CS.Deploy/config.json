@@ -1,0 +1,40 @@
+{
+  "database": {
+    "Test": {
+      "type": "postgres",
+      "connection_string": {
+        "default": "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=Test;"
+      }
+    }
+  },
+  "project": {
+    "test_consoleapp": {
+      "commands": [
+        {
+          "main": false,
+          "name": "dotnet",
+          "arguments": "clean",
+          "path": {
+            "default": "./TestProjects/Test.ConsoleApp"
+          }
+        },
+        {
+          "main": false,
+          "name": "dotnet",
+          "arguments": "build",
+          "path": {
+            "default": "./TestProjects/Test.ConsoleApp"
+          }
+        },
+        {
+          "main": true,
+          "name": "dotnet",
+          "arguments": "run",
+          "path": {
+            "default": "./TestProjects/Test.ConsoleApp"
+          }
+        }
+      ]
+    }
+  }
+}

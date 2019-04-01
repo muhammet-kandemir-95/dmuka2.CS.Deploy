@@ -1,0 +1,1 @@
+INSERT INTO public.test_table(test_col) VALUES ('a');
