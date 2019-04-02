@@ -66,11 +66,11 @@ namespace dmuka2.CS.Deploy
 
         static void Main(string[] args)
         {
-            #region Commands
             ConfigHelper.SetUserName("");
 
             string argLine = "";
-            Func<string, string> getLine = (msg) => {
+            Func<string, string> getLine = (msg) =>
+            {
                 if (__askDisable == true)
                 {
                     return argLine;
@@ -79,7 +79,16 @@ namespace dmuka2.CS.Deploy
                 Console.WriteLine(msg);
                 return Console.ReadLine();
             };
+
             bool exit = false;
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                e.Cancel = true;
+                Console.WriteLine("Type a line to exit...");
+                exit = true;
+            };
+
+            #region Commands
             List<Command> commands = new List<Command>();
             commands.Add(new Command("help", "", () =>
             {
@@ -374,21 +383,31 @@ So, you can learn what can you do with help command.
                 Console.WriteLine("Write command = ");
                 string commandName = Console.ReadLine();
 
-                var exists = false;
-                foreach (var command in commands)
+                if (exit == false)
                 {
-                    if (command.Name == commandName)
+                    var exists = false;
+                    foreach (var command in commands)
                     {
-                        exists = true;
-                        command.Action();
+                        if (command.Name == commandName)
+                        {
+                            exists = true;
+                            command.Action();
+                        }
                     }
-                }
 
-                if (exists == false)
-                    Console.WriteLine("Not found {0} command!", commandName);
+                    if (exists == false)
+                        Console.WriteLine("Not found {0} command!", commandName);
+                }
 
                 Console.WriteLine("***********************************************************");
             }
+
+            Console.WriteLine(@"    ____                ____           
+   / __ )__  _____     / __ )__  _____ 
+  / __  / / / / _ \   / __  / / / / _ \
+ / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
+/_____/\__, /\___/  /_____/\__, /\___/ 
+      /____/              /____/       ");
         }
     }
 }
