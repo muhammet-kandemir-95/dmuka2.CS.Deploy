@@ -15,14 +15,7 @@ namespace dmuka2.CS.Deploy
         #region Constructors
         static ProcessSaveHelper()
         {
-            __processesFilePath = Path.Combine(Directory.GetCurrentDirectory(), "processes.txt");
-
-            // We are checking that did pc restart?
-            if (
-                File.Exists(__processesFilePath) == false ||
-                (DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount) - new DateTime(Convert.ToInt64(File.ReadAllText(__processesFilePath).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries)[0]))).TotalSeconds > 1
-                )
-                File.WriteAllText(__processesFilePath, DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount).Ticks.ToString());
+            __processesFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Processes");
         }
         #endregion
 
@@ -34,17 +27,14 @@ namespace dmuka2.CS.Deploy
         /// <returns></returns>
         public static string Get(string name)
         {
-            var processesList = File.ReadAllText(__processesFilePath).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries);
+            var processFilePathByName = Path.Combine(__processesFilePath, name + ".txt");
+            if (File.Exists(processFilePathByName) == false)
+                return "";
 
-            for (int i = 1; i < processesList.Length; i++)
-            {
-                var process = processesList[i];
+            var processesList = File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries);
 
-                string processName = process.Split('/')[0];
-
-                if (processName == name)
-                    return process.Split('/')[1];
-            }
+            if (processesList.Length == 2)
+                return processesList[1];
 
             return "";
         }
@@ -56,28 +46,23 @@ namespace dmuka2.CS.Deploy
         /// <param name="processId">New process id.</param>
         public static void Set(string name, string processId)
         {
-            var processesList = File.ReadAllText(__processesFilePath).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            var newRow = name + "/" + processId;
+            var processFilePathByName = Path.Combine(__processesFilePath, name + ".txt");
+            // We are checking that did pc restart?
+            if (
+                File.Exists(processFilePathByName) == false ||
+                (DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount) - new DateTime(Convert.ToInt64(File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries)[0]))).TotalSeconds > 1
+                )
+                File.WriteAllText(processFilePathByName, DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount).Ticks.ToString());
 
-            var exists = false;
-            for (int i = 1; i < processesList.Count; i++)
-            {
-                var process = processesList[i];
+            var processesList = File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var newRow = processId;
 
-                string processName = process.Split('/')[0];
-
-                if (processName == name)
-                {
-                    exists = true;
-                    processesList[i] = newRow;
-                    break;
-                }
-            }
-
-            if (exists == false)
+            if (processesList.Count == 2)
+                processesList[1] = newRow;
+            else
                 processesList.Add(newRow);
 
-            File.WriteAllText(__processesFilePath, string.Join("~", processesList));
+            File.WriteAllText(processFilePathByName, string.Join("~", processesList));
         }
         #endregion
     }
