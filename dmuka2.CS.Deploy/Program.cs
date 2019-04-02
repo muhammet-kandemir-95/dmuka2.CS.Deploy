@@ -126,6 +126,33 @@ namespace dmuka2.CS.Deploy
             {
                 exit = true;
             }));
+            commands.Add(new Command("sleep -s", "Thread sleep as second.", () =>
+            {
+                tryCatch(() =>
+                {
+                    var second = Convert.ToInt32(getLine("Write second = "));
+                    Console.WriteLine("Waiting {0} second...", second);
+                    Thread.Sleep(second * 1000);
+                });
+            }));
+            commands.Add(new Command("sleep -m", "Thread sleep as minute.", () =>
+            {
+                tryCatch(() =>
+                {
+                    var minute = Convert.ToInt32(getLine("Write minute = "));
+                    Console.WriteLine("Waiting {0} minute...", minute);
+                    Thread.Sleep(minute * 1000 * 60);
+                });
+            }));
+            commands.Add(new Command("sleep -h", "Thread sleep as hour.", () =>
+            {
+                tryCatch(() =>
+                {
+                    var hour = Convert.ToInt32(getLine("Write hour = "));
+                    Console.WriteLine("Waiting {0} hour...", hour);
+                    Thread.Sleep(hour * 1000 * 60 * 60);
+                });
+            }));
             commands.Add(new Command("set -u", "Set user name.", () =>
             {
                 ConfigHelper.SetUserName(getLine("Write user name = "));
