@@ -84,8 +84,14 @@ namespace dmuka2.CS.Deploy
             Console.CancelKeyPress += (sender, e) =>
             {
                 e.Cancel = true;
-                Console.WriteLine("Type a line to exit...");
                 exit = true;
+
+                Console.WriteLine(@"    ____                ____           
+   / __ )__  _____     / __ )__  _____ 
+  / __  / / / / _ \   / __  / / / / _ \
+ / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
+/_____/\__, /\___/  /_____/\__, /\___/ 
+      /____/              /____/       ");
             };
 
             #region Commands
@@ -382,32 +388,24 @@ So, you can learn what can you do with help command.
             {
                 Console.WriteLine("Write command = ");
                 string commandName = Console.ReadLine();
+                if (exit)
+                    break;
 
-                if (exit == false)
+                var exists = false;
+                foreach (var command in commands)
                 {
-                    var exists = false;
-                    foreach (var command in commands)
+                    if (command.Name == commandName)
                     {
-                        if (command.Name == commandName)
-                        {
-                            exists = true;
-                            command.Action();
-                        }
+                        exists = true;
+                        command.Action();
                     }
-
-                    if (exists == false)
-                        Console.WriteLine("Not found {0} command!", commandName);
                 }
+
+                if (exists == false)
+                    Console.WriteLine("Not found {0} command!", commandName);
 
                 Console.WriteLine("***********************************************************");
             }
-
-            Console.WriteLine(@"    ____                ____           
-   / __ )__  _____     / __ )__  _____ 
-  / __  / / / / _ \   / __  / / / / _ \
- / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
-/_____/\__, /\___/  /_____/\__, /\___/ 
-      /____/              /____/       ");
         }
     }
 }
