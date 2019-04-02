@@ -321,6 +321,8 @@ namespace dmuka2.CS.Deploy
             #endregion
 
             #region Checking Args
+            var existReturnArg = false;
+
             // If new background process is exists, it must be on args.
             // We will check it!
             for (int i = 0; i < args.Length; i++)
@@ -345,8 +347,9 @@ namespace dmuka2.CS.Deploy
 
                             if (exists == false)
                                 Console.WriteLine("Command not found!");
-                            return;
+                            existReturnArg = true;
                         }
+                        break;
                     case "--background":
                         {
                             // This means that we need a background process.
@@ -382,12 +385,16 @@ namespace dmuka2.CS.Deploy
                                         LogHelper.Write(projectName, text);
                                 });
 
-                            return;
+                            existReturnArg = true;
                         }
+                        break;
                     default:
                         break;
                 }
             }
+
+            if (existReturnArg)
+                return;
             #endregion
 
             Console.WriteLine(@"
