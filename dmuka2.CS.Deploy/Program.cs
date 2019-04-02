@@ -4,11 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace dmuka2.CS.Deploy
 {
     class Program
     {
+        #region Variables
+        /// <summary>
+        /// We sometimes don't need to readline when program gets a line or throws exception.
+        /// <para></para>
+        /// This variable is for it.
+        /// </summary>
+        static bool __askDisable = false;
+        #endregion
+
         #region Methods
         static bool tryCatch(Action action)
         {
@@ -21,7 +31,7 @@ namespace dmuka2.CS.Deploy
             catch (Exception ex)
             {
                 Console.WriteLine("We couldn't. Do you want see the error? (y/n) ");
-                if (Console.ReadLine().ToLower() == "y")
+                if (__askDisable == true && Console.ReadLine().ToLower() == "y")
                 {
                     Console.WriteLine(ex.ToString());
                     Console.WriteLine("Enter a line to continue...");
@@ -34,6 +44,12 @@ namespace dmuka2.CS.Deploy
 
         static void areYouSure(Action action)
         {
+            if (__askDisable == true)
+            {
+                action();
+                return;
+            }
+
             Console.WriteLine("Are you sure? (y/n) ");
             if (Console.ReadLine().ToLower() == "y")
                 action();
@@ -50,72 +66,20 @@ namespace dmuka2.CS.Deploy
 
         static void Main(string[] args)
         {
-            #region Checking Args
-            // If new background process is exists, it must be on args.
-            // We will check it!
-            for (int i = 0; i < args.Length; i++)
-            {
-                var arg = args[i];
-                switch (arg)
-                {
-                    // We did it!
-                    case "--background":
-                        {
-                            // This means that we need a background process.
-                            var backgroundParameter = JsonConvert.DeserializeObject<JToken>(args[i + 1]);
-                            var userName = backgroundParameter["user_name"].Value<string>();
-                            var projectName = backgroundParameter["project_name"].Value<string>();
-
-                            ConfigHelper.SetUserName(userName);
-                            var mainProcess = ConfigHelper.GetProjectCommands(projectName).Where(o => o.main).FirstOrDefault();
-
-                            string splitText = "~_/\\_~";
-                            string processId = "";
-
-                            var previousProcessId = ProcessSaveHelper.Get(projectName);
-                            if (previousProcessId != "")
-                                ShellHelper.Run(
-                                    "",
-                                    "kill " + previousProcessId,
-                                    false,
-                                    true);
-
-                            ShellHelper.Run(
-                                mainProcess.path,
-                                mainProcess.name + " " + mainProcess.arguments + @" & " +
-                                @"echo """ + splitText + @"""$!""" + splitText + @"""", true, true, callbackOutput: (process, text) =>
-                                {
-                                    if (processId == "" && text.Contains(splitText))
-                                    {
-                                        processId = text.Split(new string[] { splitText }, StringSplitOptions.None)[1];
-                                        ProcessSaveHelper.Set(projectName, processId);
-                                    }
-                                    else
-                                        LogHelper.Write(projectName, text);
-                                });
-
-                            return;
-                        }
-                    default:
-                        break;
-                }
-            }
-            #endregion
-
-            Console.WriteLine(@"
-  ___  __  __ _   _ _  __   _     ___           _          
- |   \|  \/  | | | | |/ /  /_\   |   \ ___ _ __| |___ _  _ 
- | |) | |\/| | |_| | ' <  / _ \  | |) / -_) '_ \ / _ \ || |
- |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
-                                          |_|         |__/ 
-
------------------------------------------------------------
-Welcome, if you are here, you want a thing from me?
-So, you can learn what can you do with help command.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
+            #region Commands
             ConfigHelper.SetUserName("");
 
+            string argLine = "";
+            Func<string, string> getLine = (msg) => {
+                if (__askDisable == true)
+                {
+                    return argLine;
+                }
+
+                Console.WriteLine(msg);
+                return Console.ReadLine();
+            };
+            bool exit = false;
             List<Command> commands = new List<Command>();
             commands.Add(new Command("help", "", () =>
             {
@@ -125,17 +89,19 @@ So, you can learn what can you do with help command.
                     if (command.Name != "help")
                         Console.WriteLine(command.Name.PadRight(maxLength, ' ') + " = " + command.Description);
             }));
+            commands.Add(new Command("exit", "Close this application safely.", () =>
+            {
+                exit = true;
+            }));
             commands.Add(new Command("set -u", "Set user name.", () =>
             {
-                Console.WriteLine("Write user name = ");
-                ConfigHelper.SetUserName(Console.ReadLine());
+                ConfigHelper.SetUserName(getLine("Write user name = "));
             }));
             commands.Add(new Command("db -c", "Try to connect to database.", () =>
             {
                 tryCatch(() =>
                 {
-                    Console.WriteLine("Write database name = ");
-                    string databaseName = Console.ReadLine();
+                    string databaseName = getLine("Write database name = ");
 
                     DatabaseHelper.TryToConnect(databaseName);
                     successful();
@@ -157,8 +123,7 @@ So, you can learn what can you do with help command.
             {
                 tryCatch(() =>
                 {
-                    Console.WriteLine("Write database name = ");
-                    string databaseName = Console.ReadLine();
+                    string databaseName = getLine("Write database name = ");
 
                     DatabaseHelper.RemoveAllTables(databaseName);
                     successful();
@@ -183,8 +148,7 @@ So, you can learn what can you do with help command.
             {
                 tryCatch(() =>
                 {
-                    Console.WriteLine("Write database name = ");
-                    string databaseName = Console.ReadLine();
+                    string databaseName = getLine("Write database name = ");
 
                     DatabaseHelper.ApplyMigration(databaseName, (migrationName) =>
                     {
@@ -253,13 +217,14 @@ So, you can learn what can you do with help command.
                     user_name = ConfigHelper.UserName,
                     project_name = projectName
                 }).Replace("\"", "\\\"") + "\" --configuration RELEASE &", false, false);
+
+                Thread.Sleep(1000);
             };
             commands.Add(new Command("pr -r", "Restart project.", () =>
             {
                 tryCatch(() =>
                 {
-                    Console.WriteLine("Write project name = ");
-                    string projectName = Console.ReadLine();
+                    string projectName = getLine("Write project name = ");
 
                     restartProject(projectName);
 
@@ -297,8 +262,7 @@ So, you can learn what can you do with help command.
             {
                 tryCatch(() =>
                 {
-                    Console.WriteLine("Write project name = ");
-                    string projectName = Console.ReadLine();
+                    string projectName = getLine("Write project name = ");
 
                     killProject(projectName);
 
@@ -321,8 +285,91 @@ So, you can learn what can you do with help command.
                     successful();
                 });
             }));
+            #endregion
 
-            while (true)
+            #region Checking Args
+            // If new background process is exists, it must be on args.
+            // We will check it!
+            for (int i = 0; i < args.Length; i++)
+            {
+                var arg = args[i];
+                switch (arg)
+                {
+                    case "--cmd":
+                        {
+                            __askDisable = true;
+                            argLine = i + 2 < args.Length ? args[i + 2] : "";
+
+                            var exists = false;
+                            foreach (var command in commands)
+                            {
+                                if (command.Name == args[i + 1])
+                                {
+                                    exists = true;
+                                    command.Action();
+                                }
+                            }
+
+                            if (exists == false)
+                                Console.WriteLine("Command not found!");
+                            return;
+                        }
+                    case "--background":
+                        {
+                            // This means that we need a background process.
+                            var backgroundParameter = JsonConvert.DeserializeObject<JToken>(args[i + 1]);
+                            var userName = backgroundParameter["user_name"].Value<string>();
+                            var projectName = backgroundParameter["project_name"].Value<string>();
+
+                            ConfigHelper.SetUserName(userName);
+                            var mainProcess = ConfigHelper.GetProjectCommands(projectName).Where(o => o.main).FirstOrDefault();
+
+                            string splitText = "~_/\\_~";
+                            string processId = "";
+
+                            var previousProcessId = ProcessSaveHelper.Get(projectName);
+                            if (previousProcessId != "")
+                                ShellHelper.Run(
+                                    "",
+                                    "kill " + previousProcessId,
+                                    false,
+                                    true);
+
+                            ShellHelper.Run(
+                                mainProcess.path,
+                                mainProcess.name + " " + mainProcess.arguments + @" & " +
+                                @"echo """ + splitText + @"""$!""" + splitText + @"""", true, true, callbackOutput: (process, text) =>
+                                {
+                                    if (processId == "" && text.Contains(splitText))
+                                    {
+                                        processId = text.Split(new string[] { splitText }, StringSplitOptions.None)[1];
+                                        ProcessSaveHelper.Set(projectName, processId);
+                                    }
+                                    else
+                                        LogHelper.Write(projectName, text);
+                                });
+
+                            return;
+                        }
+                    default:
+                        break;
+                }
+            }
+            #endregion
+
+            Console.WriteLine(@"
+  ___  __  __ _   _ _  __   _     ___           _          
+ |   \|  \/  | | | | |/ /  /_\   |   \ ___ _ __| |___ _  _ 
+ | |) | |\/| | |_| | ' <  / _ \  | |) / -_) '_ \ / _ \ || |
+ |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
+                                          |_|         |__/ 
+
+-----------------------------------------------------------
+Welcome, if you are here, you want a thing from me?
+So, you can learn what can you do with help command.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
+            while (exit == false)
             {
                 Console.WriteLine("Write command = ");
                 string commandName = Console.ReadLine();
