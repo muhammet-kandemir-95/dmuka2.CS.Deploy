@@ -35,12 +35,17 @@ namespace dmuka2.CS.Deploy
             }
             catch (Exception ex)
             {
-                Console.WriteLine("We couldn't. Do you want see the error? (y/n) ");
-                if (__askDisable == true && Console.ReadLine().ToLower() == "y")
+                if (__askDisable == false)
+                    Console.WriteLine("We couldn't. Do you want see the error? (y/n) ");
+
+                if (__askDisable == true || Console.ReadLine().ToLower() == "y")
                 {
                     Console.WriteLine(ex.ToString());
-                    Console.WriteLine("Enter a line to continue...");
-                    Console.ReadLine();
+                    if (__askDisable == false)
+                    {
+                        Console.WriteLine("Enter a line to continue...");
+                        Console.ReadLine();
+                    }
                 }
 
                 return false;
