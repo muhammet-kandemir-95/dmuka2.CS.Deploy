@@ -17,6 +17,11 @@ namespace dmuka2.CS.Deploy
         /// This variable is for it.
         /// </summary>
         static bool __askDisable = false;
+
+        /// <summary>
+        /// We must check that Has bye bye been typed?
+        /// </summary>
+        static bool __byeByeEnable = true;
         #endregion
 
         #region Methods
@@ -62,6 +67,20 @@ namespace dmuka2.CS.Deploy
  /__/\_,_\__\__\___/__/__/
                           ");
         }
+
+        static void byeBye()
+        {
+            if (__byeByeEnable == false)
+                return;
+            __byeByeEnable = false;
+
+            Console.WriteLine(@"    ____                ____           
+   / __ )__  _____     / __ )__  _____ 
+  / __  / / / / _ \   / __  / / / / _ \
+ / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
+/_____/\__, /\___/  /_____/\__, /\___/ 
+      /____/              /____/       ");
+        }
         #endregion
 
         static void Main(string[] args)
@@ -86,12 +105,7 @@ namespace dmuka2.CS.Deploy
                 e.Cancel = true;
                 exit = true;
 
-                Console.WriteLine(@"    ____                ____           
-   / __ )__  _____     / __ )__  _____ 
-  / __  / / / / _ \   / __  / / / / _ \
- / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
-/_____/\__, /\___/  /_____/\__, /\___/ 
-      /____/              /____/       ");
+                byeBye();
             };
 
             #region Commands
