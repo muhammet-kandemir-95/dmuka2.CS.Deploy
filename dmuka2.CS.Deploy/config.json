@@ -35,6 +35,18 @@
           }
         }
       ]
+    },
+    "test_nodejs": {
+      "commands": [
+        {
+          "main": true,
+          "name": "npm",
+          "arguments": "start",
+          "path": {
+            "default": "./TestProjects/Test.NodeJS"
+          }
+        }
+      ]
     }
   }
 }
