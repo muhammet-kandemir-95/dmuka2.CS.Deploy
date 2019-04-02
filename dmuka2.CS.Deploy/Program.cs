@@ -74,7 +74,8 @@ namespace dmuka2.CS.Deploy
                 return;
             __byeByeEnable = false;
 
-            Console.WriteLine(@"    ____                ____           
+            Console.WriteLine(@"
+    ____                ____           
    / __ )__  _____     / __ )__  _____ 
   / __  / / / / _ \   / __  / / / / _ \
  / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
@@ -102,9 +103,7 @@ namespace dmuka2.CS.Deploy
             bool exit = false;
             Console.CancelKeyPress += (sender, e) =>
             {
-                e.Cancel = true;
                 exit = true;
-
                 byeBye();
             };
 
@@ -420,6 +419,8 @@ So, you can learn what can you do with help command.
 
                 Console.WriteLine("***********************************************************");
             }
+
+            byeBye();
         }
     }
 }
