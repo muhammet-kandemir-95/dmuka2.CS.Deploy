@@ -82,7 +82,7 @@ namespace dmuka2.CS.Deploy
 
                             ShellHelper.Run(
                                 mainProcess.path,
-                                mainProcess.name + " " + mainProcess.arguments + @" &" + Environment.NewLine +
+                                mainProcess.name + " " + mainProcess.arguments + @" & " +
                                 @"echo """ + splitText + @"""$!""" + splitText + @"""", true, true, callbackOutput: (process, text) =>
                                 {
                                     if (processId == "" && text.Contains(splitText))
@@ -238,11 +238,21 @@ So, you can learn what can you do with help command.
                 if (ConfigHelper.Projects.Any(o => o == projectName) == false)
                     throw new Exception("Not found project!");
 
+                var projectCommands = ConfigHelper.GetProjectCommands(projectName);
+                foreach (var command in projectCommands)
+                    if (command.main == false)
+                        ShellHelper.Run(
+                            command.path,
+                            command.name + " " + command.arguments, true, true, callbackOutput: (process, text) =>
+                            {
+                                Console.WriteLine(text);
+                            });
+
                 ShellHelper.Run("", "dotnet run --background \"" + JsonConvert.SerializeObject(new
                 {
                     user_name = ConfigHelper.UserName,
                     project_name = projectName
-                }).Replace("\"", "\\\"") + "\" --configuration RELEASE", false, false);
+                }).Replace("\"", "\\\"") + "\" --configuration RELEASE &", false, false);
             };
             commands.Add(new Command("pr -r", "Restart project.", () =>
             {

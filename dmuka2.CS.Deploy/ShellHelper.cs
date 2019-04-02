@@ -17,6 +17,7 @@ namespace dmuka2.CS.Deploy
         /// You only need to fill "callbacks" and set "log" parameter to true and set "wait" parameter to true.
         /// <para></para>
         /// </summary>
+        /// <param name="workingDirectory">Which directory will it work on?</param>
         /// <param name="command">Shell command.</param>
         /// <param name="log">Is log active?</param>
         /// <param name="wait">Is wait active?</param>

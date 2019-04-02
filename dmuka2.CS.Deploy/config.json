@@ -21,7 +21,7 @@
         {
           "main": false,
           "name": "dotnet",
-          "arguments": "build",
+          "arguments": "build -c RELEASE",
           "path": {
             "default": "./TestProjects/Test.ConsoleApp"
           }
@@ -29,9 +29,9 @@
         {
           "main": true,
           "name": "dotnet",
-          "arguments": "run",
+          "arguments": "exec Test.ConsoleApp.dll",
           "path": {
-            "default": "./TestProjects/Test.ConsoleApp"
+            "default": "./TestProjects/Test.ConsoleApp/bin/RELEASE/netcoreapp2.1"
           }
         }
       ]
