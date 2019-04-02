@@ -40,8 +40,8 @@
       "commands": [
         {
           "main": true,
-          "name": "npm",
-          "arguments": "start",
+          "name": "node",
+          "arguments": "app.js",
           "path": {
             "default": "./TestProjects/Test.NodeJS"
           }
