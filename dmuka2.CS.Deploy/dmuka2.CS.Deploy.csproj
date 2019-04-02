@@ -7,8 +7,11 @@
 
   <ItemGroup>
     <Compile Remove="TestProjects\Test.ConsoleApp\**" />
+    <Compile Remove="TestProjects\Test.NodeJS\**" />
     <EmbeddedResource Remove="TestProjects\Test.ConsoleApp\**" />
+    <EmbeddedResource Remove="TestProjects\Test.NodeJS\**" />
     <None Remove="TestProjects\Test.ConsoleApp\**" />
+    <None Remove="TestProjects\Test.NodeJS\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="Log\" />
+    <Folder Include="Processes\" />
     <Folder Include="TestProjects\" />
   </ItemGroup>
 
