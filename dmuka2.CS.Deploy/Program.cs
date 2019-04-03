@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -125,6 +126,47 @@ namespace dmuka2.CS.Deploy
             commands.Add(new Command("exit", "Close this application safely.", () =>
             {
                 exit = true;
+            }));
+
+            string deployShFilePath = Path.Combine(Directory.GetCurrentDirectory(), "deploy.sh");
+            string deployStartupCommand =
+                    Environment.NewLine +
+                    "@reboot root " + deployShFilePath +
+                    Environment.NewLine;
+
+            commands.Add(new Command("add -s", "Add deploy.sh to startup.", () =>
+            {
+                File.WriteAllText(deployShFilePath,
+                    "cd " + Directory.GetCurrentDirectory() +
+                    Environment.NewLine +
+                    @"dotnet run --cmd ""pr -ra""");
+
+                ShellHelper.Run(
+                    "",
+                    "chmod +x " + deployShFilePath,
+                    true,
+                    true,
+                    (process, text) =>
+                    {
+                        Console.WriteLine(text);
+                    }, callbackError: (process, text) =>
+                    {
+                        Console.WriteLine(text);
+                    });
+                string crontabContent = File.ReadAllText("/etc/crontab");
+
+                crontabContent = crontabContent.Replace(deployStartupCommand, "");
+                crontabContent += deployStartupCommand;
+
+                File.WriteAllText("/etc/crontab", crontabContent);
+            }));
+            commands.Add(new Command("remove -s", "Remove deploy.sh from startup.", () =>
+            {
+                string crontabContent = File.ReadAllText("/etc/crontab");
+
+                crontabContent = crontabContent.Replace(deployStartupCommand, "");
+
+                File.WriteAllText("/etc/crontab", crontabContent);
             }));
             commands.Add(new Command("sleep -s", "Thread sleep as second.", () =>
             {
@@ -270,6 +312,9 @@ namespace dmuka2.CS.Deploy
                             command.name + " " + command.arguments, true, true, callbackOutput: (process, text) =>
                             {
                                 Console.WriteLine(text);
+                            }, callbackError: (process, text) =>
+                            {
+                                Console.WriteLine(text);
                             });
 
                 ShellHelper.Run("", "dotnet run --background \"" + JsonConvert.SerializeObject(new
@@ -410,6 +455,9 @@ namespace dmuka2.CS.Deploy
                                     }
                                     else
                                         LogHelper.Write(projectName, text);
+                                }, callbackError: (process, text) =>
+                                {
+                                    LogHelper.Write(projectName, text);
                                 });
 
                             existReturnArg = true;

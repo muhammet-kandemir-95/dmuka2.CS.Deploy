@@ -31,6 +31,7 @@ namespace dmuka2.CS.Deploy
             if (File.Exists(processFilePathByName) == false)
                 return "";
 
+            checkPCRestart(processFilePathByName);
             var processesList = File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (processesList.Length == 2)
@@ -47,12 +48,7 @@ namespace dmuka2.CS.Deploy
         public static void Set(string name, string processId)
         {
             var processFilePathByName = Path.Combine(__processesFilePath, name + ".txt");
-            // We are checking that did pc restart?
-            if (
-                File.Exists(processFilePathByName) == false ||
-                (DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount) - new DateTime(Convert.ToInt64(File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries)[0]))).TotalSeconds > 1
-                )
-                File.WriteAllText(processFilePathByName, DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount).Ticks.ToString());
+            checkPCRestart(processFilePathByName);
 
             var processesList = File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var newRow = processId;
@@ -63,6 +59,16 @@ namespace dmuka2.CS.Deploy
                 processesList.Add(newRow);
 
             File.WriteAllText(processFilePathByName, string.Join("~", processesList));
+        }
+
+        private static void checkPCRestart(string processFilePathByName)
+        {
+            // We are checking that did pc restart?
+            if (
+                File.Exists(processFilePathByName) == false ||
+                (DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount) - new DateTime(Convert.ToInt64(File.ReadAllText(processFilePathByName).Split(new char[] { '~' }, StringSplitOptions.RemoveEmptyEntries)[0]))).TotalSeconds > 1
+                )
+                File.WriteAllText(processFilePathByName, DateTime.UtcNow.AddMilliseconds(-1 * Environment.TickCount).Ticks.ToString());
         }
         #endregion
     }
