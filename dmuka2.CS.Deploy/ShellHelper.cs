@@ -23,7 +23,7 @@ namespace dmuka2.CS.Deploy
         /// <param name="wait">Is wait active?</param>
         /// <param name="callbackOutput">Callback output event.</param>
         /// <param name="callbackError">Callback error event.</param>
-        public static void Run(string workingDirectory, string command, bool log, bool wait, Action<Process, string> callbackOutput = null, Action<Process, string> callbackError = null)
+        public static Process Run(string workingDirectory, string command, bool log, bool wait, Action<Process, string> callbackOutput = null, Action<Process, string> callbackError = null)
         {
             callbackOutput = callbackOutput ?? ((a, b) => { });
             callbackError = callbackError ?? ((a, b) => { });
@@ -56,6 +56,8 @@ namespace dmuka2.CS.Deploy
 
             if (wait == true)
                 process.WaitForExit();
+
+            return process;
         }
         #endregion
     }

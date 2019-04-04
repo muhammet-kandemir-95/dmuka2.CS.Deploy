@@ -129,13 +129,15 @@ namespace dmuka2.CS.Deploy
             }));
 
             string deployShFilePath = Path.Combine(Directory.GetCurrentDirectory(), "deploy.sh");
-            string deployStartupCommand =
-                    Environment.NewLine +
-                    "@reboot root " + deployShFilePath +
-                    Environment.NewLine;
 
             commands.Add(new Command("add -s", "Add deploy.sh to startup.", () =>
             {
+                string linuxUserName = getLine("Write linux user name = ");
+                string deployStartupCommand =
+                        Environment.NewLine +
+                        "@reboot " + linuxUserName + " " + deployShFilePath +
+                        Environment.NewLine;
+
                 File.WriteAllText(deployShFilePath,
                     "cd " + Directory.GetCurrentDirectory() +
                     Environment.NewLine +
@@ -144,6 +146,18 @@ namespace dmuka2.CS.Deploy
                 ShellHelper.Run(
                     "",
                     "chmod +x " + deployShFilePath,
+                    true,
+                    true,
+                    (process, text) =>
+                    {
+                        Console.WriteLine(text);
+                    }, callbackError: (process, text) =>
+                    {
+                        Console.WriteLine(text);
+                    });
+                ShellHelper.Run(
+                    "",
+                    "chown " + linuxUserName + " " + deployShFilePath,
                     true,
                     true,
                     (process, text) =>
@@ -162,6 +176,12 @@ namespace dmuka2.CS.Deploy
             }));
             commands.Add(new Command("remove -s", "Remove deploy.sh from startup.", () =>
             {
+                string linuxUserName = getLine("Write linux user name = ");
+                string deployStartupCommand =
+                        Environment.NewLine +
+                        "@reboot " + linuxUserName + " " + deployShFilePath +
+                        Environment.NewLine;
+
                 string crontabContent = File.ReadAllText("/etc/crontab");
 
                 crontabContent = crontabContent.Replace(deployStartupCommand, "");
@@ -198,6 +218,88 @@ namespace dmuka2.CS.Deploy
             commands.Add(new Command("set -u", "Set user name.", () =>
             {
                 ConfigHelper.SetUserName(getLine("Write user name = "));
+            }));
+            List<Process> logProcesses = new List<Process>();
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                foreach (var logProcess in logProcesses)
+                {
+                    try
+                    {
+                        logProcess.StandardInput.Close();
+                        logProcess.Kill();
+                    }
+                    catch { }
+                }
+                logProcesses.Clear();
+            };
+            Action<string[]> runLogProcesses = (projects) =>
+            {
+                // We don't work on background.
+                // It is dangerous!
+                if (__askDisable)
+                    return;
+
+                var maxLength = projects.Max(o => o.Length);
+                foreach (var projectName in projects)
+                {
+                    var logProjectPath = DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
+                    var logProjectDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName);
+
+                    if (File.Exists(Path.Combine(logProjectDirectoryPath, logProjectPath)) == false)
+                        continue;
+
+                    var shellProcess = ShellHelper.Run(logProjectDirectoryPath, "tail -n 100 -f \"" + logProjectPath + "\"", true, false,
+                        (process, text) =>
+                        {
+                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + "|" + text);
+                        }, (process, text) =>
+                        {
+                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + "|" + text);
+                        });
+
+                    logProcesses.Add(shellProcess);
+                }
+
+                while (true)
+                    Thread.Sleep(1);
+            };
+            commands.Add(new Command("log -a", "Show all projects log.", () =>
+            {
+                runLogProcesses(ConfigHelper.Projects);
+            }));
+            commands.Add(new Command("log", "Show log of project/projects.", () =>
+            {
+                var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
+
+                if (logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+                {
+                    Console.WriteLine("Not found a project in command!");
+                    return;
+                }
+
+                runLogProcesses(logs);
+            }));
+            commands.Add(new Command("log -r", "Remove all logs of a project.", () =>
+            {
+                tryCatch(() =>
+                {
+                    string projectName = getLine("Write project name = ");
+                    Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName), true);
+                    successful();
+                });
+            }));
+            commands.Add(new Command("log -ra", "Remove logs of all projects.", () =>
+            {
+                tryCatch(() =>
+                {
+                    areYouSure(() =>
+                    {
+                        foreach (var projectName in ConfigHelper.Projects)
+                            Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName), true);
+                        successful();
+                    });
+                });
             }));
             commands.Add(new Command("db -c", "Try to connect to database.", () =>
             {
@@ -347,9 +449,9 @@ namespace dmuka2.CS.Deploy
                             Console.WriteLine("Restarting {0} project...", projectName);
                             restartProject(projectName);
                         }
-                    });
 
-                    successful();
+                        successful();
+                    });
                 });
             }));
             Action<string> killProject = (projectName) =>
@@ -385,9 +487,9 @@ namespace dmuka2.CS.Deploy
                             Console.WriteLine("Killing {0} project...", projectName);
                             killProject(projectName);
                         }
-                    });
 
-                    successful();
+                        successful();
+                    });
                 });
             }));
             #endregion
