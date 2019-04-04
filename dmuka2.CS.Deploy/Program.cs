@@ -130,7 +130,7 @@ namespace dmuka2.CS.Deploy
 
             string deployShFilePath = Path.Combine(Directory.GetCurrentDirectory(), "deploy.sh");
 
-            commands.Add(new Command("add -s", "Add deploy.sh to startup.", () =>
+            commands.Add(new Command("add -s", "Add deploy.sh to startup by linux user name.", () =>
             {
                 string linuxUserName = getLine("Write linux user name = ");
                 string deployStartupCommand =
@@ -155,18 +155,6 @@ namespace dmuka2.CS.Deploy
                     {
                         Console.WriteLine(text);
                     });
-                ShellHelper.Run(
-                    "",
-                    "chown " + linuxUserName + " " + deployShFilePath,
-                    true,
-                    true,
-                    (process, text) =>
-                    {
-                        Console.WriteLine(text);
-                    }, callbackError: (process, text) =>
-                    {
-                        Console.WriteLine(text);
-                    });
                 string crontabContent = File.ReadAllText("/etc/crontab");
 
                 crontabContent = crontabContent.Replace(deployStartupCommand, "");
@@ -174,7 +162,7 @@ namespace dmuka2.CS.Deploy
 
                 File.WriteAllText("/etc/crontab", crontabContent);
             }));
-            commands.Add(new Command("remove -s", "Remove deploy.sh from startup.", () =>
+            commands.Add(new Command("remove -s", "Remove deploy.sh from startup by linux user name.", () =>
             {
                 string linuxUserName = getLine("Write linux user name = ");
                 string deployStartupCommand =
