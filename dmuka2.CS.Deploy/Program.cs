@@ -224,7 +224,7 @@ namespace dmuka2.CS.Deploy
             Action<string[]> runLogProcesses = (projects) =>
             {
                 // We don't work on background.
-                // It is dangerous!
+                // It is unnecessary!
                 if (__askDisable)
                     return;
 
@@ -240,10 +240,10 @@ namespace dmuka2.CS.Deploy
                     var shellProcess = ShellHelper.Run(logProjectDirectoryPath, "tail -n 100 -f \"" + logProjectPath + "\"", true, false,
                         (process, text) =>
                         {
-                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + "|" + text);
+                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
                         }, (process, text) =>
                         {
-                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + "|" + text);
+                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
                         });
 
                     logProcesses.Add(shellProcess);
@@ -368,22 +368,49 @@ namespace dmuka2.CS.Deploy
             {
                 tryCatch(() =>
                 {
-                    List<(string name, string status)> statusList = new List<(string name, string status)>();
-                    foreach (var project in ConfigHelper.Projects)
+                    var processesTotalProcessorTime = new List<(string projectName, Process process, double? totalMilliSecond, DateTime? calcDate)>();
+                    foreach (var projectName in ConfigHelper.Projects)
                     {
-                        bool open = false;
+                        double? totalMillisecond = null;
+                        DateTime? calcDate = null;
+                        Process process = null;
                         try
                         {
-                            open = Process.GetProcessById(Convert.ToInt32(ProcessSaveHelper.Get(project))).HasExited == false;
+                            process = Process.GetProcessById(Convert.ToInt32(ProcessSaveHelper.Get(projectName)));
+                            if (process.HasExited == false)
+                            {
+                                totalMillisecond = process.TotalProcessorTime.TotalMilliseconds;
+                                calcDate = DateTime.Now;
+                            }
+                            else
+                                process = null;
                         }
                         catch { }
 
-                        statusList.Add((name: project, status: open ? "OPENED" : "CLOSED"));
+                        processesTotalProcessorTime.Add((projectName: projectName, process: process, totalMillisecond: totalMillisecond, calcDate: calcDate));
                     }
 
-                    var maxLength = statusList.Max(o => o.name.Length);
-                    foreach (var status in statusList)
-                        Console.WriteLine(status.name.PadRight(maxLength, ' ') + " = " + status.status);
+                    Console.WriteLine("We are calculating in 2 second...");
+                    Thread.Sleep(2000);
+
+                    var projectsLog = new List<(string projectName, string text)>();
+                    foreach (var project in processesTotalProcessorTime)
+                    {
+                        projectsLog.Add((
+                            projectName: project.projectName,
+                            text: project.process == null ?
+                                        "CLOSED, CPU : ?   , RAM : ?" :
+                                        "OPENED, CPU : " + (
+                                                    (((project.process.TotalProcessorTime.TotalMilliseconds - project.totalMilliSecond.Value) / (DateTime.Now - project.calcDate.Value).TotalMilliseconds)) * 100).ToString("N2") + "%, " +
+                                                    "RAM : " + (project.process.WorkingSet64 / 1024/*KB*/ / 1024/*MB*/).ToString("N2") + "MB"
+                            ));
+                    }
+
+                    var maxLength = projectsLog.Max(o => o.projectName.Length);
+                    Console.WriteLine("=========================================================");
+                    foreach (var project in projectsLog)
+                        Console.WriteLine(project.projectName.PadRight(maxLength, ' ') + " | " + project.text);
+                    Console.WriteLine("=========================================================");
 
                     successful();
                 });

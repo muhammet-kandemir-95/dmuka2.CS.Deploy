@@ -23,7 +23,7 @@ namespace dmuka2.CS.Deploy
         /// <summary>
         /// Get process id from disk.
         /// </summary>
-        /// <param name="name">Process id on config.json.</param>
+        /// <param name="name">Project name on config.json.</param>
         /// <returns></returns>
         public static string Get(string name)
         {
@@ -43,7 +43,7 @@ namespace dmuka2.CS.Deploy
         /// <summary>
         /// Set process id on disk.
         /// </summary>
-        /// <param name="name">Process id on config.json.</param>
+        /// <param name="name">Project name on config.json.</param>
         /// <param name="processId">New process id.</param>
         public static void Set(string name, string processId)
         {
