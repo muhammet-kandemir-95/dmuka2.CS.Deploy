@@ -122,22 +122,28 @@ namespace dmuka2.CS.Deploy
         {
             new Thread(() =>
             {
-                while (true)
+                while (__exit)
                 {
-                    // This is only the example to learn.
-                    var projectUsage = GetProjectUsage(projectName);
-                    if (projectUsage.cpuPercent != null)
+                    try
                     {
-                        File.AppendAllText(
-                            Path.Combine(Directory.GetCurrentDirectory(), "agent-log.txt"),
-                            string.Format("CPU : {0}%, RAM : {1} MB", projectUsage.cpuPercent.Value.ToString("N2"), (projectUsage.ramUsage.Value / 1024/*KB*/ / 1024/*MB*/).ToString("N2")) + Environment.NewLine
-                            );
-                    }
 
-                    // Every 5 minute.
-                    Thread.Sleep(1000 * 60 * 5);
+                        // This is only the example to learn.
+                        var projectUsage = GetProjectUsage(projectName);
+                        if (projectUsage.cpuPercent != null)
+                        {
+                            File.AppendAllText(
+                                Path.Combine(Directory.GetCurrentDirectory(), "agent-process-log.txt"),
+                                string.Format("{0} -> CPU : {1}%, RAM : {2} MB, TIME : {3}", projectName, projectUsage.cpuPercent.Value.ToString("N2"), (projectUsage.ramUsage.Value / 1024/*KB*/ / 1024/*MB*/).ToString("N2"), DateTime.Now.ToString("dd.MM.yyyy hh:mm")) + Environment.NewLine
+                                );
+                        }
+
+                    }
+                    catch { }
+
+                    // Every 30 minute.
+                    Thread.Sleep(1000 * 60 * 30);
                 }
-            });
+            }).Start();
         }
 
         /// <summary>

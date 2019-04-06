@@ -440,7 +440,11 @@ namespace dmuka2.CS.Deploy
                     project_name = projectName
                 }).Replace("\"", "\\\"") + "\" --configuration RELEASE &", false, false);
 
+
                 Thread.Sleep(1000);
+
+                // When we run the nodejs project and then terminal is closed, linux kill the nodejs project auto. But when we exit normally, linux doesn't do it.
+                exit = true;
             };
             commands.Add(new Command("pr -r", "Restart project.", () =>
             {
