@@ -560,6 +560,8 @@ namespace dmuka2.CS.Deploy
                                     false,
                                     true);
 
+                            AgentHelper.StartTheQueue();
+
                             ShellHelper.Run(
                                 mainProcess.path,
                                 mainProcess.name + " " + mainProcess.arguments + @" & " +
@@ -569,15 +571,31 @@ namespace dmuka2.CS.Deploy
                                     {
                                         processId = text.Split(new string[] { splitText }, StringSplitOptions.None)[1];
                                         ProcessSaveHelper.Set(projectName, processId);
+
+                                        AgentHelper.AddToQueue(() =>
+                                        {
+                                            AgentHelper.OnProcessStart(projectName);
+                                        });
                                     }
                                     else
+                                    {
+                                        AgentHelper.AddToQueue(() =>
+                                        {
+                                            AgentHelper.OnLog(projectName, false, text);
+                                        });
                                         LogHelper.Write(projectName, text);
+                                    }
                                 }, callbackError: (process, text) =>
                                 {
+                                    AgentHelper.AddToQueue(() =>
+                                    {
+                                        AgentHelper.OnLog(projectName, true, text);
+                                    });
                                     LogHelper.Write(projectName, text);
                                 });
 
                             existReturnArg = true;
+                            AgentHelper.StopTheQueue();
                         }
                         break;
                     default:
