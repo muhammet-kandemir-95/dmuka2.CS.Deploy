@@ -20,6 +20,14 @@ namespace dmuka2.CS.Deploy
         /// </summary>
         static Queue<Action> __queue = new Queue<Action>();
         static bool __exit = false;
+        public static string AgentLogDirectory { get; private set; }
+        #endregion
+
+        #region Constructors
+        static AgentHelper()
+        {
+            AgentLogDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Processes");
+        }
         #endregion
 
         #region Methods
@@ -71,6 +79,16 @@ namespace dmuka2.CS.Deploy
         {
             lock (__queue)
                 __queue.Enqueue(action);
+        }
+
+        /// <summary>
+        /// Return the agent log path of project.
+        /// </summary>
+        /// <param name="projectName">Which project in config.json?</param>
+        /// <returns></returns>
+        public static string GetAgentLogFilePath(string projectName)
+        {
+            return Path.Combine(AgentLogDirectory, projectName + "__agent_log.txt");
         }
 
         /// <summary>
@@ -126,13 +144,12 @@ namespace dmuka2.CS.Deploy
                 {
                     try
                     {
-
                         // This is only the example to learn.
                         var projectUsage = GetProjectUsage(projectName);
                         if (projectUsage.cpuPercent != null)
                         {
                             File.AppendAllText(
-                                Path.Combine(Directory.GetCurrentDirectory(), "agent-process-log.txt"),
+                                GetAgentLogFilePath(projectName),
                                 string.Format("{0} -> CPU : {1}%, RAM : {2} MB, TIME : {3}", projectName, projectUsage.cpuPercent.Value.ToString("N2"), (projectUsage.ramUsage.Value / 1024/*KB*/ / 1024/*MB*/).ToString("N2"), DateTime.Now.ToString("dd.MM.yyyy hh:mm")) + Environment.NewLine
                                 );
                         }

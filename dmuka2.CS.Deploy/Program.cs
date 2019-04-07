@@ -86,7 +86,8 @@ namespace dmuka2.CS.Deploy
   / __  / / / / _ \   / __  / / / / _ \
  / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
 /_____/\__, /\___/  /_____/\__, /\___/ 
-      /____/              /____/       ");
+      /____/              /____/       
+");
         }
         #endregion
 
@@ -234,6 +235,52 @@ namespace dmuka2.CS.Deploy
                 }
                 logProcesses.Clear();
             };
+            Action<string[]> runAgentLogProcesses = (projects) =>
+            {
+                // We don't work on background.
+                // It is unnecessary!
+                if (__askDisable)
+                    return;
+
+                var maxLength = projects.Max(o => o.Length);
+                foreach (var projectName in projects)
+                {
+                    var logAgentFilePath = AgentHelper.GetAgentLogFilePath(projectName);
+
+                    if (File.Exists(logAgentFilePath) == false)
+                        continue;
+
+                    var shellProcess = ShellHelper.Run(AgentHelper.AgentLogDirectory, "tail -n 100 -f \"" + Path.GetFileName(logAgentFilePath) + "\"", true, false,
+                        (process, text) =>
+                        {
+                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
+                        }, (process, text) =>
+                        {
+                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
+                        });
+
+                    logProcesses.Add(shellProcess);
+                }
+
+                while (true)
+                    Thread.Sleep(1);
+            };
+            commands.Add(new Command("alog -a", "Show agent log of all projects.", () =>
+            {
+                runAgentLogProcesses(ConfigHelper.Projects);
+            }));
+            commands.Add(new Command("alog", "Show agent log of project/projects.", () =>
+            {
+                var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
+
+                if (logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+                {
+                    Console.WriteLine("Not found a project in command!");
+                    return;
+                }
+
+                runAgentLogProcesses(logs);
+            }));
             Action<string[]> runLogProcesses = (projects) =>
             {
                 // We don't work on background.
@@ -281,12 +328,22 @@ namespace dmuka2.CS.Deploy
 
                 runLogProcesses(logs);
             }));
+            Action<string> deleteLog = (projectName) =>
+            {
+                var logDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName);
+                if (Directory.Exists(logDirectoryPath))
+                    Directory.Delete(logDirectoryPath, true);
+
+                var logAgentFilePath = AgentHelper.GetAgentLogFilePath(projectName);
+                if (File.Exists(logAgentFilePath))
+                    File.Delete(logAgentFilePath);
+            };
             commands.Add(new Command("log -r", "Remove all logs of a project.", () =>
             {
                 tryCatch(() =>
                 {
                     string projectName = getLine("Write project name = ");
-                    Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName), true);
+                    deleteLog(projectName);
                     successful();
                 });
             }));
@@ -297,7 +354,7 @@ namespace dmuka2.CS.Deploy
                     areYouSure(() =>
                     {
                         foreach (var projectName in ConfigHelper.Projects)
-                            Directory.Delete(Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName), true);
+                            deleteLog(projectName);
                         successful();
                     });
                 });
@@ -400,7 +457,7 @@ namespace dmuka2.CS.Deploy
                         }
                         catch { }
 
-                        processesTotalProcessorTime.Add((projectName: projectName, process: process, totalMillisecond: totalMillisecond, calcDate: calcDate));
+                        processesTotalProcessorTime.Add((projectName: projectName, process: process, totalMillisecond, calcDate: calcDate));
                     }
 
                     Console.WriteLine("We are calculating in 2 second...");
@@ -412,7 +469,7 @@ namespace dmuka2.CS.Deploy
                         projectsLog.Add((
                             projectName: project.projectName,
                             text: project.process == null ?
-                                        "CLOSED, CPU : ?    , RAM : ?" :
+                                        "CLOSED, CPU : ?     , RAM : ?" :
                                         "OPENED, CPU : " + (
                                                     (((project.process.TotalProcessorTime.TotalMilliseconds - project.totalMilliSecond.Value) / (DateTime.Now - project.calcDate.Value).TotalMilliseconds)) * 100).ToString("N2").PadLeft(5, ' ') + "%, " +
                                                     "RAM : " + (project.process.WorkingSet64 / 1024/*KB*/ / 1024/*MB*/).ToString("N2") + "MB"
@@ -636,6 +693,13 @@ namespace dmuka2.CS.Deploy
                                           |_|         |__/ 
 
 -----------------------------------------------------------
+
+ _  _  ____  ____  ____  __  __   __ _     __     __     __  
+/ )( \(  __)(  _ \/ ___)(  )/  \ (  ( \   /  \   /  \   /  \ 
+\ \/ / ) _)  )   /\___ \ )((  O )/    /  (_/ / _(  0 )_(  0 )
+ \__/ (____)(__\_)(____/(__)\__/ \_)__)   (__)(_)\__/(_)\__/ 
+
+------------------------------------------------------------
 Welcome, if you are here, you want a thing from me?
 So, you can learn what can you do with help command.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
