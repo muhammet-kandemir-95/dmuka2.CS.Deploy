@@ -132,49 +132,58 @@ namespace dmuka2.CS.Deploy
 
             commands.Add(new Command("add -s", "Add deploy.sh to startup by linux user name.", () =>
             {
-                string linuxUserName = getLine("Write linux user name = ");
-                string deployStartupCommand =
+                tryCatch(() =>
+                {
+                    string linuxUserName = getLine("Write linux user name = ");
+                    string deployStartupCommand =
+                            Environment.NewLine +
+                            "@reboot " + linuxUserName + " " + deployShFilePath +
+                            Environment.NewLine;
+
+                    File.WriteAllText(deployShFilePath,
+                        "cd " + Directory.GetCurrentDirectory() +
                         Environment.NewLine +
-                        "@reboot " + linuxUserName + " " + deployShFilePath +
-                        Environment.NewLine;
+                        @"dotnet run --cmd ""pr -ra""");
 
-                File.WriteAllText(deployShFilePath,
-                    "cd " + Directory.GetCurrentDirectory() +
-                    Environment.NewLine +
-                    @"dotnet run --cmd ""pr -ra""");
+                    ShellHelper.Run(
+                        "",
+                        "chmod +x " + deployShFilePath,
+                        true,
+                        true,
+                        (process, text) =>
+                        {
+                            Console.WriteLine(text);
+                        }, callbackError: (process, text) =>
+                        {
+                            Console.WriteLine(text);
+                        });
+                    string crontabContent = File.ReadAllText("/etc/crontab");
 
-                ShellHelper.Run(
-                    "",
-                    "chmod +x " + deployShFilePath,
-                    true,
-                    true,
-                    (process, text) =>
-                    {
-                        Console.WriteLine(text);
-                    }, callbackError: (process, text) =>
-                    {
-                        Console.WriteLine(text);
-                    });
-                string crontabContent = File.ReadAllText("/etc/crontab");
+                    crontabContent = crontabContent.Replace(deployStartupCommand, "");
+                    crontabContent += deployStartupCommand;
 
-                crontabContent = crontabContent.Replace(deployStartupCommand, "");
-                crontabContent += deployStartupCommand;
+                    File.WriteAllText("/etc/crontab", crontabContent);
 
-                File.WriteAllText("/etc/crontab", crontabContent);
+                    successful();
+                });
             }));
             commands.Add(new Command("remove -s", "Remove deploy.sh from startup by linux user name.", () =>
             {
-                string linuxUserName = getLine("Write linux user name = ");
-                string deployStartupCommand =
-                        Environment.NewLine +
-                        "@reboot " + linuxUserName + " " + deployShFilePath +
-                        Environment.NewLine;
+                tryCatch(() =>
+                {
+                    string linuxUserName = getLine("Write linux user name = ");
+                    string deployStartupCommand =
+                            Environment.NewLine +
+                            "@reboot " + linuxUserName + " " + deployShFilePath +
+                            Environment.NewLine;
 
-                string crontabContent = File.ReadAllText("/etc/crontab");
+                    string crontabContent = File.ReadAllText("/etc/crontab");
 
-                crontabContent = crontabContent.Replace(deployStartupCommand, "");
+                    crontabContent = crontabContent.Replace(deployStartupCommand, "");
 
-                File.WriteAllText("/etc/crontab", crontabContent);
+                    File.WriteAllText("/etc/crontab", crontabContent);
+                    successful();
+                });
             }));
             commands.Add(new Command("sleep -s", "Thread sleep as second.", () =>
             {
@@ -183,6 +192,7 @@ namespace dmuka2.CS.Deploy
                     var second = Convert.ToInt32(getLine("Write second = "));
                     Console.WriteLine("Waiting {0} second...", second);
                     Thread.Sleep(second * 1000);
+                    successful();
                 });
             }));
             commands.Add(new Command("sleep -m", "Thread sleep as minute.", () =>
@@ -192,6 +202,7 @@ namespace dmuka2.CS.Deploy
                     var minute = Convert.ToInt32(getLine("Write minute = "));
                     Console.WriteLine("Waiting {0} minute...", minute);
                     Thread.Sleep(minute * 1000 * 60);
+                    successful();
                 });
             }));
             commands.Add(new Command("sleep -h", "Thread sleep as hour.", () =>
@@ -201,11 +212,13 @@ namespace dmuka2.CS.Deploy
                     var hour = Convert.ToInt32(getLine("Write hour = "));
                     Console.WriteLine("Waiting {0} hour...", hour);
                     Thread.Sleep(hour * 1000 * 60 * 60);
+                    successful();
                 });
             }));
             commands.Add(new Command("set -u", "Set user name.", () =>
             {
                 ConfigHelper.SetUserName(getLine("Write user name = "));
+                successful();
             }));
             List<Process> logProcesses = new List<Process>();
             Console.CancelKeyPress += (sender, e) =>
