@@ -26,7 +26,13 @@ namespace dmuka2.CS.Deploy
         #region Constructors
         static AgentHelper()
         {
-            AgentLogDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Processes");
+            var logDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Log");
+            if (Directory.Exists(logDirectoryPath) == false)
+                Directory.CreateDirectory(logDirectoryPath);
+
+            AgentLogDirectory = Path.Combine(logDirectoryPath, "Agent");
+            if (Directory.Exists(AgentLogDirectory) == false)
+                Directory.CreateDirectory(AgentLogDirectory);
         }
         #endregion
 
@@ -144,7 +150,6 @@ namespace dmuka2.CS.Deploy
                 {
                     try
                     {
-                        // This is only the example to learn.
                         var projectUsage = GetProjectUsage(projectName);
                         if (projectUsage.cpuPercent != null)
                         {
