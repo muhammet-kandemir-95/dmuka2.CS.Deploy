@@ -122,7 +122,7 @@ namespace dmuka2.CS.Deploy
         {
             new Thread(() =>
             {
-                while (__exit)
+                while (__exit == false)
                 {
                     try
                     {
