@@ -412,9 +412,9 @@ namespace dmuka2.CS.Deploy
                         projectsLog.Add((
                             projectName: project.projectName,
                             text: project.process == null ?
-                                        "CLOSED, CPU : ?   , RAM : ?" :
+                                        "CLOSED, CPU : ?    , RAM : ?" :
                                         "OPENED, CPU : " + (
-                                                    (((project.process.TotalProcessorTime.TotalMilliseconds - project.totalMilliSecond.Value) / (DateTime.Now - project.calcDate.Value).TotalMilliseconds)) * 100).ToString("N2") + "%, " +
+                                                    (((project.process.TotalProcessorTime.TotalMilliseconds - project.totalMilliSecond.Value) / (DateTime.Now - project.calcDate.Value).TotalMilliseconds)) * 100).ToString("N2").PadLeft(5, ' ') + "%, " +
                                                     "RAM : " + (project.process.WorkingSet64 / 1024/*KB*/ / 1024/*MB*/).ToString("N2") + "MB"
                             ));
                     }
