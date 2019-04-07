@@ -447,6 +447,10 @@ namespace dmuka2.CS.Deploy
                                 Console.WriteLine(text);
                             });
 
+                var processId = ProcessSaveHelper.Get(projectName);
+                if (processId != "")
+                    ShellHelper.Run("", "kill " + processId, false, false);
+
                 ShellHelper.Run("", "dotnet run --background \"" + JsonConvert.SerializeObject(new
                 {
                     user_name = ConfigHelper.UserName,
