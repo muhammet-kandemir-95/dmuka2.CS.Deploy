@@ -438,10 +438,10 @@ namespace dmuka2.CS.Deploy
             {
                 tryCatch(() =>
                 {
-                    var processesTotalProcessorTime = new List<(string projectName, Process process, double? totalMilliSecond, DateTime? calcDate)>();
+                    var processesTotalProcessorTime = new List<(string projectName, Process process, double? totalTicks, DateTime? calcDate)>();
                     foreach (var projectName in ConfigHelper.Projects)
                     {
-                        double? totalMillisecond = null;
+                        double? totalTicks = null;
                         DateTime? calcDate = null;
                         Process process = null;
                         try
@@ -449,7 +449,7 @@ namespace dmuka2.CS.Deploy
                             process = Process.GetProcessById(Convert.ToInt32(ProcessSaveHelper.Get(projectName)));
                             if (process.HasExited == false)
                             {
-                                totalMillisecond = process.TotalProcessorTime.TotalMilliseconds;
+                                totalTicks = process.TotalProcessorTime.Ticks;
                                 calcDate = DateTime.Now;
                             }
                             else
@@ -457,7 +457,7 @@ namespace dmuka2.CS.Deploy
                         }
                         catch { }
 
-                        processesTotalProcessorTime.Add((projectName: projectName, process: process, totalMillisecond, calcDate: calcDate));
+                        processesTotalProcessorTime.Add((projectName: projectName, process: process, totalTicks, calcDate: calcDate));
                     }
 
                     Console.WriteLine("We are calculating in 2 second...");
@@ -471,7 +471,7 @@ namespace dmuka2.CS.Deploy
                             text: project.process == null ?
                                         "CLOSED, CPU :      ?, RAM : ?" :
                                         "OPENED, CPU : " + (
-                                                    (((project.process.TotalProcessorTime.TotalMilliseconds - project.totalMilliSecond.Value) / (DateTime.Now - project.calcDate.Value).TotalMilliseconds)) * 100).ToString("N2").PadLeft(5, ' ') + "%, " +
+                                                    (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks)) * 100).ToString("N2").PadLeft(5, ' ') + "%, " +
                                                     "RAM : " + (project.process.WorkingSet64 / 1024/*KB*/ / 1024/*MB*/).ToString("N2") + "MB"
                             ));
                     }

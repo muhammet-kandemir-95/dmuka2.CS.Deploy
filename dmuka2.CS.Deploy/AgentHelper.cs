@@ -111,7 +111,7 @@ namespace dmuka2.CS.Deploy
             double? cpuPercent = null;
             long? ramUsage = null;
 
-            double? totalMillisecond = null;
+            double? totalTicks = null;
             DateTime? calcDate = null;
             Process process = null;
             try
@@ -119,7 +119,7 @@ namespace dmuka2.CS.Deploy
                 process = Process.GetProcessById(Convert.ToInt32(ProcessSaveHelper.Get(projectName)));
                 if (process.HasExited == false)
                 {
-                    totalMillisecond = process.TotalProcessorTime.TotalMilliseconds;
+                    totalTicks = process.TotalProcessorTime.Ticks;
                     calcDate = DateTime.Now;
                 }
                 else
@@ -129,7 +129,7 @@ namespace dmuka2.CS.Deploy
 
             if (process != null)
             {
-                cpuPercent = ((process.TotalProcessorTime.TotalMilliseconds - totalMillisecond.Value) / (DateTime.Now - calcDate.Value).TotalMilliseconds) * 100;
+                cpuPercent = ((process.TotalProcessorTime.Ticks - totalTicks.Value) / (DateTime.Now - calcDate.Value).Ticks) * 100;
                 ramUsage = process.WorkingSet64;
             }
 
