@@ -512,7 +512,7 @@ namespace dmuka2.CS.Deploy
                 {
                     user_name = ConfigHelper.UserName,
                     project_name = projectName
-                }).Replace("\"", "\\\"") + "\" --configuration RELEASE &", false, false);
+                }).Replace("\"", "\\\"") + "\" --configuration Release &", false, false);
 
 
                 Thread.Sleep(1000);
