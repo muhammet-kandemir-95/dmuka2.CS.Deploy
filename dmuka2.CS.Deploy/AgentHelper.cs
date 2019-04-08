@@ -155,7 +155,7 @@ namespace dmuka2.CS.Deploy
                         {
                             File.AppendAllText(
                                 GetAgentLogFilePath(projectName),
-                                string.Format("{0} -> CPU : {1}%, RAM : {2} MB, TIME : {3}", projectName, projectUsage.cpuPercent.Value.ToString("N2"), (projectUsage.ramUsage.Value / 1024/*KB*/ / 1024/*MB*/).ToString("N2"), DateTime.Now.ToString("dd.MM.yyyy hh:mm")) + Environment.NewLine
+                                string.Format("CPU : {0}%, RAM : {1} MB, TIME : {2}", projectUsage.cpuPercent.Value.ToString("N2"), (projectUsage.ramUsage.Value / 1024/*KB*/ / 1024/*MB*/).ToString("N2"), DateTime.Now.ToString("dd.MM.yyyy hh:mm")) + Environment.NewLine
                                 );
                         }
 
