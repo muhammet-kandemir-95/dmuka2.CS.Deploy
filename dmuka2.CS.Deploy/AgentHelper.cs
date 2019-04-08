@@ -129,6 +129,7 @@ namespace dmuka2.CS.Deploy
 
             if (process != null)
             {
+                Thread.Sleep(2000);
                 cpuPercent = ((process.TotalProcessorTime.Ticks - totalTicks.Value) / (DateTime.Now - calcDate.Value).Ticks) * 100;
                 ramUsage = process.WorkingSet64;
             }
