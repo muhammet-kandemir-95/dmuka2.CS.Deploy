@@ -18,6 +18,10 @@ namespace dmuka2.CS.Deploy
         /// This variable is for it.
         /// </summary>
         static bool __askDisable = false;
+        /// <summary>
+        /// Console can't show anything when this variable is true.
+        /// </summary>
+        static bool __writeDisable = false;
 
         /// <summary>
         /// We must check that Has bye bye been typed?
@@ -26,6 +30,52 @@ namespace dmuka2.CS.Deploy
         #endregion
 
         #region Methods
+        static void write(string text, params object[] arguments)
+        {
+            if (__writeDisable == true)
+                return;
+
+            text = text
+                    .Replace("[line][01]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '─'))
+                    .Replace("[line][02]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '═'))
+                    .Replace("[line][03]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '.'));
+
+            var split = text.Split(new string[] { "[color]" }, StringSplitOptions.None);
+            var previousForeColor = Console.ForegroundColor;
+            var previousBackColor = Console.BackgroundColor;
+
+            for (int i = 0; i < split.Length; i++)
+            {
+                var item = split[i];
+                if (i != 0)
+                {
+                    var colors = item.Substring(0, "[--,--]".Length);
+                    item = item.Substring("[--,--]".Length);
+
+
+                    var foreColor = colors.Split(',')[0].Replace("[", "");
+                    var backColor = colors.Split(',')[1].Replace("]", "");
+                    if (foreColor != "--")
+                        Console.ForegroundColor = (ConsoleColor)Convert.ToInt32(foreColor);
+                    if (backColor != "--")
+                        Console.BackgroundColor = (ConsoleColor)Convert.ToInt32(backColor);
+                }
+                Console.Write(item, arguments);
+            }
+            Console.ForegroundColor = previousForeColor;
+            Console.BackgroundColor = previousBackColor;
+        }
+
+        static void writeLine(string text, params object[] arguments)
+        {
+            write(text + Environment.NewLine, arguments);
+        }
+
+        static void writeLine()
+        {
+            write(Environment.NewLine);
+        }
+
         static bool tryCatch(Action action)
         {
             try
@@ -37,15 +87,15 @@ namespace dmuka2.CS.Deploy
             catch (Exception ex)
             {
                 if (__askDisable == false)
-                    Console.WriteLine("We couldn't. Do you want see the error? (y/n) ");
+                    write("[color][03,--]We couldn't. Do you want see the error? [color][01,--](y/n) ");
 
                 if (__askDisable == true || Console.ReadLine().ToLower() == "y")
                 {
-                    Console.WriteLine(ex.ToString());
+                    writeLine("[color][04,--]" + ex.ToString());
                     if (__askDisable == false)
                     {
-                        Console.WriteLine("Enter a line to continue...");
-                        Console.ReadLine();
+                        writeLine("[color][07,--]Press a key to continue...");
+                        Console.ReadKey(true);
                     }
                 }
 
@@ -61,17 +111,14 @@ namespace dmuka2.CS.Deploy
                 return;
             }
 
-            Console.WriteLine("Are you sure? (y/n) ");
+            write("[color][15,--]Are you sure? [color][01,--](y/n) ");
             if (Console.ReadLine().ToLower() == "y")
                 action();
         }
 
         static void successful()
         {
-            Console.WriteLine(@"  ____  _ __ __ ___ ______
- (_-< || / _/ _/ -_|_-<_-<
- /__/\_,_\__\__\___/__/__/
-                          ");
+            writeLine(@"[color][10,--]Successfull");
         }
 
         static void byeBye()
@@ -80,14 +127,10 @@ namespace dmuka2.CS.Deploy
                 return;
             __byeByeEnable = false;
 
-            Console.WriteLine(@"
-     ____                ____           
-    / __ )__  _____     / __ )__  _____ 
-   / __  / / / / _ \   / __  / / / / _ \
-  / /_/ / /_/ /  __/  / /_/ / /_/ /  __/
- /_____/\__, /\___/  /_____/\__, /\___/ 
-       /____/              /____/       
-");
+            writeLine();
+            writeLine("[color][13,00]" + "".PadRight(Console.BufferWidth, ' '));
+            writeLine("[color][13,00]" + "Bye Bye".PadLeft((Console.BufferWidth + 7) / 2, ' ').PadRight(Console.BufferWidth, ' '));
+            writeLine("[color][13,00]" + "".PadRight(Console.BufferWidth, ' '));
         }
         #endregion
 
@@ -103,16 +146,21 @@ namespace dmuka2.CS.Deploy
                     return argLine;
                 }
 
-                Console.WriteLine(msg);
-                return Console.ReadLine();
+                write("[color][07,--]" + msg);
+
+                var previousForeColor = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+
+                var line = Console.ReadLine();
+
+                Console.ForegroundColor = previousForeColor;
+
+                writeLine("[line][03]");
+
+                return line;
             };
 
             bool exit = false;
-            Console.CancelKeyPress += (sender, e) =>
-            {
-                exit = true;
-                byeBye();
-            };
 
             #region Commands
             List<Command> commands = new List<Command>();
@@ -122,11 +170,15 @@ namespace dmuka2.CS.Deploy
 
                 foreach (var command in commands)
                     if (command.Name != "help")
-                        Console.WriteLine(command.Name.PadRight(maxLength, ' ') + " = " + command.Description);
+                        writeLine("[color][11,--]" + command.Name.PadRight(maxLength, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
             }));
             commands.Add(new Command("exit", "Close this application safely.", () =>
             {
                 exit = true;
+            }));
+            commands.Add(new Command("clear", "Clear console.", () =>
+            {
+                Console.Clear();
             }));
 
             string deployShFilePath = Path.Combine(Directory.GetCurrentDirectory(), "deploy.sh");
@@ -153,10 +205,10 @@ namespace dmuka2.CS.Deploy
                         true,
                         (process, text) =>
                         {
-                            Console.WriteLine(text);
+                            writeLine(text);
                         }, callbackError: (process, text) =>
                         {
-                            Console.WriteLine(text);
+                            writeLine(text);
                         });
                     string crontabContent = File.ReadAllText("/etc/crontab");
 
@@ -191,7 +243,7 @@ namespace dmuka2.CS.Deploy
                 tryCatch(() =>
                 {
                     var second = Convert.ToInt32(getLine("Write second = "));
-                    Console.WriteLine("Waiting {0} second...", second);
+                    writeLine("[color][13,--]Waiting {0} second...", second);
                     Thread.Sleep(second * 1000);
                     successful();
                 });
@@ -201,7 +253,7 @@ namespace dmuka2.CS.Deploy
                 tryCatch(() =>
                 {
                     var minute = Convert.ToInt32(getLine("Write minute = "));
-                    Console.WriteLine("Waiting {0} minute...", minute);
+                    writeLine("[color][13,--]Waiting {0} minute...", minute);
                     Thread.Sleep(minute * 1000 * 60);
                     successful();
                 });
@@ -211,7 +263,7 @@ namespace dmuka2.CS.Deploy
                 tryCatch(() =>
                 {
                     var hour = Convert.ToInt32(getLine("Write hour = "));
-                    Console.WriteLine("Waiting {0} hour...", hour);
+                    writeLine("[color][13,--]Waiting {0} hour...", hour);
                     Thread.Sleep(hour * 1000 * 60 * 60);
                     successful();
                 });
@@ -221,8 +273,13 @@ namespace dmuka2.CS.Deploy
                 ConfigHelper.SetUserName(getLine("Write user name = "));
                 successful();
             }));
+            commands.Add(new Command("get -u", "Get user name.", () =>
+            {
+                writeLine("[color][13,--]" + ConfigHelper.UserName);
+                successful();
+            }));
             List<Process> logProcesses = new List<Process>();
-            Console.CancelKeyPress += (sender, e) =>
+            Action killLogProcesses = () =>
             {
                 foreach (var logProcess in logProcesses)
                 {
@@ -235,13 +292,16 @@ namespace dmuka2.CS.Deploy
                 }
                 logProcesses.Clear();
             };
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                killLogProcesses();
+            };
             Action<string[]> runAgentLogProcesses = (projects) =>
             {
-                // We don't work on background.
-                // It is unnecessary!
-                if (__askDisable)
-                    return;
+                writeLine("[color][15,--]Agent log was started...");
+                writeLine();
 
+                var disableLog = false;
                 var maxLength = projects.Max(o => o.Length);
                 foreach (var projectName in projects)
                 {
@@ -253,17 +313,27 @@ namespace dmuka2.CS.Deploy
                     var shellProcess = ShellHelper.Run(AgentHelper.AgentLogDirectory, "tail -n 100 -f \"" + Path.GetFileName(logAgentFilePath) + "\"", true, false,
                         (process, text) =>
                         {
-                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
+                            if (exit == true || disableLog == true)
+                                return;
+
+                            writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
                         }, (process, text) =>
                         {
-                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
+                            if (exit == true || disableLog == true)
+                                return;
+
+                            writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
                         });
 
                     logProcesses.Add(shellProcess);
                 }
 
-                while (true)
-                    Thread.Sleep(1);
+                Console.ReadKey(true);
+                disableLog = true;
+                killLogProcesses();
+
+                writeLine();
+                writeLine("[color][15,--]Agent log was closed...");
             };
             commands.Add(new Command("alog -a", "Show agent log of all projects.", () =>
             {
@@ -271,23 +341,22 @@ namespace dmuka2.CS.Deploy
             }));
             commands.Add(new Command("alog", "Show agent log of project/projects.", () =>
             {
-                var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
-
-                if (logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+                tryCatch(() =>
                 {
-                    Console.WriteLine("Not found a project in command!");
-                    return;
-                }
+                    var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
 
-                runAgentLogProcesses(logs);
+                    if (logs.Length == 0 || logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+                        throw new Exception("Not found project!");
+
+                    runAgentLogProcesses(logs);
+                });
             }));
             Action<string[]> runLogProcesses = (projects) =>
             {
-                // We don't work on background.
-                // It is unnecessary!
-                if (__askDisable)
-                    return;
+                writeLine("[color][15,--]Log was started...");
+                writeLine();
 
+                var disableLog = false;
                 var maxLength = projects.Max(o => o.Length);
                 foreach (var projectName in projects)
                 {
@@ -300,17 +369,27 @@ namespace dmuka2.CS.Deploy
                     var shellProcess = ShellHelper.Run(logProjectDirectoryPath, "tail -n 100 -f \"" + logProjectPath + "\"", true, false,
                         (process, text) =>
                         {
-                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
+                            if (exit == true || disableLog == true)
+                                return;
+
+                            writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
                         }, (process, text) =>
                         {
-                            Console.WriteLine(projectName.PadRight(maxLength + 2, ' ') + " | " + text);
+                            if (exit == true || disableLog == true)
+                                return;
+
+                            writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
                         });
 
                     logProcesses.Add(shellProcess);
                 }
 
-                while (true)
-                    Thread.Sleep(1);
+                Console.ReadKey(true);
+                disableLog = true;
+                killLogProcesses();
+
+                writeLine();
+                writeLine("[color][15,--]Log was closed...");
             };
             commands.Add(new Command("log -a", "Show all projects log.", () =>
             {
@@ -318,15 +397,15 @@ namespace dmuka2.CS.Deploy
             }));
             commands.Add(new Command("log", "Show log of project/projects.", () =>
             {
-                var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
-
-                if (logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+                tryCatch(() =>
                 {
-                    Console.WriteLine("Not found a project in command!");
-                    return;
-                }
+                    var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
 
-                runLogProcesses(logs);
+                    if (logs.Length == 0 || logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+                        throw new Exception("Not found project!");
+
+                    runLogProcesses(logs);
+                });
             }));
             Action<string> deleteLog = (projectName) =>
             {
@@ -359,6 +438,156 @@ namespace dmuka2.CS.Deploy
                     });
                 });
             }));
+            commands.Add(new Command("mon", "Open the monitor to watch all project.", () =>
+            {
+                tryCatch(() =>
+                {
+                    string projectName = getLine("Write project name = ");
+                    if (ConfigHelper.Projects.Any(o => o == projectName) == false)
+                        throw new Exception("Not found project!");
+
+                    Console.Clear();
+                    int cursorPosition = Console.CursorTop;
+                    bool exitMonitor = false;
+                    int consoleWidth = Console.BufferWidth - (Console.BufferWidth % 2);
+                    int consoleHeight = Console.BufferHeight - (2 - (Console.BufferWidth % 2));
+
+                    int graphWidth = consoleWidth - 2;
+                    int graphHeight = consoleHeight - 2;
+
+                    char[,] graph = new char[graphHeight, graphWidth];
+                    for (int y = 0; y < graphHeight; y++)
+                        for (int x = 0; x < graphWidth; x++)
+                            graph[y, x] = ' ';
+
+                    Action draw = () =>
+                    {
+                        for (int y = 1; y <= consoleHeight; y++)
+                        {
+                            for (int x = 1; x <= consoleWidth; x++)
+                            {
+                                if (exitMonitor == true)
+                                    return;
+
+                                if (x == 1 && y == 1)
+                                    write("[color][01,--]┌");
+                                else if (x == consoleWidth && y == consoleHeight)
+                                    write("[color][01,--]┘");
+                                else if (x == consoleWidth && y == 1)
+                                    write("[color][01,--]┐");
+                                else if (x == 1 && y == consoleHeight)
+                                    write("[color][01,--]└");
+                                else if (x == 1 || x == consoleWidth)
+                                    write("[color][01,--]│");
+                                else if (y == 1 || y == consoleHeight)
+                                    write("[color][01,--]─");
+                                else
+                                {
+                                    char graphChar = graph[y - 2, x - 2];
+                                    string color = "";
+                                    if (y == 2 || y == consoleHeight / 2 + 1)
+                                        color = "[color][14,--]";
+                                    else if (y == 3 || y == consoleHeight / 2 + 2)
+                                    {
+                                        if (x < 6)
+                                            color = "[color][07,--]";
+                                        else
+                                            color = "[color][11,--]";
+                                    }
+                                    else if (y == consoleHeight / 2)
+                                        color = "[color][01,--]";
+                                    else if (graphChar != ' ')
+                                        color = "[color][--,15]";
+
+                                    write(color + graphChar);
+                                }
+                            }
+                        }
+                    };
+                    draw();
+
+                    Thread onDraw = new Thread(() =>
+                    {
+                        while (exitMonitor == false)
+                        {
+                            Console.SetCursorPosition(0, cursorPosition);
+                            draw();
+                            Thread.Sleep(600);
+                        }
+                    });
+                    onDraw.Start();
+
+                    Thread onUsage = new Thread(() =>
+                    {
+                        List<double> beforeCpus = new List<double>();
+                        List<long> beforeRAMs = new List<long>();
+                        var ramY = graphHeight / 2;
+
+                        var usageGraphYMin = 3;
+                        var usageGraphYMax = ramY - 2;
+                        var usageGraphXMax = graphWidth;
+                        long maxRam = 100;
+                        while (exitMonitor == false)
+                        {
+                            var usage = AgentHelper.GetProjectUsage(projectName);
+                            var cpu = usage.cpuPercent ?? 0;
+                            var ram = usage.ramUsage ?? 0;
+
+                            for (int y = 0; y < graphHeight; y++)
+                                for (int x = 0; x < graphWidth; x++)
+                                    graph[y, x] = ' ';
+
+                            for (int x = 0; x < graphWidth; x++)
+                                graph[ramY - 1, x] = '─';
+
+                            for (int i = 0; i < projectName.Length; i++)
+                            {
+                                graph[0, i + 1] = projectName[i];
+                                graph[ramY, i + 1] = projectName[i];
+                            }
+
+                            graph[1, 1] = 'C';
+                            graph[1, 2] = 'P';
+                            graph[1, 3] = 'U';
+
+                            graph[ramY + 1, 1] = 'R';
+                            graph[ramY + 1, 2] = 'A';
+                            graph[ramY + 1, 3] = 'M';
+
+                            beforeCpus.Add(cpu);
+                            beforeRAMs.Add(ram);
+                            maxRam = Math.Max(maxRam, ram);
+
+                            var cpuStr = cpu.ToString();
+                            for (int i = 0; i < cpuStr.Length; i++)
+                                graph[1, 5 + i] = cpuStr[i];
+                            graph[1, 5 + cpuStr.Length] = '%';
+
+                            var ramStr = GC.GetTotalMemory(true).ToString();
+                            for (int i = 0; i < ramStr.Length; i++)
+                                graph[1 + ramY, 5 + i] = ramStr[i];
+
+                            if (beforeCpus.Count > usageGraphXMax)
+                            {
+                                beforeCpus.RemoveAt(0);
+                                beforeRAMs.RemoveAt(0);
+                            }
+
+                            for (int i = 0; i < beforeCpus.Count; i++)
+                                graph[usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100), i] = '0';
+
+                            for (int i = 0; i < beforeRAMs.Count; i++)
+                                graph[ramY + (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)), i] = '0';
+
+                            Thread.Sleep(300);
+                        }
+                    });
+                    onUsage.Start();
+
+                    Console.ReadKey(true);
+                    exitMonitor = true;
+                });
+            }));
             commands.Add(new Command("db -c", "Try to connect to database.", () =>
             {
                 tryCatch(() =>
@@ -375,7 +604,7 @@ namespace dmuka2.CS.Deploy
                 {
                     foreach (var databaseName in ConfigHelper.Databases)
                     {
-                        Console.WriteLine("Working on {0} database...", databaseName);
+                        writeLine("[color][09,--]Working on [color][14,--]{0} [color][09,--]database...", databaseName);
                         DatabaseHelper.TryToConnect(databaseName);
                     }
                     successful();
@@ -399,7 +628,7 @@ namespace dmuka2.CS.Deploy
                     {
                         foreach (var databaseName in ConfigHelper.Databases)
                         {
-                            Console.WriteLine("Working on {0} database...", databaseName);
+                            writeLine("[color][09,--]Working on [color][14,--]{0} [color][09,--]database...", databaseName);
                             DatabaseHelper.RemoveAllTables(databaseName);
                         }
                         successful();
@@ -414,7 +643,7 @@ namespace dmuka2.CS.Deploy
 
                     DatabaseHelper.ApplyMigration(databaseName, (migrationName) =>
                     {
-                        Console.WriteLine("Applying migration {0}...", migrationName);
+                        writeLine("[color][09,--]Applying migration [color][14,--]{0}[color][09,--]...", migrationName);
                     });
                     successful();
                 });
@@ -425,10 +654,10 @@ namespace dmuka2.CS.Deploy
                 {
                     foreach (var databaseName in ConfigHelper.Databases)
                     {
-                        Console.WriteLine("Working on {0} database...", databaseName);
+                        writeLine("[color][09,--]Working on [color][14,--]{0} [color][09,--]database...", databaseName);
                         DatabaseHelper.ApplyMigration(databaseName, (migrationName) =>
                         {
-                            Console.WriteLine("Applying migration {0}...", migrationName);
+                            writeLine("[color][09,--]Applying migration [color][14,--]{0}[color][09,--]...", migrationName);
                         });
                     }
                     successful();
@@ -460,8 +689,7 @@ namespace dmuka2.CS.Deploy
                         processesTotalProcessorTime.Add((projectName: projectName, process: process, totalTicks, calcDate: calcDate));
                     }
 
-                    Console.WriteLine("We are calculating in 2 second...");
-                    Thread.Sleep(2000);
+                    Thread.Sleep(300);
 
                     var projectsLog = new List<(string projectName, string text)>();
                     foreach (var project in processesTotalProcessorTime)
@@ -469,18 +697,20 @@ namespace dmuka2.CS.Deploy
                         projectsLog.Add((
                             projectName: project.projectName,
                             text: project.process == null ?
-                                        "CLOSED, CPU :      ?, RAM : ?" :
-                                        "OPENED, CPU : " + (
-                                                    (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks)) * 100).ToString("N2").PadLeft(5, ' ') + "%, " +
-                                                    "RAM : " + (project.process.WorkingSet64 / 1024/*KB*/ / 1024/*MB*/).ToString("N2") + "MB"
+                                        "[color][12,--]CLOSED[color][08,--], [color][15,--]CPU [color][08,--]:[color][11,--]      ?[color][08,--], [color][15,--]RAM [color][08,--]:[color][11,--] ?" :
+                                        "[color][10,--]OPENED[color][08,--], [color][15,--]CPU [color][08,--]:[color][11,--] " + (
+                                                    (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks)) * 100).ToString("N2").PadLeft(5, ' ') + "%[color][08,--], " +
+                                                    "[color][15,--]RAM [color][08,--]: [color][11,--]" + AgentHelper.ByteShort(project.process.WorkingSet64)
                             ));
                     }
 
+                    writeLine();
+
                     var maxLength = projectsLog.Max(o => o.projectName.Length);
-                    Console.WriteLine("=========================================================");
                     foreach (var project in projectsLog)
-                        Console.WriteLine(project.projectName.PadRight(maxLength, ' ') + " | " + project.text);
-                    Console.WriteLine("=========================================================");
+                        writeLine("[color][14,--]" + project.projectName.PadRight(maxLength, ' ') + " [color][08,--]| " + project.text);
+
+                    writeLine();
 
                     successful();
                 });
@@ -498,10 +728,10 @@ namespace dmuka2.CS.Deploy
                             command.path,
                             command.name + " " + command.arguments, true, true, callbackOutput: (process, text) =>
                             {
-                                Console.WriteLine(text);
+                                writeLine(text);
                             }, callbackError: (process, text) =>
                             {
-                                Console.WriteLine(text);
+                                writeLine(text);
                             });
 
                 var processId = ProcessSaveHelper.Get(projectName);
@@ -516,9 +746,6 @@ namespace dmuka2.CS.Deploy
 
 
                 Thread.Sleep(1000);
-
-                // When we run the nodejs project and then terminal is closed, linux kill the nodejs project auto. But when we exit normally, linux doesn't do it.
-                exit = true;
             };
             commands.Add(new Command("pr -r", "Restart project.", () =>
             {
@@ -539,7 +766,7 @@ namespace dmuka2.CS.Deploy
                     {
                         foreach (var projectName in ConfigHelper.Projects)
                         {
-                            Console.WriteLine("Restarting {0} project...", projectName);
+                            writeLine("[color][09,--]Restarting [color][14,--]{0} [color][09,--]project...", projectName);
                             restartProject(projectName);
                         }
 
@@ -577,7 +804,7 @@ namespace dmuka2.CS.Deploy
                     {
                         foreach (var projectName in ConfigHelper.Projects)
                         {
-                            Console.WriteLine("Killing {0} project...", projectName);
+                            writeLine("[color][09,--]Killing [color][14,--]{0} [color][09,--]project...", projectName);
                             killProject(projectName);
                         }
 
@@ -613,7 +840,7 @@ namespace dmuka2.CS.Deploy
                             }
 
                             if (exists == false)
-                                Console.WriteLine("Command not found!");
+                                writeLine("Command not found!");
                             existReturnArg = true;
                         }
                         break;
@@ -674,6 +901,8 @@ namespace dmuka2.CS.Deploy
 
                             existReturnArg = true;
                             AgentHelper.StopTheQueue();
+
+                            throw new Exception("Process was finished!");
                         }
                         break;
                     default:
@@ -685,29 +914,31 @@ namespace dmuka2.CS.Deploy
                 return;
             #endregion
 
-            Console.WriteLine(@"
+            Console.CancelKeyPress += (sender, e) =>
+            {
+                exit = true;
+                __askDisable = true;
+                __writeDisable = true;
+                commands.FirstOrDefault(o => o.Name == "pr -ka").Action();
+            };
+
+            writeLine(@"
   ___  __  __ _   _ _  __   _     ___           _          
  |   \|  \/  | | | | |/ /  /_\   |   \ ___ _ __| |___ _  _ 
  | |) | |\/| | |_| | ' <  / _ \  | |) / -_) '_ \ / _ \ || |
  |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
                                           |_|         |__/ 
+[line][01]
+ [color][15,--]Version 1.0.0.0
+[line][01]
+ [color][15,--]Welcome, if you are here, you want a thing from me?
+ So, you can learn what can you do with help command.
+[line][02]");
 
----------------------------------------------------------------
-
-  _  _  ____  ____  ____  __  __   __ _     __     __     __  
- / )( \(  __)(  _ \/ ___)(  )/  \ (  ( \   /  \   /  \   /  \ 
- \ \/ / ) _)  )   /\___ \ )((  O )/    /  (_/ / _(  0 )_(  0 )
-  \__/ (____)(__\_)(____/(__)\__/ \_)__)   (__)(_)\__/(_)\__/ 
-
----------------------------------------------------------------
-     Welcome, if you are here, you want a thing from me?
-     So, you can learn what can you do with help command.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
             while (exit == false)
             {
-                Console.WriteLine("Write command = ");
-                string commandName = Console.ReadLine();
+                string commandName = getLine("Write command = ");
                 if (exit)
                     break;
 
@@ -722,9 +953,10 @@ namespace dmuka2.CS.Deploy
                 }
 
                 if (exists == false)
-                    Console.WriteLine("Not found {0} command!", commandName);
+                    writeLine("Not found {0} command!", commandName);
 
-                Console.WriteLine("***********************************************************");
+                if (exit == false)
+                    writeLine("[line][03]");
             }
 
             byeBye();

@@ -97,6 +97,20 @@ namespace dmuka2.CS.Deploy
             return Path.Combine(AgentLogDirectory, projectName + "__agent_log.txt");
         }
 
+        public static string ByteShort(long value)
+        {
+            if (value < 1024)
+                return value + " B";
+            else if (value < 1024 * 1024)
+                return (value / 1024/*KB*/).ToString("N2") + " KB";
+            else if (value < 1024 * 1024 * 1024)
+                return (value / 1024/*KB*/ / 1024/*MB*/).ToString("N2") + " MB";
+            else if (value < 1024 * 1024 * 1024)
+                return (value / 1024/*KB*/ / 1024/*MB*/ / 1024/*GB*/).ToString("N2") + " GB";
+
+            return (value / 1024/*KB*/ / 1024/*MB*/ / 1024/*GB*/ / 1024/*TB*/).ToString("N2") + " TB";
+        }
+
         /// <summary>
         /// This method calculates to cpu usage and how much does it use the ram as byte.
         /// <para></para>
@@ -129,7 +143,7 @@ namespace dmuka2.CS.Deploy
 
             if (process != null)
             {
-                Thread.Sleep(2000);
+                Thread.Sleep(300);
                 cpuPercent = ((process.TotalProcessorTime.Ticks - totalTicks.Value) / (DateTime.Now - calcDate.Value).Ticks) * 100;
                 ramUsage = process.WorkingSet64;
             }
@@ -156,7 +170,7 @@ namespace dmuka2.CS.Deploy
                         {
                             File.AppendAllText(
                                 GetAgentLogFilePath(projectName),
-                                string.Format("CPU : {0}%, RAM : {1} MB, TIME : {2}", projectUsage.cpuPercent.Value.ToString("N2"), (projectUsage.ramUsage.Value / 1024/*KB*/ / 1024/*MB*/).ToString("N2"), DateTime.Now.ToString("dd.MM.yyyy HH:mm")) + Environment.NewLine
+                                string.Format("CPU : {0}%, RAM : {1} MB, TIME : {2}", projectUsage.cpuPercent.Value.ToString("N2"), ByteShort(projectUsage.ramUsage.Value), DateTime.Now.ToString("dd.MM.yyyy HH:mm")) + Environment.NewLine
                                 );
                         }
 
