@@ -563,7 +563,7 @@ namespace dmuka2.CS.Deploy
                                 graph[1, 5 + i] = cpuStr[i];
                             graph[1, 5 + cpuStr.Length] = '%';
 
-                            var ramStr = GC.GetTotalMemory(true).ToString();
+                            var ramStr = AgentHelper.ByteShort(ram);
                             for (int i = 0; i < ramStr.Length; i++)
                                 graph[1 + ramY, 5 + i] = ramStr[i];
 
