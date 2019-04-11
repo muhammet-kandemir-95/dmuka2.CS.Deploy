@@ -904,7 +904,6 @@ namespace dmuka2.CS.Deploy
 
                             throw new Exception("Process was finished!");
                         }
-                        break;
                     default:
                         break;
                 }
