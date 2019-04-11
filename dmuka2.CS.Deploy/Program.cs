@@ -40,6 +40,9 @@ namespace dmuka2.CS.Deploy
                     .Replace("[line][02]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '═'))
                     .Replace("[line][03]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '.'));
 
+            for (int i = 0; i < arguments.Length; i++)
+                text = text.Replace("{" + i + "}", arguments[i].ToString());
+
             var split = text.Split(new string[] { "[color]" }, StringSplitOptions.None);
             var previousForeColor = Console.ForegroundColor;
             var previousBackColor = Console.BackgroundColor;
@@ -574,10 +577,10 @@ namespace dmuka2.CS.Deploy
                             }
 
                             for (int i = 0; i < beforeCpus.Count; i++)
-                                graph[usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100), i] = '0';
+                                graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
 
                             for (int i = 0; i < beforeRAMs.Count; i++)
-                                graph[ramY + (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)), i] = '0';
+                                graph[ramY + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
 
                             Thread.Sleep(300);
                         }
@@ -697,9 +700,9 @@ namespace dmuka2.CS.Deploy
                         projectsLog.Add((
                             projectName: project.projectName,
                             text: project.process == null ?
-                                        "[color][12,--]CLOSED[color][08,--], [color][15,--]CPU [color][08,--]:[color][11,--]      ?[color][08,--], [color][15,--]RAM [color][08,--]:[color][11,--] ?" :
+                                        "[color][12,--]CLOSED[color][08,--], [color][15,--]CPU [color][08,--]:[color][11,--]       ?[color][08,--], [color][15,--]RAM [color][08,--]:[color][11,--] ?" :
                                         "[color][10,--]OPENED[color][08,--], [color][15,--]CPU [color][08,--]:[color][11,--] " + (
-                                                    (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks)) * 100).ToString("N2").PadLeft(5, ' ') + "%[color][08,--], " +
+                                                    (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks)) * 100).ToString("N2").PadLeft(6, ' ') + "%[color][08,--], " +
                                                     "[color][15,--]RAM [color][08,--]: [color][11,--]" + AgentHelper.ByteShort(project.process.WorkingSet64)
                             ));
                     }
