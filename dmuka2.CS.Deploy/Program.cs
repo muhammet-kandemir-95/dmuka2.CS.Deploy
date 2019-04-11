@@ -505,6 +505,7 @@ namespace dmuka2.CS.Deploy
                                     write(color + graphChar);
                                 }
                             }
+                            writeLine();
                         }
                     };
                     draw();
