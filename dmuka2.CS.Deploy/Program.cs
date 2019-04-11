@@ -79,6 +79,11 @@ namespace dmuka2.CS.Deploy
             write(Environment.NewLine);
         }
 
+        /// <summary>
+        /// Check exceptions.
+        /// </summary>
+        /// <param name="action">What will it do?</param>
+        /// <returns></returns>
         static bool tryCatch(Action action)
         {
             try
@@ -106,6 +111,12 @@ namespace dmuka2.CS.Deploy
             }
         }
 
+        /// <summary>
+        /// This method is for get an answer from a question.
+        /// <para></para>
+        /// If the user's answer is yes, this method call the parameter to execute.
+        /// </summary>
+        /// <param name="action">What will it do?</param>
         static void areYouSure(Action action)
         {
             if (__askDisable == true)
@@ -119,11 +130,17 @@ namespace dmuka2.CS.Deploy
                 action();
         }
 
+        /// <summary>
+        /// Write successful text with color.
+        /// </summary>
         static void successful()
         {
             writeLine(@"[color][10,--]Successfull");
         }
 
+        /// <summary>
+        /// Write bye bye text with colors.
+        /// </summary>
         static void byeBye()
         {
             if (__byeByeEnable == false)
@@ -472,6 +489,7 @@ namespace dmuka2.CS.Deploy
                                 if (exitMonitor == true)
                                     return;
 
+                                // BEGIN Edge
                                 if (x == 1 && y == 1)
                                     write("[color][01,--]┌");
                                 else if (x == consoleWidth && y == consoleHeight)
@@ -484,22 +502,23 @@ namespace dmuka2.CS.Deploy
                                     write("[color][01,--]│");
                                 else if (y == 1 || y == consoleHeight)
                                     write("[color][01,--]─");
+                                // END Edge
                                 else
                                 {
                                     char graphChar = graph[y - 2, x - 2];
                                     string color = "";
-                                    if (y == 2 || y == consoleHeight / 2 + 1)
+                                    if (y == 2 || y == consoleHeight / 2 + 1) // Project name
                                         color = "[color][14,--]";
                                     else if (y == 3 || y == consoleHeight / 2 + 2)
                                     {
                                         if (x < 6)
-                                            color = "[color][07,--]";
+                                            color = "[color][07,--]"; // CPU or RAM text
                                         else
-                                            color = "[color][11,--]";
+                                            color = "[color][11,--]"; // CPU's value or RAM's value
                                     }
-                                    else if (y == consoleHeight / 2)
+                                    else if (y == consoleHeight / 2) // Middle line
                                         color = "[color][01,--]";
-                                    else if (graphChar != ' ')
+                                    else if (graphChar != ' ') // Graph's datas
                                         color = "[color][--,15]";
 
                                     write(color + graphChar);
@@ -516,7 +535,7 @@ namespace dmuka2.CS.Deploy
                         {
                             Console.SetCursorPosition(0, cursorPosition);
                             draw();
-                            Thread.Sleep(600);
+                            Thread.Sleep(300);
                         }
                     });
                     onDraw.Start();
@@ -537,23 +556,28 @@ namespace dmuka2.CS.Deploy
                             var cpu = usage.cpuPercent ?? 0;
                             var ram = usage.ramUsage ?? 0;
 
+                            // Clear all datas
                             for (int y = 0; y < graphHeight; y++)
                                 for (int x = 0; x < graphWidth; x++)
                                     graph[y, x] = ' ';
 
+                            // Draw middle line
                             for (int x = 0; x < graphWidth; x++)
                                 graph[ramY - 1, x] = '─';
 
+                            // Write project name double time
                             for (int i = 0; i < projectName.Length; i++)
                             {
                                 graph[0, i + 1] = projectName[i];
                                 graph[ramY, i + 1] = projectName[i];
                             }
 
+                            // Write CPU text
                             graph[1, 1] = 'C';
                             graph[1, 2] = 'P';
                             graph[1, 3] = 'U';
 
+                            // Write RAM text
                             graph[ramY + 1, 1] = 'R';
                             graph[ramY + 1, 2] = 'A';
                             graph[ramY + 1, 3] = 'M';
@@ -562,11 +586,13 @@ namespace dmuka2.CS.Deploy
                             beforeRAMs.Add(ram);
                             maxRam = Math.Max(maxRam, ram);
 
+                            // Write CPU value
                             var cpuStr = cpu.ToString();
                             for (int i = 0; i < cpuStr.Length; i++)
                                 graph[1, 5 + i] = cpuStr[i];
                             graph[1, 5 + cpuStr.Length] = '%';
 
+                            // Write RAM value
                             var ramStr = AgentHelper.ByteShort(ram);
                             for (int i = 0; i < ramStr.Length; i++)
                                 graph[1 + ramY, 5 + i] = ramStr[i];
@@ -577,13 +603,16 @@ namespace dmuka2.CS.Deploy
                                 beforeRAMs.RemoveAt(0);
                             }
 
+                            // Draw CPU graph
                             for (int i = 0; i < beforeCpus.Count; i++)
                                 graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
 
+                            // Draw RAM graph
                             for (int i = 0; i < beforeRAMs.Count; i++)
                                 graph[ramY + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
 
-                            Thread.Sleep(300);
+                            if (usage.cpuPercent == null)
+                                Thread.Sleep(300);
                         }
                     });
                     onUsage.Start();
