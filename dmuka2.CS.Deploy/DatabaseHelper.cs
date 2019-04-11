@@ -47,7 +47,7 @@ namespace dmuka2.CS.Deploy
         {
             // We are reading the config on static constructor.
             // It's mean that if you change anything on the folder, you must restart this application.
-            var currentDirectory = Directory.GetCurrentDirectory();
+            var currentDirectory = Program.CurrentDirectory;
             __migrationDirectoryPath = Path.Combine(currentDirectory, "Database", "Migration");
             var databaseCommandDirectory = Path.Combine(currentDirectory, "Database", "Command");
             var databasesCommandNameAsDirectory = Directory.GetDirectories(databaseCommandDirectory);

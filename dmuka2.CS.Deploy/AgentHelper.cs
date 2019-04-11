@@ -26,7 +26,7 @@ namespace dmuka2.CS.Deploy
         #region Constructors
         static AgentHelper()
         {
-            var logDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Log");
+            var logDirectoryPath = Path.Combine(Program.CurrentDirectory, "Log");
             if (Directory.Exists(logDirectoryPath) == false)
                 Directory.CreateDirectory(logDirectoryPath);
 

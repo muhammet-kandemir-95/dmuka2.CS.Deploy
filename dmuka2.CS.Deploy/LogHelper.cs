@@ -21,7 +21,7 @@ namespace dmuka2.CS.Deploy
         {
             lock (__lockObject)
             {
-                var directoryName = Path.Combine(Directory.GetCurrentDirectory(), "Log", projectName);
+                var directoryName = Path.Combine(Program.CurrentDirectory, "Log", projectName);
                 if (Directory.Exists(directoryName) == false)
                     Directory.CreateDirectory(directoryName);
 

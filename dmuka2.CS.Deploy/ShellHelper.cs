@@ -33,7 +33,7 @@ namespace dmuka2.CS.Deploy
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "sh",
-                    WorkingDirectory = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), workingDirectory)),
+                    WorkingDirectory = Path.GetFullPath(Path.Combine(Program.CurrentDirectory, workingDirectory)),
                     Arguments = "-c \"" + command.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
