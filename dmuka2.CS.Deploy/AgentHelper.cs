@@ -97,6 +97,13 @@ namespace dmuka2.CS.Deploy
             return Path.Combine(AgentLogDirectory, projectName + "__agent_log.txt");
         }
 
+        /// <summary>
+        /// This method provides short name of byte value.
+        /// <para></para>
+        /// For example, if value is 1024 byte, result will be "1 KB".
+        /// </summary>
+        /// <param name="value">Byte value.</param>
+        /// <returns></returns>
         public static string ByteShort(long value)
         {
             if (value < 1024)
@@ -170,7 +177,7 @@ namespace dmuka2.CS.Deploy
                         {
                             File.AppendAllText(
                                 GetAgentLogFilePath(projectName),
-                                string.Format("CPU : {0}%, RAM : {1} MB, TIME : {2}", projectUsage.cpuPercent.Value.ToString("N2"), ByteShort(projectUsage.ramUsage.Value), DateTime.Now.ToString("dd.MM.yyyy HH:mm")) + Environment.NewLine
+                                string.Format("CPU : {0}%, RAM : {1}, TIME : {2}", projectUsage.cpuPercent.Value.ToString("N2"), ByteShort(projectUsage.ramUsage.Value), DateTime.Now.ToString("dd.MM.yyyy HH:mm")) + Environment.NewLine
                                 );
                         }
 
