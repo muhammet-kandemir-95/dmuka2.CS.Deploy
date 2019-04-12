@@ -152,10 +152,8 @@ namespace dmuka2.CS.Deploy
 			string argLine = "";
 			Func<string, string> getLine = (msg) =>
 			{
-				if (__askDisable == true)
-				{
+				if (__askDisable == true && argLine != "")
 					return argLine;
-				}
 
 				write("[color][07,--]" + msg);
 
@@ -179,9 +177,32 @@ namespace dmuka2.CS.Deploy
 			{
 				var maxLength = commands.Max(o => o.Name.Length);
 
-				writeLine("[color][03,--]Run Command Schema");
+				writeLine("[color][03,--]Run a Command/Commands Schema");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" -c \"<cmd2>\" -c \"<cmd3>\"...");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" --cmd \"<cmd2>\" --cmd \"<cmd3>\"...");
 				writeLine();
+
+				writeLine("[color][03,--]Run a Command/Commands Schema with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" \"<parameter1>\" -c \"<cmd2>\" \"<parameter1>\" -c \"<cmd3>\" \"<parameter1>\"...");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" \"<parameter1>\" --cmd \"<cmd2>\" \"<parameter1>\" --cmd \"<cmd3>\" \"<parameter1>\"...");
+				writeLine();
+
+				writeLine("[color][03,--]Example 1 - Run a Command");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\"");
+				writeLine();
+
+				writeLine("[color][03,--]Example 2 - Run Multiple Command");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\" [color][14,--]-c \"pr -ka\"");
+				writeLine();
+
+				writeLine("[color][03,--]Example 3 - Run a Command with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\"");
+				writeLine();
+
+				writeLine("[color][03,--]Example 4 - Run Multiple Command with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\" [color][14,--]-c \"pr -ka\"");
+				writeLine();
+
 				writeLine("[color][03,--]Commands List");
 
 				foreach (var command in commands)
@@ -886,7 +907,7 @@ namespace dmuka2.CS.Deploy
 						{
 							ConfigHelper.Load();
 							__askDisable = true;
-							argLine = i + 2 < args.Length ? args[i + 2] : "";
+							argLine = i + 2 < args.Length ? args[i + 2] != "--cmd" & args[i + 2] != "-c" ? args[i + 2] : "" : "";
 
 							var exists = false;
 							foreach (var command in commands)
