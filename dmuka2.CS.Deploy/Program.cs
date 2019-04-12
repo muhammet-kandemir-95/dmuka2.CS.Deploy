@@ -337,7 +337,6 @@ namespace dmuka2.CS.Deploy
 				{
 					try
 					{
-						logProcess.StandardInput.Close();
 						logProcess.Kill();
 					}
 					catch { }
@@ -375,7 +374,7 @@ namespace dmuka2.CS.Deploy
 								return;
 
 							writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
-						});
+						}, useShell: false);
 
 					logProcesses.Add(shellProcess);
 				}
@@ -431,7 +430,7 @@ namespace dmuka2.CS.Deploy
 								return;
 
 							writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
-						});
+						}, useShell: false);
 
 					logProcesses.Add(shellProcess);
 				}
@@ -795,7 +794,7 @@ namespace dmuka2.CS.Deploy
 				{
 					user_name = ConfigHelper.UserName,
 					project_name = projectName
-				}).Replace("\"", "\\\"") + "\" --configuration Release &", false, false);
+				}).Replace("\"", "\\\"") + "\" --configuration Release &", false, false, useShell: false);
 
 
 				Thread.Sleep(1000);
@@ -878,6 +877,7 @@ namespace dmuka2.CS.Deploy
 				switch (arg)
 				{
 					case "--cmd":
+					case "-c":
 						{
 							ConfigHelper.Load();
 							__askDisable = true;
@@ -960,6 +960,7 @@ namespace dmuka2.CS.Deploy
 							throw new Exception("Process was finished!");
 						}
 					case "--current-directory":
+					case "-d":
 						{
 							CurrentDirectory = args[i + 1];
 							ConfigHelper.Load();
