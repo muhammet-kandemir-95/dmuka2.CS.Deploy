@@ -179,6 +179,11 @@ namespace dmuka2.CS.Deploy
 			{
 				var maxLength = commands.Max(o => o.Name.Length);
 
+				writeLine("[color][03,--]Run Command Schema");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" -c \"<cmd2>\" -c \"<cmd3>\"...");
+				writeLine();
+				writeLine("[color][03,--]Commands List");
+
 				foreach (var command in commands)
 					if (command.Name != "help")
 						writeLine("[color][11,--]" + command.Name.PadRight(maxLength, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
@@ -964,6 +969,12 @@ namespace dmuka2.CS.Deploy
 						{
 							CurrentDirectory = args[i + 1];
 							ConfigHelper.Load();
+						}
+						break;
+					case "--help":
+						{
+							commands.First(o => o.Name == "help").Action();
+							existReturnArg = true;
 						}
 						break;
 					default:
