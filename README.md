@@ -31,7 +31,7 @@ Linux deploy tool to manage multiple project via **dotnet core 2.1**.
 ## What are the commands in this project?
 
 ### add -p
- Add a new project to config. For instance, you installed this project your linux os and you want to add new project on anywhere. At this time, you should use this command for it.
+ Add a new project to config. For instance, you installed this project to your linux os and you want to add new project on anywhere. At this time, you should use this command for it.
  
 **Schema**
 ```console
