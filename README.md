@@ -28,7 +28,7 @@ Linux deploy tool to manage multiple project via **dotnet core 2.1**.
 
  First you have to run bash script "**depmk**" after installed to see this. If you do it, you see our ui designer. I can hear "_Why will I use it_". Reason of this is more attention and more details. When you use other way(**depmk pr -r** like that), program won't ask anything for any warning. But this way provides it. Also, if you haven't used it, you should use this project with ui.
 
-## What are the command in this project?
+## What are the commands in this project?
 
 ### add -p
  Add a new project to config. For instance, you installed this project your linux os and you want to add new project on anywhere. At this time, you should use this command for it.
