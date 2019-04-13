@@ -1,4 +1,4 @@
-﻿{
+{
   "database": {
     "Test": {
       "type": "postgres",

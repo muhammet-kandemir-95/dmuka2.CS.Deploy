@@ -13,7 +13,7 @@ namespace dmuka2.CS.Deploy
 		/// <summary>
 		/// Our JToken to use manage everything in config.json.
 		/// </summary>
-		public static JToken Config { get; private set; }
+		public static JToken Config { get; set; }
 
 		/// <summary>
 		/// Who is user using this class?
@@ -25,22 +25,26 @@ namespace dmuka2.CS.Deploy
 		public static string[] Databases { get; private set; }
 
 		public static string[] Projects { get; private set; }
+
+		static string __configFilePath = null;
 		#endregion
 
 		#region Methods
 		/// <summary>
 		/// To load config by current directory.
 		/// </summary>
-		public static void Load()
+		/// <param name="force">When this parameter is false, if Config have been loaded, doesn't run again.</param>
+		public static void Load(bool force = false)
 		{
-			if (Config != null)
+			if (Config != null && force == false)
 				return;
 
 			// We are reading the config on static constructor.
 			// It's mean that if you change anything on the config, you must restart this application.
-			var currentDirectory = Program.CurrentDirectory;
-			var configFilePath = Path.Combine(currentDirectory, "config.json");
-			Config = JsonConvert.DeserializeObject<JToken>(File.ReadAllText(configFilePath, Encoding.UTF8));
+			__configFilePath = Path.Combine(Program.CurrentDirectory, "config.json");
+			if (File.Exists(__configFilePath) == false)
+				return;
+			Config = JsonConvert.DeserializeObject<JToken>(File.ReadAllText(__configFilePath, Encoding.UTF8));
 
 			// We are getting all databases name in config.json.
 			List<string> allDatabasesNameList = new List<string>();
@@ -59,6 +63,14 @@ namespace dmuka2.CS.Deploy
 
 			Projects = allProjectsNameList.ToArray();
 			allProjectsNameList.Clear();
+		}
+
+		/// <summary>
+		/// To save Config as json to file.
+		/// </summary>
+		public static void Save()
+		{
+			File.WriteAllText(__configFilePath, Config.ToString(), Encoding.UTF8);
 		}
 
 		/// <summary>

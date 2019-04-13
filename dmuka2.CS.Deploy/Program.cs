@@ -60,7 +60,6 @@ namespace dmuka2.CS.Deploy
 					var colors = item.Substring(0, "[--,--]".Length);
 					item = item.Substring("[--,--]".Length);
 
-
 					var foreColor = colors.Split(',')[0].Replace("[", "");
 					var backColor = colors.Split(',')[1].Replace("]", "");
 					if (foreColor != "--")
@@ -68,7 +67,7 @@ namespace dmuka2.CS.Deploy
 					if (backColor != "--")
 						Console.BackgroundColor = (ConsoleColor)Convert.ToInt32(backColor);
 				}
-				Console.Write(item, arguments);
+				Console.Write(item);
 			}
 			Console.ForegroundColor = previousForeColor;
 			Console.BackgroundColor = previousBackColor;
@@ -149,11 +148,13 @@ namespace dmuka2.CS.Deploy
 			CurrentDirectory = Directory.GetCurrentDirectory();
 			ConfigHelper.SetUserName("");
 
-			string argLine = "";
+			Func<string> getNewArgLine = () => throw new Exception("Not found enough arguments!");
 			Func<string, string> getLine = (msg) =>
 			{
-				if (__askDisable == true && argLine != "")
-					return argLine;
+				if (__askDisable == true)
+				{
+					return getNewArgLine();
+				}
 
 				write("[color][07,--]" + msg);
 
@@ -178,36 +179,46 @@ namespace dmuka2.CS.Deploy
 				var maxLength = commands.Max(o => o.Name.Length);
 
 				writeLine("[color][03,--]Run a Command/Commands Schema");
+				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <cmd2> <cmd3>...");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" -c \"<cmd2>\" -c \"<cmd3>\"...");
 				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" --cmd \"<cmd2>\" --cmd \"<cmd3>\"...");
 				writeLine();
 
 				writeLine("[color][03,--]Run a Command/Commands Schema with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <parameter1> <cmd2> <parameter1> <cmd3> <parameter1>...");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" \"<parameter1>\" -c \"<cmd2>\" \"<parameter1>\" -c \"<cmd3>\" \"<parameter1>\"...");
 				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" \"<parameter1>\" --cmd \"<cmd2>\" \"<parameter1>\" --cmd \"<cmd3>\" \"<parameter1>\"...");
 				writeLine();
 
+				writeLine("[color][03,--]Commands List");
+
+				foreach (var command in commands.OrderBy(o => o.Name.Split(' ')[0]))
+					if (command.Name != "help")
+						writeLine("[color][11,--]" + command.Name.PadRight(maxLength, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
+
+				writeLine();
 				writeLine("[color][03,--]Example 1 - Run a Command");
+				writeLine("[color][01,--]depmk [color][14,--]pr -s");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -s\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 2 - Run Multiple Command");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\" [color][14,--]-c \"pr -ka\"");
+				writeLine("[color][01,--]depmk [color][14,--]pr -s pr -ka");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\" -c \"pr -ka\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -s\" -c \"pr -ka\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 3 - Run a Command with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -r\" \"test_consoleapp\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 4 - Run Multiple Command with Parameter");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\" [color][14,--]-c \"pr -ka\"");
-				writeLine();
-
-				writeLine("[color][03,--]Commands List");
-
-				foreach (var command in commands)
-					if (command.Name != "help")
-						writeLine("[color][11,--]" + command.Name.PadRight(maxLength, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
+				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp pr -ka");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
 			}));
 			commands.Add(new Command("exit", "Close this application safely.", () =>
 			{
@@ -221,9 +232,69 @@ namespace dmuka2.CS.Deploy
 			{
 				writeLine("[color][14,--]" + CurrentDirectory);
 			}));
+			commands.Add(new Command("show -c", "Show config file.", () =>
+			{
+				tryCatch(() =>
+				{
+					writeLine("[color][14,--]" + ConfigHelper.Config.ToString());
 
+					successful();
+				});
+			}));
+			commands.Add(new Command("set -c", "Set config file.", () =>
+			{
+				tryCatch(() =>
+				{
+					string newConfigPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), getLine("Write config file name = ")));
+					ConfigHelper.Config = JsonConvert.DeserializeObject<JToken>(File.ReadAllText(newConfigPath));
+					ConfigHelper.Save();
+
+					successful();
+				});
+			}));
+			commands.Add(new Command("add -p", "Add a new project to config.", () =>
+			{
+				tryCatch(() =>
+				{
+					string projectName = getLine("Write project name = ");
+					if (ConfigHelper.Projects.Any(o => o == projectName))
+						throw new Exception("Project already is exist!");
+
+					string commandName = getLine("Write your command name = ");
+					string commandArgs = getLine("Write your command arguments = ");
+					((JObject)ConfigHelper.Config["project"])[projectName] = JObject.FromObject(new
+					{
+						commands = new object[] {
+							new {
+								main =  true,
+								name =  commandName,
+								arguments =  commandArgs,
+								path =  new {
+									@default = Directory.GetCurrentDirectory()
+								}
+							}
+						}
+					});
+					ConfigHelper.Save();
+
+					successful();
+				});
+			}));
+			commands.Add(new Command("remove -p", "Remove a project from config.", () =>
+			{
+				tryCatch(() =>
+				{
+					string projectName = getLine("Write project name = ");
+					if (ConfigHelper.Projects.Any(o => o == projectName) == false)
+						throw new Exception("Project was not found!");
+
+					((JObject)ConfigHelper.Config["project"]).Remove(projectName);
+					ConfigHelper.Save();
+
+					successful();
+				});
+			}));
 			string deployShFilePath = Path.Combine(CurrentDirectory, "deploy.sh");
-
 			commands.Add(new Command("add -s", "Add deploy.sh to startup by linux user name.", () =>
 			{
 				tryCatch(() =>
@@ -897,38 +968,69 @@ namespace dmuka2.CS.Deploy
 
 			// If new background process is exists, it must be on args.
 			// We will check it!
-			for (int i = 0; i < args.Length; i++)
+			string argCommand = "";
+			int argIndex = 0;
+			Action<string> runCommand = (commandName) =>
 			{
-				var arg = args[i];
+				ConfigHelper.Load();
+				__askDisable = true;
+				int argumentIndex = argIndex + 1;
+				getNewArgLine = () =>
+				{
+					if (args.Length <= argumentIndex || (args[argumentIndex].Length > 0 && args[argumentIndex][0] == '-'))
+						throw new Exception((argumentIndex + 1) + ". argument was not found for " + commandName + " command!");
+
+					string newArgLine = args[argumentIndex];
+					argumentIndex++;
+					argIndex++;
+					return newArgLine;
+				};
+
+				var exists = false;
+				foreach (var command in commands)
+				{
+					if (command.Name == commandName)
+					{
+						exists = true;
+						command.Action();
+					}
+				}
+
+				if (exists == false)
+					writeLine("Command was not found!");
+				existReturnArg = true;
+
+				getNewArgLine = () => throw new Exception("Not found enough arguments!");
+				argCommand = "";
+			};
+			Action checkIncorrectArguments = () =>
+			{
+				if (argCommand != "")
+					throw new Exception("Not found " + argCommand + " argument!");
+			};
+
+			ConfigHelper.Load();
+			for (argIndex = 0; argIndex < args.Length; argIndex++)
+			{
+				var arg = args[argIndex];
 				switch (arg)
 				{
 					case "--cmd":
 					case "-c":
 						{
-							ConfigHelper.Load();
-							__askDisable = true;
-							argLine = i + 2 < args.Length ? args[i + 2] != "--cmd" & args[i + 2] != "-c" ? args[i + 2] : "" : "";
+							checkIncorrectArguments();
 
-							var exists = false;
-							foreach (var command in commands)
-							{
-								if (command.Name == args[i + 1])
-								{
-									exists = true;
-									command.Action();
-								}
-							}
-
-							if (exists == false)
-								writeLine("Command not found!");
-							existReturnArg = true;
+							string commandName = args[argIndex + 1];
+							argIndex++;
+							runCommand(commandName);
 						}
 						break;
 					case "--background":
 						{
-							ConfigHelper.Load();
+							checkIncorrectArguments();
+
 							// This means that we need a background process.
-							var backgroundParameter = JsonConvert.DeserializeObject<JToken>(args[i + 1]);
+							var backgroundParameter = JsonConvert.DeserializeObject<JToken>(args[argIndex + 1]);
 							var userName = backgroundParameter["user_name"].Value<string>();
 							var projectName = backgroundParameter["project_name"].Value<string>();
 
@@ -988,26 +1090,47 @@ namespace dmuka2.CS.Deploy
 					case "--current-directory":
 					case "-d":
 						{
-							CurrentDirectory = args[i + 1];
-							ConfigHelper.Load();
+							checkIncorrectArguments();
+
+							CurrentDirectory = args[argIndex + 1];
+							argIndex++;
+							ConfigHelper.Load(true);
 						}
 						break;
 					case "--help":
 						{
+							checkIncorrectArguments();
+
 							commands.First(o => o.Name == "help").Action();
 							existReturnArg = true;
 						}
 						break;
 					default:
+						{
+							while (argIndex < args.Length)
+							{
+								if (argCommand != "")
+									argCommand += " ";
+
+								argCommand += args[argIndex];
+								if (commands.Any(o => o.Name == argCommand))
+								{
+									runCommand(argCommand);
+									break;
+								}
+								argIndex++;
+							}
+						}
 						break;
 				}
 			}
+			checkIncorrectArguments();
 
 			Console.ForegroundColor = (ConsoleColor)(-1);
 			Console.BackgroundColor = (ConsoleColor)(-1);
 			if (existReturnArg)
 				return;
-			
+
 			ConfigHelper.Load();
 			#endregion
 
