@@ -257,3 +257,64 @@ depmk set -c "<file_path>"
 ```console
 depmk show -c
 ```
+
+## Example Config
+
+```js
+{
+  "database": {
+    // For postgres
+    "TestDb": {
+      "type": "postgres",
+      "connection_string": {
+        "default": "User ID=postgres;Password=123;Host=localhost;Port=5432;Database=TestDb;"
+      }
+    }
+  },
+  "project": {
+    // For dotnet core
+    "test_consoleapp": {
+      "commands": [
+        {
+          "main": false,
+          "name": "dotnet",
+          "arguments": "clean",
+          "path": {
+            "default": "./TestProjects/Test.ConsoleApp"
+          }
+        },
+        {
+          "main": false,
+          "name": "dotnet",
+          "arguments": "build -c Release",
+          "path": {
+            "default": "./TestProjects/Test.ConsoleApp"
+          }
+        },
+        {
+          "main": true,
+          "name": "dotnet",
+          "arguments": "exec Test.ConsoleApp.dll",
+          "path": {
+            "default": "./TestProjects/Test.ConsoleApp/bin/Release/netcoreapp2.1"
+          }
+        }
+      ]
+    },
+    // For nodejs
+    "test_nodejs": {
+      "commands": [
+        {
+          "main": true,
+          "name": "node",
+          "arguments": "app.js",
+          "path": {
+            "default": "./TestProjects/Test.NodeJS"
+          }
+        }
+      ]
+    }
+  }
+}
+
+```
