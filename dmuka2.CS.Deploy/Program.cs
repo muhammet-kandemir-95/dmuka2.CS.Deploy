@@ -483,11 +483,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Agent log was closed...");
 			};
-			commands.Add(new Command("alog -a", "Show agent log of all projects.", () =>
+			commands.Add(new Command("alog -sa", "Show agent log of all projects.", () =>
 			{
 				runAgentLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("alog", "Show agent log of project/projects.", () =>
+			commands.Add(new Command("alog -s", "Show agent log of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -539,11 +539,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Log was closed...");
 			};
-			commands.Add(new Command("log -a", "Show all projects log.", () =>
+			commands.Add(new Command("log -sa", "Show all projects log.", () =>
 			{
 				runLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("log", "Show log of project/projects.", () =>
+			commands.Add(new Command("log -s", "Show log of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -602,6 +602,7 @@ namespace dmuka2.CS.Deploy
 
 					int graphWidth = consoleWidth - 2;
 					int graphHeight = consoleHeight - 2;
+					var ramY = ((graphHeight - 1) / 2);
 
 					char[,] graph = new char[graphHeight, graphWidth];
 					for (int y = 0; y < graphHeight; y++)
@@ -633,16 +634,16 @@ namespace dmuka2.CS.Deploy
 								{
 									char graphChar = graph[y - 2, x - 2];
 									string color = "";
-									if (y == 2 || y == consoleHeight / 2 + 1)
+									if (y == 2 || y == ramY + 3)
 										color = "[color][14,--]";
-									else if (y == 3 || y == consoleHeight / 2 + 2)
+									else if (y == 3 || y == ramY + 4)
 									{
 										if (x < 6)
 											color = "[color][07,--]";
 										else
 											color = "[color][11,--]";
 									}
-									else if (y == consoleHeight / 2)
+									else if (y == ramY + 2)
 										color = "[color][01,--]";
 									else if (graphChar != ' ')
 										color = "[color][--,15]";
@@ -661,7 +662,7 @@ namespace dmuka2.CS.Deploy
 						{
 							Console.SetCursorPosition(0, cursorPosition);
 							draw();
-							Thread.Sleep(600);
+							Thread.Sleep(300);
 						}
 					});
 					onDraw.Start();
@@ -670,10 +671,9 @@ namespace dmuka2.CS.Deploy
 					{
 						List<double> beforeCpus = new List<double>();
 						List<long> beforeRAMs = new List<long>();
-						var ramY = graphHeight / 2;
 
 						var usageGraphYMin = 3;
-						var usageGraphYMax = ramY - 2;
+						var usageGraphYMax = ramY;
 						var usageGraphXMax = graphWidth;
 						long maxRam = 100;
 						while (exitMonitor == false)
@@ -687,21 +687,21 @@ namespace dmuka2.CS.Deploy
 									graph[y, x] = ' ';
 
 							for (int x = 0; x < graphWidth; x++)
-								graph[ramY - 1, x] = '─';
+								graph[ramY, x] = '─';
 
 							for (int i = 0; i < projectName.Length; i++)
 							{
 								graph[0, i + 1] = projectName[i];
-								graph[ramY, i + 1] = projectName[i];
+								graph[ramY + 1, i + 1] = projectName[i];
 							}
 
 							graph[1, 1] = 'C';
 							graph[1, 2] = 'P';
 							graph[1, 3] = 'U';
 
-							graph[ramY + 1, 1] = 'R';
-							graph[ramY + 1, 2] = 'A';
-							graph[ramY + 1, 3] = 'M';
+							graph[ramY + 2, 1] = 'R';
+							graph[ramY + 2, 2] = 'A';
+							graph[ramY + 2, 3] = 'M';
 
 							beforeCpus.Add(cpu);
 							beforeRAMs.Add(ram);
@@ -714,7 +714,7 @@ namespace dmuka2.CS.Deploy
 
 							var ramStr = AgentHelper.ByteShort(ram);
 							for (int i = 0; i < ramStr.Length; i++)
-								graph[1 + ramY, 5 + i] = ramStr[i];
+								graph[2 + ramY, 5 + i] = ramStr[i];
 
 							if (beforeCpus.Count > usageGraphXMax)
 							{
@@ -726,9 +726,10 @@ namespace dmuka2.CS.Deploy
 								graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
 
 							for (int i = 0; i < beforeRAMs.Count; i++)
-								graph[ramY + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
+								graph[ramY + 1 + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
 
-							Thread.Sleep(300);
+							if (usage.cpuPercent == null)
+								Thread.Sleep(300);
 						}
 					});
 					onUsage.Start();

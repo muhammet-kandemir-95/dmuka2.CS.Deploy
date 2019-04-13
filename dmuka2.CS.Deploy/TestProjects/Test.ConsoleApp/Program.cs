@@ -18,7 +18,7 @@ namespace Test.ConsoleApp
 			while (true)
 			{
 				System.Threading.Thread.Sleep(1000);
-				Console.WriteLine(DateTime.Now.ToString("yyyyMMddhhmmss.fff log"));
+				Console.WriteLine(DateTime.Now.ToString("yyyyMMddHHmmss.fff log"));
 			}
 		}
 	}
