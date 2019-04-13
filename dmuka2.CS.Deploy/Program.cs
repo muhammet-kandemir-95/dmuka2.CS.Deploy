@@ -586,7 +586,7 @@ namespace dmuka2.CS.Deploy
 					});
 				});
 			}));
-			commands.Add(new Command("mon", "Open the monitor to watch all project.", () =>
+			commands.Add(new Command("mon", "Open the monitor to watch a project.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -608,6 +608,7 @@ namespace dmuka2.CS.Deploy
 					for (int y = 0; y < graphHeight; y++)
 						for (int x = 0; x < graphWidth; x++)
 							graph[y, x] = ' ';
+					bool projectEnable = true;
 
 					Action draw = () =>
 					{
@@ -635,7 +636,7 @@ namespace dmuka2.CS.Deploy
 									char graphChar = graph[y - 2, x - 2];
 									string color = "";
 									if (y == 2 || y == ramY + 3)
-										color = "[color][14,--]";
+										color = projectEnable == true ? "[color][14,--]" : "[color][08,--]";
 									else if (y == 3 || y == ramY + 4)
 									{
 										if (x < 6)
@@ -678,63 +679,224 @@ namespace dmuka2.CS.Deploy
 						long maxRam = 100;
 						while (exitMonitor == false)
 						{
-							var usage = AgentHelper.GetProjectUsage(projectName);
-							var cpu = usage.cpuPercent ?? 0;
-							var ram = usage.ramUsage ?? 0;
+							try
+							{
+								var usage = AgentHelper.GetProjectUsage(projectName);
+								var cpu = usage.cpuPercent ?? 0;
+								var ram = usage.ramUsage ?? 0;
+								projectEnable = usage.cpuPercent != null;
 
-							for (int y = 0; y < graphHeight; y++)
+								for (int y = 0; y < graphHeight; y++)
+									for (int x = 0; x < graphWidth; x++)
+										graph[y, x] = ' ';
+
 								for (int x = 0; x < graphWidth; x++)
-									graph[y, x] = ' ';
+									graph[ramY, x] = '─';
 
-							for (int x = 0; x < graphWidth; x++)
-								graph[ramY, x] = '─';
+								for (int i = 0; i < projectName.Length; i++)
+								{
+									graph[0, i + 1] = projectName[i];
+									graph[ramY + 1, i + 1] = projectName[i];
+								}
 
-							for (int i = 0; i < projectName.Length; i++)
-							{
-								graph[0, i + 1] = projectName[i];
-								graph[ramY + 1, i + 1] = projectName[i];
+								graph[1, 1] = 'C';
+								graph[1, 2] = 'P';
+								graph[1, 3] = 'U';
+
+								graph[ramY + 2, 1] = 'R';
+								graph[ramY + 2, 2] = 'A';
+								graph[ramY + 2, 3] = 'M';
+
+								beforeCpus.Add(cpu);
+								beforeRAMs.Add(ram);
+								maxRam = Math.Max(maxRam, ram);
+
+								var cpuStr = cpu.ToString();
+								for (int i = 0; i < cpuStr.Length; i++)
+									graph[1, 5 + i] = cpuStr[i];
+								graph[1, 5 + cpuStr.Length] = '%';
+
+								var ramStr = AgentHelper.ByteShort(ram);
+								for (int i = 0; i < ramStr.Length; i++)
+									graph[2 + ramY, 5 + i] = ramStr[i];
+
+								if (beforeCpus.Count > usageGraphXMax)
+								{
+									beforeCpus.RemoveAt(0);
+									beforeRAMs.RemoveAt(0);
+								}
+
+								for (int i = 0; i < beforeCpus.Count; i++)
+									graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
+
+								for (int i = 0; i < beforeRAMs.Count; i++)
+									graph[ramY + 1 + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
+
+								if (usage.cpuPercent == null)
+									Thread.Sleep(300);
 							}
-
-							graph[1, 1] = 'C';
-							graph[1, 2] = 'P';
-							graph[1, 3] = 'U';
-
-							graph[ramY + 2, 1] = 'R';
-							graph[ramY + 2, 2] = 'A';
-							graph[ramY + 2, 3] = 'M';
-
-							beforeCpus.Add(cpu);
-							beforeRAMs.Add(ram);
-							maxRam = Math.Max(maxRam, ram);
-
-							var cpuStr = cpu.ToString();
-							for (int i = 0; i < cpuStr.Length; i++)
-								graph[1, 5 + i] = cpuStr[i];
-							graph[1, 5 + cpuStr.Length] = '%';
-
-							var ramStr = AgentHelper.ByteShort(ram);
-							for (int i = 0; i < ramStr.Length; i++)
-								graph[2 + ramY, 5 + i] = ramStr[i];
-
-							if (beforeCpus.Count > usageGraphXMax)
-							{
-								beforeCpus.RemoveAt(0);
-								beforeRAMs.RemoveAt(0);
-							}
-
-							for (int i = 0; i < beforeCpus.Count; i++)
-								graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
-
-							for (int i = 0; i < beforeRAMs.Count; i++)
-								graph[ramY + 1 + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
-
-							if (usage.cpuPercent == null)
-								Thread.Sleep(300);
+							catch { }
 						}
 					});
 					onUsage.Start();
 
 					Console.ReadKey(true);
+					exitMonitor = true;
+				});
+			}));
+			commands.Add(new Command("live", "Open the live screen to watch all projects.", () =>
+			{
+				tryCatch(() =>
+				{
+					Console.Clear();
+					int cursorPosition = Console.CursorTop;
+					bool exitMonitor = false;
+					int consoleWidth = Console.BufferWidth - (Console.BufferWidth % 2);
+					int consoleHeight = Console.BufferHeight - (2 - (Console.BufferWidth % 2));
+
+					int graphWidth = consoleWidth - 2;
+					int graphHeight = consoleHeight - 2;
+					int maxLength = ConfigHelper.Projects.Max(o => o.Length) + 8;
+
+					int?[] cpuIndex = new int?[graphHeight];
+					char[,] graph = new char[graphHeight, graphWidth];
+					for (int y = 0; y < graphHeight; y++)
+						for (int x = 0; x < graphWidth; x++)
+							graph[y, x] = ' ';
+
+					Action draw = () =>
+					{
+						for (int y = 1; y <= consoleHeight; y++)
+						{
+							for (int x = 1; x <= consoleWidth; x++)
+							{
+								if (exitMonitor == true)
+									return;
+
+								if (x == 1 && y == 1)
+									write("[color][01,--]┌");
+								else if (x == consoleWidth && y == consoleHeight)
+									write("[color][01,--]┘");
+								else if (x == consoleWidth && y == 1)
+									write("[color][01,--]┐");
+								else if (x == 1 && y == consoleHeight)
+									write("[color][01,--]└");
+								else if (x == 1 || x == consoleWidth)
+									write("[color][01,--]│");
+								else if (y == 1 || y == consoleHeight)
+									write("[color][01,--]─");
+								else
+								{
+									char graphChar = graph[y - 2, x - 2];
+									string color = "";
+									if (x < maxLength + 2 - 8)
+										color = "[color][14,--]";
+									else if (x < maxLength + 2 && cpuIndex[y - 2] == null)
+										color = "[color][12,--]";
+									else if (x < maxLength + 2 && cpuIndex[y - 2] != null)
+										color = "[color][10,--]";
+									else if (cpuIndex[y - 2] == null)
+										color = "[color][08,--]";
+									else if (x < cpuIndex[y - 2] + maxLength + 3)
+										color = "[color][15,--]";
+									else
+										color = "[color][03,--]";
+
+									write(color + graphChar);
+								}
+							}
+							writeLine();
+						}
+					};
+					draw();
+
+					Thread onDraw = new Thread(() =>
+					{
+						while (exitMonitor == false)
+						{
+							Console.SetCursorPosition(0, cursorPosition);
+							draw();
+							Thread.Sleep(300);
+						}
+					});
+					onDraw.Start();
+
+					int rowIndex = 0;
+					Thread onUsage = new Thread(() =>
+					{
+						while (exitMonitor == false)
+						{
+							try
+							{
+								var processesTotalProcessorTime = new List<(string projectName, Process process, double? totalTicks, DateTime? calcDate)>();
+								foreach (var projectName in ConfigHelper.Projects)
+								{
+									double? totalTicks = null;
+									DateTime? calcDate = null;
+									Process process = null;
+									try
+									{
+										process = Process.GetProcessById(Convert.ToInt32(ProcessSaveHelper.Get(projectName)));
+										if (process.HasExited == false)
+										{
+											totalTicks = process.TotalProcessorTime.Ticks;
+											calcDate = DateTime.Now;
+										}
+										else
+											process = null;
+									}
+									catch { }
+
+									processesTotalProcessorTime.Add((projectName: projectName, process: process, totalTicks, calcDate: calcDate));
+								}
+
+								Thread.Sleep(300);
+
+								for (int y = 0; y < graphHeight; y++)
+									for (int x = 0; x < graphWidth; x++)
+										graph[y, x] = ' ';
+
+								var projectIndex = 0;
+								foreach (var project in processesTotalProcessorTime)
+								{
+									if (projectIndex < rowIndex || projectIndex >= rowIndex + graphHeight)
+									{
+										projectIndex++;
+										continue;
+									}
+
+									string cpu = project.process == null ? "0%" : (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks) * 100).ToString("N2") + "%";
+									string ram = AgentHelper.ByteShort(project.process == null ? 0 : project.process.WorkingSet64);
+									string projectName = project.projectName.PadRight(maxLength - 8, ' ') + " " + (project.process == null ? "CLOSED" : "OPENED");
+									cpuIndex[projectIndex - rowIndex] = project.process == null ? null : (int?)cpu.Length;
+
+									for (int i = 0; i < projectName.Length; i++)
+										graph[Math.Min(graphHeight - 1, projectIndex - rowIndex), Math.Min(graphWidth - 1, i)] = projectName[i];
+
+									for (int i = 0; i < cpu.Length; i++)
+										graph[Math.Min(graphHeight - 1, projectIndex - rowIndex), Math.Min(graphWidth - 1, i + projectName.Length + 1)] = cpu[i];
+
+									for (int i = 0; i < ram.Length; i++)
+										graph[Math.Min(graphHeight - 1, projectIndex - rowIndex), Math.Min(graphWidth - 1, i + cpu.Length + 1 + projectName.Length + 1)] = ram[i];
+
+									projectIndex++;
+								}
+							}
+							catch { }
+						}
+					});
+					onUsage.Start();
+
+					do
+					{
+						var key = Console.ReadKey(true);
+						if (key.Key == ConsoleKey.UpArrow)
+							rowIndex = Math.Max(0, rowIndex - 1);
+						else if (key.Key == ConsoleKey.DownArrow)
+							rowIndex = Math.Min(ConfigHelper.Projects.Length - 1, rowIndex + 1);
+						else
+							break;
+					} while (true);
 					exitMonitor = true;
 				});
 			}));
