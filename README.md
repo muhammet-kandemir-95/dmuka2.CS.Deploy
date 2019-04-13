@@ -34,7 +34,7 @@ Linux deploy tool to manage multiple project via **dotnet core 2.1**.
  Add a new project to config. For instance, you installed this project your linux os and you want to add new project on anywhere. At this time, you should use this command for it.
  
 **Schema**
-```bash
+```console
 depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 ```
  
@@ -44,7 +44,7 @@ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
   If you want to will be started on reboot, you must run this command. Thus, if your linux os is closed and then opened, your applications will be started auto by **depmk**.
   
 **Schema**
-```bash
+```console
 depmk add -s "<linux_user_name>"
 ```
 
@@ -55,7 +55,7 @@ depmk add -s "<linux_user_name>"
  Actually, this is the most important thing in this project's commands. Why am I saying this? Because you have to run this command to use **depmk** command in bash. This command will add the **depmk** to _.bashrc_ as alias to end line and reload on your current terminal to able run. It also build the project on release mode to run last version of codes. It means if you change anything on this project, you have to run either this command or **install.sh**.
   
 **Schema**
-```bash
+```console
 depmk add -a
 ```
  
@@ -66,7 +66,7 @@ depmk add -a
  To see all projects agent logs. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you notice a thing that your project is very slow while is running background. At this moment, you can get agent logs to see cpu and ram via this command for all projects.
    
 **Schema**
-```bash
+```console
 depmk alog -sa
 ```
  
@@ -75,7 +75,7 @@ depmk alog -sa
  To see a project agent logs. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you notice a thing that your project is very slow while is running background. At this moment, you can get agent logs to see cpu and ram via this command for a project.
    
 **Schema**
-```bash
+```console
 depmk alog -s "<project_name>"
 ```
  
@@ -84,7 +84,7 @@ depmk alog -s "<project_name>"
  To clear console. I guess you don't need more detail.
   
 **Schema**
-```bash
+```console
 depmk clear
 ```
  
@@ -93,7 +93,7 @@ depmk clear
  To write the current directory of project. You can use this command for extreme situations. For instance, you can manage the config via other applications, you have to know where are the logs or other things. This command give it.
   
 **Schema**
-```bash
+```console
 depmk cwd
 ```
   
@@ -106,7 +106,7 @@ depmk cwd
  Sometimes, you have different project's paths. For this paths you can use **username**. If you detailed review config.json, you see **default** on commands. You can add more **username** there. But if you do it, you must use **set -u** command to program catch this data. **get -u** command only show _What is the current username?_.
  
 **Schema**
-```bash
+```console
 depmk set -u "<user_name>"
 depmk get -u
 ```
@@ -118,7 +118,7 @@ depmk get -u
  To show all project's status/cpu/ram datas live.
   
 **Schema**
-```bash
+```console
 depmk live
 ```
   
@@ -127,7 +127,7 @@ depmk live
  To show all projects log datas.
    
 **Schema**
-```bash
+```console
 depmk log -sa
 ```
   
@@ -136,7 +136,7 @@ depmk log -sa
  To show a project's log datas.
   
 **Schema**
-```bash
+```console
 depmk log -s "<project_name>"
 ```
  
@@ -145,7 +145,7 @@ depmk log -s "<project_name>"
  To remove all logs with agent logs.
   
 **Schema**
-```bash
+```console
 depmk log -ra
 ```
  
@@ -154,7 +154,7 @@ depmk log -ra
  To remove a project's logs with agent logs.
   
 **Schema**
-```bash
+```console
 depmk log -r "<project_name>"
 ```
  
@@ -163,7 +163,7 @@ depmk log -r "<project_name>"
  To show a project's cpu and ram on graphics live.
   
 **Schema**
-```bash
+```console
 depmk mon "<project_name>"
 ```
   
@@ -172,7 +172,7 @@ depmk mon "<project_name>"
  To show all projects status/cpu/ram datas.
    
 **Schema**
-```bash
+```console
 depmk pr -s
 ```
   
@@ -181,7 +181,7 @@ depmk pr -s
  To restart all projects.
    
 **Schema**
-```bash
+```console
 depmk pr -ra
 ```
  
@@ -190,7 +190,7 @@ depmk pr -ra
  To restart a project.
    
 **Schema**
-```bash
+```console
 depmk pr -r "<project_name>"
 ```
  
@@ -199,7 +199,7 @@ depmk pr -r "<project_name>"
  To kill all projects.
    
 **Schema**
-```bash
+```console
 depmk pr -ka
 ```
  
@@ -208,7 +208,7 @@ depmk pr -ka
  To kill a project.
    
 **Schema**
-```bash
+```console
 depmk pr -k "<project_name>"
 ```
  
@@ -217,7 +217,7 @@ depmk pr -k "<project_name>"
  To remove a project from config.
    
 **Schema**
-```bash
+```console
 depmk remove -p "<project_name>"
 ```
  
@@ -226,7 +226,7 @@ depmk remove -p "<project_name>"
    To remove from startup by linux user name.
    
 **Schema**
-```bash
+```console
 depmk remove -s "<linux_user_name>"
 ```
  
@@ -235,7 +235,7 @@ depmk remove -s "<linux_user_name>"
  To remove **depmk** alias from _.bashrc_.
    
 **Schema**
-```bash
+```console
 depmk remove -a
 ```
   
@@ -244,7 +244,7 @@ depmk remove -a
  To set new config by file path on current directory.
    
 **Schema**
-```bash
+```console
 depmk set -c "<file_path>"
 ```
   
@@ -254,6 +254,6 @@ depmk set -c "<file_path>"
    
 
 **Schema**
-```bash
+```console
 depmk show -c
 ```
