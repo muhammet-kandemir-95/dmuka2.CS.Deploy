@@ -132,6 +132,7 @@ namespace dmuka2.CS.Deploy
 		{
 			if (__byeByeEnable == false)
 				return;
+				
 			__byeByeEnable = false;
 
 			writeLine();
