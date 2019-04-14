@@ -60,7 +60,6 @@ namespace dmuka2.CS.Deploy
 					var colors = item.Substring(0, "[--,--]".Length);
 					item = item.Substring("[--,--]".Length);
 
-
 					var foreColor = colors.Split(',')[0].Replace("[", "");
 					var backColor = colors.Split(',')[1].Replace("]", "");
 					if (foreColor != "--")
@@ -68,7 +67,7 @@ namespace dmuka2.CS.Deploy
 					if (backColor != "--")
 						Console.BackgroundColor = (ConsoleColor)Convert.ToInt32(backColor);
 				}
-				Console.Write(item, arguments);
+				Console.Write(item);
 			}
 			Console.ForegroundColor = previousForeColor;
 			Console.BackgroundColor = previousBackColor;
@@ -133,6 +132,7 @@ namespace dmuka2.CS.Deploy
 		{
 			if (__byeByeEnable == false)
 				return;
+				
 			__byeByeEnable = false;
 
 			writeLine();
@@ -149,12 +149,12 @@ namespace dmuka2.CS.Deploy
 			CurrentDirectory = Directory.GetCurrentDirectory();
 			ConfigHelper.SetUserName("");
 
-			string argLine = "";
+			Func<string> getNewArgLine = () => throw new Exception("Not found enough arguments!");
 			Func<string, string> getLine = (msg) =>
 			{
 				if (__askDisable == true)
 				{
-					return argLine;
+					return getNewArgLine();
 				}
 
 				write("[color][07,--]" + msg);
@@ -179,9 +179,47 @@ namespace dmuka2.CS.Deploy
 			{
 				var maxLength = commands.Max(o => o.Name.Length);
 
-				foreach (var command in commands)
+				writeLine("[color][03,--]Run a Command/Commands Schema");
+				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <cmd2> <cmd3>...");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" -c \"<cmd2>\" -c \"<cmd3>\"...");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" --cmd \"<cmd2>\" --cmd \"<cmd3>\"...");
+				writeLine();
+
+				writeLine("[color][03,--]Run a Command/Commands Schema with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <parameter1> <cmd2> <parameter1> <cmd3> <parameter1>...");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" \"<parameter1>\" -c \"<cmd2>\" \"<parameter1>\" -c \"<cmd3>\" \"<parameter1>\"...");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" \"<parameter1>\" --cmd \"<cmd2>\" \"<parameter1>\" --cmd \"<cmd3>\" \"<parameter1>\"...");
+				writeLine();
+
+				writeLine("[color][03,--]Commands List");
+
+				foreach (var command in commands.OrderBy(o => o.Name.Split(' ')[0]))
 					if (command.Name != "help")
 						writeLine("[color][11,--]" + command.Name.PadRight(maxLength, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
+
+				writeLine();
+				writeLine("[color][03,--]Example 1 - Run a Command");
+				writeLine("[color][01,--]depmk [color][14,--]pr -s");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -s\"");
+				writeLine();
+
+				writeLine("[color][03,--]Example 2 - Run Multiple Command");
+				writeLine("[color][01,--]depmk [color][14,--]pr -s pr -ka");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\" -c \"pr -ka\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -s\" -c \"pr -ka\"");
+				writeLine();
+
+				writeLine("[color][03,--]Example 3 - Run a Command with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -r\" \"test_consoleapp\"");
+				writeLine();
+
+				writeLine("[color][03,--]Example 4 - Run Multiple Command with Parameter");
+				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp pr -ka");
+				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
+				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
 			}));
 			commands.Add(new Command("exit", "Close this application safely.", () =>
 			{
@@ -195,9 +233,69 @@ namespace dmuka2.CS.Deploy
 			{
 				writeLine("[color][14,--]" + CurrentDirectory);
 			}));
+			commands.Add(new Command("show -c", "Show config file.", () =>
+			{
+				tryCatch(() =>
+				{
+					writeLine("[color][14,--]" + ConfigHelper.Config.ToString());
 
+					successful();
+				});
+			}));
+			commands.Add(new Command("set -c", "Set config file.", () =>
+			{
+				tryCatch(() =>
+				{
+					string newConfigPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), getLine("Write config file name = ")));
+					ConfigHelper.Config = JsonConvert.DeserializeObject<JToken>(File.ReadAllText(newConfigPath));
+					ConfigHelper.Save();
+
+					successful();
+				});
+			}));
+			commands.Add(new Command("add -p", "Add a new project to config.", () =>
+			{
+				tryCatch(() =>
+				{
+					string projectName = getLine("Write project name = ");
+					if (ConfigHelper.Projects.Any(o => o == projectName))
+						throw new Exception("Project already is exist!");
+
+					string commandName = getLine("Write your command name = ");
+					string commandArgs = getLine("Write your command arguments = ");
+					((JObject)ConfigHelper.Config["project"])[projectName] = JObject.FromObject(new
+					{
+						commands = new object[] {
+							new {
+								main =  true,
+								name =  commandName,
+								arguments =  commandArgs,
+								path =  new {
+									@default = Directory.GetCurrentDirectory()
+								}
+							}
+						}
+					});
+					ConfigHelper.Save();
+
+					successful();
+				});
+			}));
+			commands.Add(new Command("remove -p", "Remove a project from config.", () =>
+			{
+				tryCatch(() =>
+				{
+					string projectName = getLine("Write project name = ");
+					if (ConfigHelper.Projects.Any(o => o == projectName) == false)
+						throw new Exception("Project was not found!");
+
+					((JObject)ConfigHelper.Config["project"]).Remove(projectName);
+					ConfigHelper.Save();
+
+					successful();
+				});
+			}));
 			string deployShFilePath = Path.Combine(CurrentDirectory, "deploy.sh");
-
 			commands.Add(new Command("add -s", "Add deploy.sh to startup by linux user name.", () =>
 			{
 				tryCatch(() =>
@@ -337,7 +435,6 @@ namespace dmuka2.CS.Deploy
 				{
 					try
 					{
-						logProcess.StandardInput.Close();
 						logProcess.Kill();
 					}
 					catch { }
@@ -375,7 +472,7 @@ namespace dmuka2.CS.Deploy
 								return;
 
 							writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
-						});
+						}, useShell: false);
 
 					logProcesses.Add(shellProcess);
 				}
@@ -387,11 +484,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Agent log was closed...");
 			};
-			commands.Add(new Command("alog -a", "Show agent log of all projects.", () =>
+			commands.Add(new Command("alog -sa", "Show agent log of all projects.", () =>
 			{
 				runAgentLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("alog", "Show agent log of project/projects.", () =>
+			commands.Add(new Command("alog -s", "Show agent log of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -431,7 +528,7 @@ namespace dmuka2.CS.Deploy
 								return;
 
 							writeLine("[color][14,--]" + projectName.PadRight(maxLength + 2, ' ') + " [color][08,--]| [color][15,--]" + text);
-						});
+						}, useShell: false);
 
 					logProcesses.Add(shellProcess);
 				}
@@ -443,11 +540,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Log was closed...");
 			};
-			commands.Add(new Command("log -a", "Show all projects log.", () =>
+			commands.Add(new Command("log -sa", "Show all projects log.", () =>
 			{
 				runLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("log", "Show log of project/projects.", () =>
+			commands.Add(new Command("log -s", "Show log of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -490,7 +587,7 @@ namespace dmuka2.CS.Deploy
 					});
 				});
 			}));
-			commands.Add(new Command("mon", "Open the monitor to watch all project.", () =>
+			commands.Add(new Command("mon", "Open the monitor to watch a project.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -506,7 +603,163 @@ namespace dmuka2.CS.Deploy
 
 					int graphWidth = consoleWidth - 2;
 					int graphHeight = consoleHeight - 2;
+					var ramY = ((graphHeight - 1) / 2);
 
+					char[,] graph = new char[graphHeight, graphWidth];
+					for (int y = 0; y < graphHeight; y++)
+						for (int x = 0; x < graphWidth; x++)
+							graph[y, x] = ' ';
+					bool projectEnable = true;
+
+					Action draw = () =>
+					{
+						for (int y = 1; y <= consoleHeight; y++)
+						{
+							for (int x = 1; x <= consoleWidth; x++)
+							{
+								if (exitMonitor == true)
+									return;
+
+								if (x == 1 && y == 1)
+									write("[color][01,--]┌");
+								else if (x == consoleWidth && y == consoleHeight)
+									write("[color][01,--]┘");
+								else if (x == consoleWidth && y == 1)
+									write("[color][01,--]┐");
+								else if (x == 1 && y == consoleHeight)
+									write("[color][01,--]└");
+								else if (x == 1 || x == consoleWidth)
+									write("[color][01,--]│");
+								else if (y == 1 || y == consoleHeight)
+									write("[color][01,--]─");
+								else
+								{
+									char graphChar = graph[y - 2, x - 2];
+									string color = "";
+									if (y == 2 || y == ramY + 3)
+										color = projectEnable == true ? "[color][14,--]" : "[color][08,--]";
+									else if (y == 3 || y == ramY + 4)
+									{
+										if (x < 6)
+											color = "[color][07,--]";
+										else
+											color = "[color][11,--]";
+									}
+									else if (y == ramY + 2)
+										color = "[color][01,--]";
+									else if (graphChar != ' ')
+										color = "[color][--,15]";
+
+									write(color + graphChar);
+								}
+							}
+							writeLine();
+						}
+					};
+					draw();
+
+					Thread onDraw = new Thread(() =>
+					{
+						while (exitMonitor == false)
+						{
+							Console.SetCursorPosition(0, cursorPosition);
+							draw();
+							Thread.Sleep(300);
+						}
+					});
+					onDraw.Start();
+
+					Thread onUsage = new Thread(() =>
+					{
+						List<double> beforeCpus = new List<double>();
+						List<long> beforeRAMs = new List<long>();
+
+						var usageGraphYMin = 3;
+						var usageGraphYMax = ramY;
+						var usageGraphXMax = graphWidth;
+						long maxRam = 100;
+						while (exitMonitor == false)
+						{
+							try
+							{
+								var usage = AgentHelper.GetProjectUsage(projectName);
+								var cpu = usage.cpuPercent ?? 0;
+								var ram = usage.ramUsage ?? 0;
+								projectEnable = usage.cpuPercent != null;
+
+								for (int y = 0; y < graphHeight; y++)
+									for (int x = 0; x < graphWidth; x++)
+										graph[y, x] = ' ';
+
+								for (int x = 0; x < graphWidth; x++)
+									graph[ramY, x] = '─';
+
+								for (int i = 0; i < projectName.Length; i++)
+								{
+									graph[0, i + 1] = projectName[i];
+									graph[ramY + 1, i + 1] = projectName[i];
+								}
+
+								graph[1, 1] = 'C';
+								graph[1, 2] = 'P';
+								graph[1, 3] = 'U';
+
+								graph[ramY + 2, 1] = 'R';
+								graph[ramY + 2, 2] = 'A';
+								graph[ramY + 2, 3] = 'M';
+
+								beforeCpus.Add(cpu);
+								beforeRAMs.Add(ram);
+								maxRam = Math.Max(maxRam, ram);
+
+								var cpuStr = cpu.ToString();
+								for (int i = 0; i < cpuStr.Length; i++)
+									graph[1, 5 + i] = cpuStr[i];
+								graph[1, 5 + cpuStr.Length] = '%';
+
+								var ramStr = AgentHelper.ByteShort(ram);
+								for (int i = 0; i < ramStr.Length; i++)
+									graph[2 + ramY, 5 + i] = ramStr[i];
+
+								if (beforeCpus.Count > usageGraphXMax)
+								{
+									beforeCpus.RemoveAt(0);
+									beforeRAMs.RemoveAt(0);
+								}
+
+								for (int i = 0; i < beforeCpus.Count; i++)
+									graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
+
+								for (int i = 0; i < beforeRAMs.Count; i++)
+									graph[ramY + 1 + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
+
+								if (usage.cpuPercent == null)
+									Thread.Sleep(300);
+							}
+							catch { }
+						}
+					});
+					onUsage.Start();
+
+					Console.ReadKey(true);
+					exitMonitor = true;
+				});
+			}));
+			commands.Add(new Command("live", "Open the live screen to watch all projects.", () =>
+			{
+				tryCatch(() =>
+				{
+					Console.Clear();
+					int cursorPosition = Console.CursorTop;
+					bool exitMonitor = false;
+					int consoleWidth = Console.BufferWidth - (Console.BufferWidth % 2);
+					int consoleHeight = Console.BufferHeight - (2 - (Console.BufferWidth % 2));
+
+					int graphWidth = consoleWidth - 2;
+					int graphHeight = consoleHeight - 2;
+					int maxLength = ConfigHelper.Projects.Max(o => o.Length) + 8;
+
+					int?[] cpuIndex = new int?[graphHeight];
 					char[,] graph = new char[graphHeight, graphWidth];
 					for (int y = 0; y < graphHeight; y++)
 						for (int x = 0; x < graphWidth; x++)
@@ -537,19 +790,18 @@ namespace dmuka2.CS.Deploy
 								{
 									char graphChar = graph[y - 2, x - 2];
 									string color = "";
-									if (y == 2 || y == consoleHeight / 2 + 1)
+									if (x < maxLength + 2 - 8)
 										color = "[color][14,--]";
-									else if (y == 3 || y == consoleHeight / 2 + 2)
-									{
-										if (x < 6)
-											color = "[color][07,--]";
-										else
-											color = "[color][11,--]";
-									}
-									else if (y == consoleHeight / 2)
-										color = "[color][01,--]";
-									else if (graphChar != ' ')
-										color = "[color][--,15]";
+									else if (x < maxLength + 2 && cpuIndex[y - 2] == null)
+										color = "[color][12,--]";
+									else if (x < maxLength + 2 && cpuIndex[y - 2] != null)
+										color = "[color][10,--]";
+									else if (cpuIndex[y - 2] == null)
+										color = "[color][08,--]";
+									else if (x < cpuIndex[y - 2] + maxLength + 3)
+										color = "[color][15,--]";
+									else
+										color = "[color][03,--]";
 
 									write(color + graphChar);
 								}
@@ -565,79 +817,87 @@ namespace dmuka2.CS.Deploy
 						{
 							Console.SetCursorPosition(0, cursorPosition);
 							draw();
-							Thread.Sleep(600);
+							Thread.Sleep(300);
 						}
 					});
 					onDraw.Start();
 
+					int rowIndex = 0;
 					Thread onUsage = new Thread(() =>
 					{
-						List<double> beforeCpus = new List<double>();
-						List<long> beforeRAMs = new List<long>();
-						var ramY = graphHeight / 2;
-
-						var usageGraphYMin = 3;
-						var usageGraphYMax = ramY - 2;
-						var usageGraphXMax = graphWidth;
-						long maxRam = 100;
 						while (exitMonitor == false)
 						{
-							var usage = AgentHelper.GetProjectUsage(projectName);
-							var cpu = usage.cpuPercent ?? 0;
-							var ram = usage.ramUsage ?? 0;
-
-							for (int y = 0; y < graphHeight; y++)
-								for (int x = 0; x < graphWidth; x++)
-									graph[y, x] = ' ';
-
-							for (int x = 0; x < graphWidth; x++)
-								graph[ramY - 1, x] = '─';
-
-							for (int i = 0; i < projectName.Length; i++)
+							try
 							{
-								graph[0, i + 1] = projectName[i];
-								graph[ramY, i + 1] = projectName[i];
+								var processesTotalProcessorTime = new List<(string projectName, Process process, double? totalTicks, DateTime? calcDate)>();
+								foreach (var projectName in ConfigHelper.Projects)
+								{
+									double? totalTicks = null;
+									DateTime? calcDate = null;
+									Process process = null;
+									try
+									{
+										process = Process.GetProcessById(Convert.ToInt32(ProcessSaveHelper.Get(projectName)));
+										if (process.HasExited == false)
+										{
+											totalTicks = process.TotalProcessorTime.Ticks;
+											calcDate = DateTime.Now;
+										}
+										else
+											process = null;
+									}
+									catch { }
+
+									processesTotalProcessorTime.Add((projectName: projectName, process: process, totalTicks, calcDate: calcDate));
+								}
+
+								Thread.Sleep(300);
+
+								for (int y = 0; y < graphHeight; y++)
+									for (int x = 0; x < graphWidth; x++)
+										graph[y, x] = ' ';
+
+								var projectIndex = 0;
+								foreach (var project in processesTotalProcessorTime)
+								{
+									if (projectIndex < rowIndex || projectIndex >= rowIndex + graphHeight)
+									{
+										projectIndex++;
+										continue;
+									}
+
+									string cpu = project.process == null ? "0%" : (((project.process.TotalProcessorTime.Ticks - project.totalTicks.Value) / (DateTime.Now - project.calcDate.Value).Ticks) * 100).ToString("N2") + "%";
+									string ram = AgentHelper.ByteShort(project.process == null ? 0 : project.process.WorkingSet64);
+									string projectName = project.projectName.PadRight(maxLength - 8, ' ') + " " + (project.process == null ? "CLOSED" : "OPENED");
+									cpuIndex[projectIndex - rowIndex] = project.process == null ? null : (int?)cpu.Length;
+
+									for (int i = 0; i < projectName.Length; i++)
+										graph[Math.Min(graphHeight - 1, projectIndex - rowIndex), Math.Min(graphWidth - 1, i)] = projectName[i];
+
+									for (int i = 0; i < cpu.Length; i++)
+										graph[Math.Min(graphHeight - 1, projectIndex - rowIndex), Math.Min(graphWidth - 1, i + projectName.Length + 1)] = cpu[i];
+
+									for (int i = 0; i < ram.Length; i++)
+										graph[Math.Min(graphHeight - 1, projectIndex - rowIndex), Math.Min(graphWidth - 1, i + cpu.Length + 1 + projectName.Length + 1)] = ram[i];
+
+									projectIndex++;
+								}
 							}
-
-							graph[1, 1] = 'C';
-							graph[1, 2] = 'P';
-							graph[1, 3] = 'U';
-
-							graph[ramY + 1, 1] = 'R';
-							graph[ramY + 1, 2] = 'A';
-							graph[ramY + 1, 3] = 'M';
-
-							beforeCpus.Add(cpu);
-							beforeRAMs.Add(ram);
-							maxRam = Math.Max(maxRam, ram);
-
-							var cpuStr = cpu.ToString();
-							for (int i = 0; i < cpuStr.Length; i++)
-								graph[1, 5 + i] = cpuStr[i];
-							graph[1, 5 + cpuStr.Length] = '%';
-
-							var ramStr = AgentHelper.ByteShort(ram);
-							for (int i = 0; i < ramStr.Length; i++)
-								graph[1 + ramY, 5 + i] = ramStr[i];
-
-							if (beforeCpus.Count > usageGraphXMax)
-							{
-								beforeCpus.RemoveAt(0);
-								beforeRAMs.RemoveAt(0);
-							}
-
-							for (int i = 0; i < beforeCpus.Count; i++)
-								graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
-
-							for (int i = 0; i < beforeRAMs.Count; i++)
-								graph[ramY + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
-
-							Thread.Sleep(300);
+							catch { }
 						}
 					});
 					onUsage.Start();
 
-					Console.ReadKey(true);
+					do
+					{
+						var key = Console.ReadKey(true);
+						if (key.Key == ConsoleKey.UpArrow)
+							rowIndex = Math.Max(0, rowIndex - 1);
+						else if (key.Key == ConsoleKey.DownArrow)
+							rowIndex = Math.Min(ConfigHelper.Projects.Length - 1, rowIndex + 1);
+						else
+							break;
+					} while (true);
 					exitMonitor = true;
 				});
 			}));
@@ -795,7 +1055,7 @@ namespace dmuka2.CS.Deploy
 				{
 					user_name = ConfigHelper.UserName,
 					project_name = projectName
-				}).Replace("\"", "\\\"") + "\" --configuration Release &", false, false);
+				}).Replace("\"", "\\\"") + "\" --configuration Release &", false, false, useShell: false);
 
 
 				Thread.Sleep(1000);
@@ -872,37 +1132,69 @@ namespace dmuka2.CS.Deploy
 
 			// If new background process is exists, it must be on args.
 			// We will check it!
-			for (int i = 0; i < args.Length; i++)
+			string argCommand = "";
+			int argIndex = 0;
+			Action<string> runCommand = (commandName) =>
 			{
-				var arg = args[i];
+				ConfigHelper.Load();
+				__askDisable = true;
+				int argumentIndex = argIndex + 1;
+				getNewArgLine = () =>
+				{
+					if (args.Length <= argumentIndex || (args[argumentIndex].Length > 0 && args[argumentIndex][0] == '-'))
+						throw new Exception((argumentIndex + 1) + ". argument was not found for " + commandName + " command!");
+
+					string newArgLine = args[argumentIndex];
+					argumentIndex++;
+					argIndex++;
+					return newArgLine;
+				};
+
+				var exists = false;
+				foreach (var command in commands)
+				{
+					if (command.Name == commandName)
+					{
+						exists = true;
+						command.Action();
+					}
+				}
+
+				if (exists == false)
+					writeLine("Command was not found!");
+				existReturnArg = true;
+
+				getNewArgLine = () => throw new Exception("Not found enough arguments!");
+				argCommand = "";
+			};
+			Action checkIncorrectArguments = () =>
+			{
+				if (argCommand != "")
+					throw new Exception("Not found " + argCommand + " argument!");
+			};
+
+			ConfigHelper.Load();
+			for (argIndex = 0; argIndex < args.Length; argIndex++)
+			{
+				var arg = args[argIndex];
 				switch (arg)
 				{
 					case "--cmd":
+					case "-c":
 						{
-							ConfigHelper.Load();
-							__askDisable = true;
-							argLine = i + 2 < args.Length ? args[i + 2] : "";
+							checkIncorrectArguments();
 
-							var exists = false;
-							foreach (var command in commands)
-							{
-								if (command.Name == args[i + 1])
-								{
-									exists = true;
-									command.Action();
-								}
-							}
-
-							if (exists == false)
-								writeLine("Command not found!");
-							existReturnArg = true;
+							string commandName = args[argIndex + 1];
+							argIndex++;
+							runCommand(commandName);
 						}
 						break;
 					case "--background":
 						{
-							ConfigHelper.Load();
+							checkIncorrectArguments();
+
 							// This means that we need a background process.
-							var backgroundParameter = JsonConvert.DeserializeObject<JToken>(args[i + 1]);
+							var backgroundParameter = JsonConvert.DeserializeObject<JToken>(args[argIndex + 1]);
 							var userName = backgroundParameter["user_name"].Value<string>();
 							var projectName = backgroundParameter["project_name"].Value<string>();
 
@@ -960,21 +1252,49 @@ namespace dmuka2.CS.Deploy
 							throw new Exception("Process was finished!");
 						}
 					case "--current-directory":
+					case "-d":
 						{
-							CurrentDirectory = args[i + 1];
-							ConfigHelper.Load();
+							checkIncorrectArguments();
+
+							CurrentDirectory = args[argIndex + 1];
+							argIndex++;
+							ConfigHelper.Load(true);
+						}
+						break;
+					case "--help":
+						{
+							checkIncorrectArguments();
+
+							commands.First(o => o.Name == "help").Action();
+							existReturnArg = true;
 						}
 						break;
 					default:
+						{
+							while (argIndex < args.Length)
+							{
+								if (argCommand != "")
+									argCommand += " ";
+
+								argCommand += args[argIndex];
+								if (commands.Any(o => o.Name == argCommand))
+								{
+									runCommand(argCommand);
+									break;
+								}
+								argIndex++;
+							}
+						}
 						break;
 				}
 			}
+			checkIncorrectArguments();
 
 			Console.ForegroundColor = (ConsoleColor)(-1);
 			Console.BackgroundColor = (ConsoleColor)(-1);
 			if (existReturnArg)
 				return;
-			
+
 			ConfigHelper.Load();
 			#endregion
 
