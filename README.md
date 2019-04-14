@@ -2,7 +2,7 @@
   <br/>
   <img src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/main.png" />
   <br/>
-  <img width="140px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.svg" alt="version" />
+  <img width="140px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
 </div>
 
 ## What is this?
