@@ -18,7 +18,9 @@
 2. Run shell script -> **sh install.sh**
 
 <div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/install.gif?raw=true" />
+  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/install.gif?raw=true" />
+  <br />
+  <font size="10px"><i>Click to image to open on new tab</i></font>
 </div>
 
 ## How do I uninstall?
