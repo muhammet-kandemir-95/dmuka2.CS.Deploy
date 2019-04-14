@@ -18,9 +18,7 @@
 2. Run shell script -> **sh install.sh**
 
 <div>
-  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/install.gif?raw=true" />
-  <br />
-  <font size="10px"><i>Click to image to open on new tab</i></font>
+  <img width="100px" src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/install.gif?raw=true" />
 </div>
 
 ## How do I uninstall?
@@ -38,6 +36,7 @@
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/help.gif?raw=true" />
+  <br />
   <br />
 </div>
 
@@ -64,6 +63,7 @@ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/add-p.gif?raw=true" />
   <br />
+  <br />
 </div>
  
   We have to say that project_name isn't at config.json before run this command. Because this command write to config.json your project name as json, and if it repeat, you will take an error from this project which is "**Project already is exist!**. So you shouldn't worry about this command. Because you can remove it after added. Also, if you don't run your project which was added by you, nothing will happen.
@@ -78,6 +78,7 @@ depmk add -s "<linux_user_name>"
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/add-s.gif?raw=true" />
+  <br />
   <br />
 </div>
 
@@ -94,6 +95,7 @@ depmk add -a
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/add-a.gif?raw=true" />
+  <br />
   <br />
 </div>
  
@@ -176,6 +178,7 @@ depmk get -u
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/set-u-get-u.gif?raw=true" />
+  <br />
   <br />
 </div>
  
