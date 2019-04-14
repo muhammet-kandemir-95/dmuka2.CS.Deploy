@@ -26,15 +26,28 @@
 1. Open the project directory.
 2. Run bash script -> **sh uninstall.sh**
 
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/uninstall.gif?raw=true" />
+</div>
+
 ## Where is the help?
 
 1. Run bash script -> **depmk help** or **depmk --help**
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/help.gif?raw=true" />
+  <br />
+</div>
 
 > Help will give you what are the commands in projects. It also will give 3 example scenario to learn. If you don't understand, you should look at **What is the commands?** section to more example and more descriptions.
 
 ## What is the project ui? How can I see it?
 
  First you have to run bash script "**depmk**" after installed to see this. If you do it, you see our ui designer. I can hear "_Why will I use it_". Reason of this is more attention and more details. When you use other way(**depmk pr -r** like that), program won't ask anything for any warning. But this way provides it. Also, if you haven't used it, you should use this project with ui.
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/ui.gif?raw=true" />
+</div>
 
 ## What are the commands in this project?
 
@@ -45,6 +58,11 @@
 ```console
 depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/add-p.gif?raw=true" />
+  <br />
+</div>
  
   We have to say that project_name isn't at config.json before run this command. Because this command write to config.json your project name as json, and if it repeat, you will take an error from this project which is "**Project already is exist!**. So you shouldn't worry about this command. Because you can remove it after added. Also, if you don't run your project which was added by you, nothing will happen.
  
@@ -56,6 +74,11 @@ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 depmk add -s "<linux_user_name>"
 ```
 
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/add-s.gif?raw=true" />
+  <br />
+</div>
+
  You may take an error which is "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
  
 ### add -a
@@ -66,6 +89,11 @@ depmk add -s "<linux_user_name>"
 ```console
 depmk add -a
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/add-a.gif?raw=true" />
+  <br />
+</div>
  
  You only need a permission that you can change the _.bashrc_ file. You don't need **sudo** for this situation.
   
@@ -77,6 +105,10 @@ depmk add -a
 ```console
 depmk alog -sa
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/alog-sa.gif?raw=true" />
+</div>
  
 ### alog -s
   
@@ -86,6 +118,10 @@ depmk alog -sa
 ```console
 depmk alog -s "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/alog-s.gif?raw=true" />
+</div>
  
 ### clear
  
@@ -95,6 +131,10 @@ depmk alog -s "<project_name>"
 ```console
 depmk clear
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/clear.gif?raw=true" />
+</div>
  
 ### cwd
  
@@ -104,10 +144,23 @@ depmk clear
 ```console
 depmk cwd
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/cwd.gif?raw=true" />
+</div>
   
 ### exit
  
  If you use the ui, you don't forget a thing that you must use this command when you want to close it. Because, if you use _CTRL + C_, linux os send _SIGINT_ to child processes and projects like nodejs is closed auto without your commands.
+ 
+**Schema**
+```console
+depmk exit
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/exit.gif?raw=true" />
+</div>
   
 ### set -u / get -u
  
@@ -118,6 +171,11 @@ depmk cwd
 depmk set -u "<user_name>"
 depmk get -u
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/set-u-get-u.gif?raw=true" />
+  <br />
+</div>
  
  But don't forget that this command works only on a session. It means if you use any command like **depmk pr -r** which needs a path, you must use **set -u** before this command. For instance, **depmk set -u dmuka pr -r**. It's not global variable.
  
@@ -129,6 +187,10 @@ depmk get -u
 ```console
 depmk live
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/live.gif?raw=true" />
+</div>
   
 ### log -sa
   
@@ -138,6 +200,10 @@ depmk live
 ```console
 depmk log -sa
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-sa.gif?raw=true" />
+</div>
   
 ### log -s
   
@@ -147,6 +213,10 @@ depmk log -sa
 ```console
 depmk log -s "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-s.gif?raw=true" />
+</div>
  
 ### log -ra
   
@@ -156,8 +226,12 @@ depmk log -s "<project_name>"
 ```console
 depmk log -ra
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-ra.gif?raw=true" />
+</div>
  
-### log -ra
+### log -r
   
  To remove a project's logs with agent logs.
   
@@ -165,6 +239,10 @@ depmk log -ra
 ```console
 depmk log -r "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-r.gif?raw=true" />
+</div>
  
 ### mon
   
@@ -174,6 +252,10 @@ depmk log -r "<project_name>"
 ```console
 depmk mon "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/mon.gif?raw=true" />
+</div>
   
 ### pr -s
   
@@ -183,6 +265,10 @@ depmk mon "<project_name>"
 ```console
 depmk pr -s
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-s.gif?raw=true" />
+</div>
   
 ### pr -ra
   
@@ -192,6 +278,10 @@ depmk pr -s
 ```console
 depmk pr -ra
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-ra.gif?raw=true" />
+</div>
  
 ### pr -r
   
@@ -201,6 +291,10 @@ depmk pr -ra
 ```console
 depmk pr -r "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-r.gif?raw=true" />
+</div>
  
 ### pr -ka
   
@@ -210,6 +304,10 @@ depmk pr -r "<project_name>"
 ```console
 depmk pr -ka
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-ka.gif?raw=true" />
+</div>
  
 ### pr -k
   
@@ -219,6 +317,10 @@ depmk pr -ka
 ```console
 depmk pr -k "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-k.gif?raw=true" />
+</div>
  
 ### remove -p
   
@@ -228,6 +330,10 @@ depmk pr -k "<project_name>"
 ```console
 depmk remove -p "<project_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-p.gif?raw=true" />
+</div>
  
 ### remove -s
   
@@ -237,6 +343,10 @@ depmk remove -p "<project_name>"
 ```console
 depmk remove -s "<linux_user_name>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-s.gif?raw=true" />
+</div>
  
 ### remove -a
   
@@ -246,6 +356,10 @@ depmk remove -s "<linux_user_name>"
 ```console
 depmk remove -a
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-a.gif?raw=true" />
+</div>
   
 ### set -c
   
@@ -255,6 +369,10 @@ depmk remove -a
 ```console
 depmk set -c "<file_path>"
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/set-c.gif?raw=true" />
+</div>
   
 ### show -c
   
@@ -265,6 +383,10 @@ depmk set -c "<file_path>"
 ```console
 depmk show -c
 ```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/show-c.gif?raw=true" />
+</div>
 
 ## Example Config
 
