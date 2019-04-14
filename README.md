@@ -1,5 +1,9 @@
-# dmuka2.CS.Deploy
-Linux deploy tool to manage multiple project via **dotnet core 2.1**.
+<div align="center">
+  <br/>
+  <img src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/main.png" />
+  <br/>
+  <img width="120px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
+</div>
 
 ## What is this?
  This application provides to you that you can manage your applications which are working on your linux os. Also, you can see text log which is given by your applications. Thus, when you connect to your linux system via ssh or other ways, you can get what happened on your applications. 
@@ -12,6 +16,10 @@ Linux deploy tool to manage multiple project via **dotnet core 2.1**.
 
 1. Open the project directory.
 2. Run shell script -> **sh install.sh**
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/install.gif?raw=true" />
+</div>
 
 ## How do I uninstall?
 
