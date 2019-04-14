@@ -71,9 +71,11 @@ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 ### add -s
   If you want to will be started on reboot, you must run this command. Thus, if your linux os is closed and then opened, your applications will be started auto by **depmk**.
   
+  You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
+  
 **Schema**
 ```console
-depmk add -s "<linux_user_name>"
+dotnet run add -s "<linux_user_name>"
 ```
 
 <div>
