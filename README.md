@@ -69,6 +69,9 @@
 |_db -ra_|Remove all tables from all databases.|
 |_db -m_|Apply migrations on database.|
 |_db -ma_|Apply migrations on all databases.|
+|_del -p_|Remove a project from config.|
+|_del -s_|Remove deploy.sh from startup by linux user name.|
+|_del -a_|Remove alias from .bashrc.|
 |_exit_|Close this application safely.|
 |_get -u_|Get user name.|
 |_live_|Open the live screen to watch all projects.|
@@ -82,9 +85,6 @@
 |_pr -ra_|Restart all projects.|
 |_pr -k_|Kill project.|
 |_pr -ka_|Kill all projects.|
-|_remove -p_|Remove a project from config.|
-|_remove -s_|Remove deploy.sh from startup by linux user name.|
-|_remove -a_|Remove alias from .bashrc.|
 |_set -c_|Set config file.|
 |_set -u_|Set user name.|
 |_show -c_|Show config file.|
@@ -196,6 +196,55 @@ depmk cwd
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/cwd.gif?raw=true" />
 </div>
+ 
+### del -p
+  
+ To remove a project from config.
+   
+**Schema**
+```console
+depmk del -p "<project_name>"
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-p.gif?raw=true" />
+</div>
+ 
+### del -s
+  
+  To remove from startup by linux user name.
+   
+  You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
+   
+**Schema**
+```console
+dotnet run del -s "<linux_user_name>"
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-s.gif?raw=true" />
+ <br />
+ <br />
+</div>
+
+ You may take an error which is "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
+ 
+### del -a
+  
+ To remove **depmk** alias from _.bashrc_.
+   
+**Schema**
+```console
+depmk del -a
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-a.gif?raw=true" />
+ <br />
+ <br />
+</div>
+
+ You only need a permission that you can change the .bashrc file. You don't need sudo for this situation.
   
 ### exit
  
@@ -370,56 +419,7 @@ depmk pr -k "<project_name>"
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-k.gif?raw=true" />
 </div>
- 
-### remove -p
-  
- To remove a project from config.
-   
-**Schema**
-```console
-depmk remove -p "<project_name>"
-```
 
-<div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-p.gif?raw=true" />
-</div>
- 
-### remove -s
-  
-  To remove from startup by linux user name.
-   
-  You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
-   
-**Schema**
-```console
-dotnet run remove -s "<linux_user_name>"
-```
-
-<div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-s.gif?raw=true" />
- <br />
- <br />
-</div>
-
- You may take an error which is "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
- 
-### remove -a
-  
- To remove **depmk** alias from _.bashrc_.
-   
-**Schema**
-```console
-depmk remove -a
-```
-
-<div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-a.gif?raw=true" />
- <br />
- <br />
-</div>
-
- You only need a permission that you can change the .bashrc file. You don't need sudo for this situation.
-  
 ### set -c
   
  To set new config by file path on current directory.
