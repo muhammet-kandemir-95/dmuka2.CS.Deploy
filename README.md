@@ -52,6 +52,48 @@
 
 ## What are the commands in this project?
 
+**This table has command list but you can also see details of commands at below.**
+
+|Command|Short Description|
+|---|---|
+|_add -p_|Add a new project to config.|
+|_add -s_|Add deploy.sh to startup by linux user name.|
+|_add -a_|Add alias to bash as 'depmk' via current directory.|
+|_alog -sa_|Show agent log of all projects.|
+|_alog -s_|Show agent log of project/projects.|
+|_clear_|Clear console.|
+|_cwd_|Write current directory.|
+|_db -c_|Try to connect to database.|
+|_db -ca_|Try to connect to all databases.|
+|_db -r_|Remove all tables from database.|
+|_db -ra_|Remove all tables from all databases.|
+|_db -m_|Apply migrations on database.|
+|_db -ma_|Apply migrations on all databases.|
+|_exit_|Close this application safely.|
+|_get -u_|Get user name.|
+|_live_|Open the live screen to watch all projects.|
+|_log -sa_|Show all projects log.|
+|_log -s_|Show log of project/projects.|
+|_log -r_|Remove all logs of a project.|
+|_log -ra_|Remove logs of all projects.|
+|_mon_|Open the monitor to watch a project.|
+|_pr -s_|Show projects status.|
+|_pr -r_|Restart project.|
+|_pr -ra_|Restart all projects.|
+|_pr -k_|Kill project.|
+|_pr -ka_|Kill all projects.|
+|_remove -p_|Remove a project from config.|
+|_remove -s_|Remove deploy.sh from startup by linux user name.|
+|_remove -a_|Remove alias from .bashrc.|
+|_set -c_|Set config file.|
+|_set -u_|Set user name.|
+|_show -c_|Show config file.|
+|_sleep -s_|Thread sleep as second.|
+|_sleep -m_|Thread sleep as minute.|
+|_sleep -h_|Thread sleep as hour.|
+
+## Description of Commands
+
 ### add -p
  Add a new project to config. For instance, you installed this project to your linux os and you want to add new project on anywhere. At this time, you should use this command for it.
  
