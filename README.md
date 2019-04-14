@@ -5,12 +5,12 @@
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
 </div>
 
-## What is this?
- This application provides to you that you can manage your applications which are working on your linux os. Also, you can see text log which is given by your applications. Thus, when you connect to your linux system via ssh or other ways, you can get what happened on your applications. 
+## What is DEPMK?
+ This application helps you to manage your applications working on your linux os. Also, you can see text log which is given by your applications. Thus, when you connect to your linux system via ssh or other ways, you can get what happened on your applications. 
 
- When you want to see how much cpu and ram are your applications using, default codes write it as agent log to text files. But you can use it to other ui systems(We haven't made it yet) like pm2+ with source code. It is very simple.
+ When you want to see how much cpu and ram your applications are using, default codes write it as agent log to text files. But you can use it to other ui systems(We haven't made it yet) like pm2+ with source code. It is very simple.
  
-  Our programs sometimes doesn't work as well and we need to see what is it doing at the moment. This project ensure the live cpu and ram datas via bash terminal with colors to you understand easly. You don't need anytool to use it.
+ Our programs sometimes do not work as well as planned andwe need to see what they are doing at that moment and what causes it. This project ensures live cpu and ram datas via bash terminal with colors to help you understand easily. You don't need any tools to use it.
 
 ## How do I install?
 
@@ -40,11 +40,11 @@
   <br />
 </div>
 
-> Help will give you what are the commands in projects. It also will give 3 example scenario to learn. If you don't understand, you should look at **What is the commands?** section to more example and more descriptions.
+> Help will provide you the commands in the project. It will also produce 3 example scenarios to help you. If you still have problems, look at "**What are the commands?**" section for further examples and explanations.
 
 ## What is the project ui? How can I see it?
 
- First you have to run bash script "**depmk**" after installed to see this. If you do it, you see our ui designer. I can hear "_Why will I use it_". Reason of this is more attention and more details. When you use other way(**depmk pr -r** like that), program won't ask anything for any warning. But this way provides it. Also, if you haven't used it, you should use this project with ui.
+ First, you need to run bash script "**depmk**" after installation. When youdo it, you will see our ui designer. I can hear you asking "_Why will I use it?_" Reason of this is to catch more attention and provide more details.
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/ui.gif?raw=true" />
@@ -52,7 +52,7 @@
 
 ## What are the commands in this project?
 
-**This table has command list but you can also see details of commands at below.**
+**This table has the commands list, but you can also see the details of the commands below.**
 
 |Command|Short Description|
 |---|---|
@@ -108,10 +108,10 @@ $ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
   <br />
 </div>
  
-  We have to say that project_name isn't at config.json before run this command. Because this command write to config.json your project name as json, and if it repeat, you will take an error from this project which is "**Project already is exist!**. So you shouldn't worry about this command. Because you can delete it after added. Also, if you don't run your project which was added by you, nothing will happen.
+  We have to say that, project_name isn't at config.json until you run this command. Because this command write your project name as json to config.json, and if it is repeated,you will get an error from the project saying "**Project already exist!**" So you shouldn't worry about this command, because you can delete it after adding.
  
 ### add -s
-  If you want to will be started on reboot, you must run this command. Thus, if your linux os is closed and then opened, your applications will be started auto by **depmk**.
+  If you want that it will be started on reboot, you must run this command. Thus, if your linux os is closed and then opened, your applications will be started auto by **depmk**.
   
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
   
@@ -126,11 +126,11 @@ $ dotnet run add -s "<linux_user_name>"
   <br />
 </div>
 
- You may take an error which is "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
+ You may get an error saying "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
  
 ### add -a
  
- Actually, this is the most important thing in this project's commands. Why am I saying this? Because you have to run this command to use **depmk** command in bash. This command will add the **depmk** to _.bashrc_ as alias to end line and reload on your current terminal to able run. It also build the project on release mode to run last version of codes. It means if you change anything on this project, you have to run either this command or **install.sh**.
+ Actually, this is the most important thing in this project's commands. Why am I saying this? Because you have to run this command to use **depmk** command in bash. This command will add the **depmk** to _.bashrc_ as alias to the end line and reload on your current terminal to enable run. It also build the project on release mode to run last version of codes. It means if you change anything on this project, you have to run either this command or **install.sh**.
   
 **Schema**
 ```bash
@@ -147,7 +147,7 @@ $ depmk add -a
   
 ### alog -sa
   
- To see all projects agent logs. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you notice a thing that your project is very slow while is running background. At this moment, you can get agent logs to see cpu and ram via this command for all projects.
+ To see all projects' agent logs, you use this command. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you noticed that your project is very slow while running in the background. At this moment, you can get agent logs to see cpu and ram via this command for all projects.
    
 **Schema**
 ```bash
@@ -160,7 +160,7 @@ $ depmk alog -sa
  
 ### alog -s
   
- To see a project agent logs. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you notice a thing that your project is very slow while is running background. At this moment, you can get agent logs to see cpu and ram via this command for a project.
+ To see a project's agent logs, you use this command. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you noticed that your project is very slow while running in the background.. At this moment, you can get agent logs to see cpu and ram via this command for a project.
    
 **Schema**
 ```bash
@@ -173,7 +173,7 @@ $ depmk alog -s "<project_name>"
  
 ### clear
  
- To clear console. I guess you don't need more detail.
+ To clear console, you use this command. I guess you don't need more detail.
   
 **Schema**
 ```bash
@@ -186,7 +186,7 @@ $ depmk clear
  
 ### cwd
  
- To write the current directory of project. You can use this command for extreme situations. For instance, you can manage the config via other applications, you have to know where are the logs or other things. This command give it.
+ To write current directory of the project, you use this command for extreme situations. For instance, you can manage the config via other applications, you have to know where the logs and other things are. This command gives this.
   
 **Schema**
 ```bash
@@ -199,7 +199,7 @@ $ depmk cwd
  
 ### del -p
   
- To delete a project from config.
+ To delete a project from the config, you use this command..
    
 **Schema**
 ```bash
@@ -212,7 +212,7 @@ $ depmk del -p "<project_name>"
  
 ### del -s
   
-  To delete from startup by linux user name.
+ To delete from startup by linux username, you can use this command.
    
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
    
@@ -227,11 +227,11 @@ $ dotnet run del -s "<linux_user_name>"
  <br />
 </div>
 
- You may take an error which is "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
+ You may get an error saying "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
  
 ### del -a
   
- To delete **depmk** alias from _.bashrc_.
+ To delete **depmk** alias from _.bashrc_, you can use this command.
    
 **Schema**
 ```bash
@@ -248,7 +248,7 @@ $ depmk del -a
   
 ### exit
  
- If you use the ui, you don't forget a thing that you must use this command when you want to close it. Because, if you use _CTRL + C_, linux os send _SIGINT_ to child processes and projects like nodejs is closed auto without your commands.
+ If you use ui, you shouldn't forget that you have to use this command when you want to close it. Because if you use CTRL+C, linux os sends SIGINT to child processes and projects like nodejs are closed automatically without your command.
  
 **Schema**
 ```bash
@@ -261,7 +261,7 @@ $ depmk exit
   
 ### set -u / get -u
  
- Sometimes, you have different project's paths. For this paths you can use **username**. If you detailed review config.json, you see **default** on commands. You can add more **username** there. But if you do it, you must use **set -u** command to program catch this data. **get -u** command only show _What is the current username?_.
+ Sometimes you have different project's paths. For these paths, you can use username. If you closely review config.json, you can see default on commands. You can add more usernames there. But if you do it, you must use **set -u** command to catch this data. **get -u** command only shows _What is the current username?_.
  
 **Schema**
 ```bash
@@ -275,11 +275,11 @@ depmk get -u
   <br />
 </div>
  
- But don't forget that this command works only on a session. It means if you use any command like **depmk pr -r** which needs a path, you must use **set -u** before this command. For instance, **depmk set -u dmuka pr -r**. It's not global variable.
+ But don't forget that this command works only on a session. It means if you use any command like **depmk pr -r** which needs a path, you must use **set -u** before this command. For instance, **depmk set -u dmuka pr -r**. It's not globally variable.
  
 ### live
  
- To show all project's status/cpu/ram datas live.
+ To show all projects' status/cpu/ram datas live.
   
 **Schema**
 ```bash
@@ -292,7 +292,7 @@ $ depmk live
   
 ### log -sa
   
- To show all projects log datas.
+ To show all projects' status/cpu/ram data live, you can use this command.
    
 **Schema**
 ```bash
@@ -305,7 +305,7 @@ $ depmk log -sa
   
 ### log -s
   
- To show a project's log datas.
+ To show all projects' log data, this command is available.
   
 **Schema**
 ```bash
@@ -318,7 +318,7 @@ $ depmk log -s "<project_name>"
  
 ### log -ra
   
- To delete all logs with agent logs.
+ To delete all logs with agent logs, use this command.
   
 **Schema**
 ```bash
@@ -331,7 +331,7 @@ $ depmk log -ra
  
 ### log -r
   
- To delete a project's logs with agent logs.
+ To delete a project's logs with agent logs, this command is available.
   
 **Schema**
 ```bash
@@ -344,7 +344,7 @@ $ depmk log -r "<project_name>"
  
 ### mon
   
- To show a project's cpu and ram on graphics live.
+ To show a project's live cpu and ram on graphics, you can use this commmand.
   
 **Schema**
 ```bash
@@ -357,7 +357,7 @@ $ depmk mon "<project_name>"
   
 ### pr -s
   
- To show all projects status/cpu/ram datas.
+ To show all projects' status/cpu/ram data, you can use this command.
    
 **Schema**
 ```bash
@@ -370,7 +370,7 @@ $ depmk pr -s
   
 ### pr -ra
   
- To restart all projects.
+ To restart all projects, use this command.
    
 **Schema**
 ```bash
@@ -383,7 +383,7 @@ $ depmk pr -ra
  
 ### pr -r
   
- To restart a project.
+ To restart a project, this command is available.
    
 **Schema**
 ```bash
@@ -396,7 +396,7 @@ $ depmk pr -r "<project_name>"
  
 ### pr -ka
   
- To kill all projects.
+ To kill all projects, you can use this command.
    
 **Schema**
 ```bash
@@ -409,7 +409,7 @@ $ depmk pr -ka
  
 ### pr -k
   
- To kill a project.
+ To kill a project, use this command.
    
 **Schema**
 ```bash
@@ -422,7 +422,7 @@ $ depmk pr -k "<project_name>"
 
 ### set -c
   
- To set new config by file path on current directory.
+ To set new config by file path on current directory, this command is available.
    
 **Schema**
 ```bash
@@ -435,7 +435,7 @@ $ depmk set -c "<file_path>"
   
 ### show -c
   
- To show config file.
+ To show config file, use this command.
    
 
 **Schema**
