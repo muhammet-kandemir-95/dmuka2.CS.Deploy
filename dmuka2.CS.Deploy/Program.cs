@@ -281,7 +281,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("remove -p", "Remove a project from config.", () =>
+			commands.Add(new Command("del -p", "Remove a project from config.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -331,7 +331,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("remove -s", "Remove deploy.sh from startup by linux user name.", () =>
+			commands.Add(new Command("del -s", "Remove deploy.sh from startup by linux user name.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -377,7 +377,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("remove -a", "Remove alias from .bashrc.", () =>
+			commands.Add(new Command("del -a", "Remove alias from .bashrc.", () =>
 			{
 				tryCatch(() =>
 				{

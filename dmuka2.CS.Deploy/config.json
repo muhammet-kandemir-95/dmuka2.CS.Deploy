@@ -1,52 +1,53 @@
 ﻿{
-  "database": {
-    "Test": {
-      "type": "postgres",
-      "connection_string": {
-        "default": "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=Test;"
-      }
-    }
-  },
-  "project": {
-    "test_consoleapp": {
-      "commands": [
-        {
-          "main": false,
-          "name": "dotnet",
-          "arguments": "clean",
-          "path": {
-            "default": "./TestProjects/Test.ConsoleApp"
-          }
-        },
-        {
-          "main": false,
-          "name": "dotnet",
-          "arguments": "build -c Release",
-          "path": {
-            "default": "./TestProjects/Test.ConsoleApp"
-          }
-        },
-        {
-          "main": true,
-          "name": "dotnet",
-          "arguments": "exec Test.ConsoleApp.dll",
-          "path": {
-            "default": "./TestProjects/Test.ConsoleApp/bin/Release/netcoreapp2.1"
-          }
-        }
-      ]
-    },
-    "test_nodejs": {
-      "commands": [
-        {
-          "main": true,
-          "name": "node",
-          "arguments": "app.js",
-          "path": {
-            "default": "./TestProjects/Test.NodeJS"
-          }
-        }
-      ]
-    }
+	"database": {
+	  "Test": {
+		"type": "postgres",
+		"connection_string": {
+		  "default": "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=Test;"
+		}
+	  }
+	},
+	"project": {
+	  "test_consoleapp": {
+		"commands": [
+		  {
+			"main": false,
+			"name": "dotnet",
+			"arguments": "clean",
+			"path": {
+			  "default": "./TestProjects/Test.ConsoleApp"
+			}
+		  },
+		  {
+			"main": false,
+			"name": "dotnet",
+			"arguments": "build -c Release",
+			"path": {
+			  "default": "./TestProjects/Test.ConsoleApp"
+			}
+		  },
+		  {
+			"main": true,
+			"name": "dotnet",
+			"arguments": "exec Test.ConsoleApp.dll",
+			"path": {
+			  "default": "./TestProjects/Test.ConsoleApp/bin/Release/netcoreapp2.1"
+			}
+		  }
+		]
+	  },
+	  "test_nodejs": {
+		"commands": [
+		  {
+			"main": true,
+			"name": "node",
+			"arguments": "app.js",
+			"path": {
+			  "default": "./TestProjects/Test.NodeJS"
+			}
+		  }
+		]
+	  }
+	}
   }
-}
+  
