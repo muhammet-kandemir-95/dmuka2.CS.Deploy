@@ -2,7 +2,7 @@
   <br/>
   <img src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/main.png" />
   <br/>
-  <img width="140px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
+  <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
 </div>
 
 ## What is this?
@@ -65,20 +65,20 @@
 |_cwd_|Write current directory.|
 |_db -c_|Try to connect to database.|
 |_db -ca_|Try to connect to all databases.|
-|_db -r_|Remove all tables from database.|
-|_db -ra_|Remove all tables from all databases.|
+|_db -r_|Delete all tables from database.|
+|_db -ra_|Delete all tables from all databases.|
 |_db -m_|Apply migrations on database.|
 |_db -ma_|Apply migrations on all databases.|
-|_del -p_|Remove a project from config.|
-|_del -s_|Remove deploy.sh from startup by linux user name.|
-|_del -a_|Remove alias from .bashrc.|
+|_del -p_|Delete a project from config.|
+|_del -s_|Delete deploy.sh from startup by linux user name.|
+|_del -a_|Delete alias from .bashrc.|
 |_exit_|Close this application safely.|
 |_get -u_|Get user name.|
 |_live_|Open the live screen to watch all projects.|
 |_log -sa_|Show all projects log.|
 |_log -s_|Show log of project/projects.|
-|_log -r_|Remove all logs of a project.|
-|_log -ra_|Remove logs of all projects.|
+|_log -r_|Delete all logs of a project.|
+|_log -ra_|Delete logs of all projects.|
 |_mon_|Open the monitor to watch a project.|
 |_pr -s_|Show projects status.|
 |_pr -r_|Restart project.|
@@ -108,7 +108,7 @@ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
   <br />
 </div>
  
-  We have to say that project_name isn't at config.json before run this command. Because this command write to config.json your project name as json, and if it repeat, you will take an error from this project which is "**Project already is exist!**. So you shouldn't worry about this command. Because you can remove it after added. Also, if you don't run your project which was added by you, nothing will happen.
+  We have to say that project_name isn't at config.json before run this command. Because this command write to config.json your project name as json, and if it repeat, you will take an error from this project which is "**Project already is exist!**. So you shouldn't worry about this command. Because you can delete it after added. Also, if you don't run your project which was added by you, nothing will happen.
  
 ### add -s
   If you want to will be started on reboot, you must run this command. Thus, if your linux os is closed and then opened, your applications will be started auto by **depmk**.
@@ -199,7 +199,7 @@ depmk cwd
  
 ### del -p
   
- To remove a project from config.
+ To delete a project from config.
    
 **Schema**
 ```console
@@ -212,7 +212,7 @@ depmk del -p "<project_name>"
  
 ### del -s
   
-  To remove from startup by linux user name.
+  To delete from startup by linux user name.
    
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
    
@@ -231,7 +231,7 @@ dotnet run del -s "<linux_user_name>"
  
 ### del -a
   
- To remove **depmk** alias from _.bashrc_.
+ To delete **depmk** alias from _.bashrc_.
    
 **Schema**
 ```console
@@ -318,7 +318,7 @@ depmk log -s "<project_name>"
  
 ### log -ra
   
- To remove all logs with agent logs.
+ To delete all logs with agent logs.
   
 **Schema**
 ```console
@@ -331,7 +331,7 @@ depmk log -ra
  
 ### log -r
   
- To remove a project's logs with agent logs.
+ To delete a project's logs with agent logs.
   
 **Schema**
 ```console
