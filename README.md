@@ -344,16 +344,22 @@ depmk remove -p "<project_name>"
  
 ### remove -s
   
-   To remove from startup by linux user name.
+  To remove from startup by linux user name.
+   
+  You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
    
 **Schema**
 ```console
-depmk remove -s "<linux_user_name>"
+dotnet run remove -s "<linux_user_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-s.gif?raw=true" />
+ <br />
+ <br />
 </div>
+
+ You may take an error which is "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
  
 ### remove -a
   
