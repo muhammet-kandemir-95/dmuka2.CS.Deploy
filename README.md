@@ -99,7 +99,7 @@
  
 **Schema**
 ```console
-depmk add -p "<project_name>" "<command_name>" "<command arguments>"
+$ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 ```
 
 <div>
@@ -117,7 +117,7 @@ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
   
 **Schema**
 ```console
-dotnet run add -s "<linux_user_name>"
+$ dotnet run add -s "<linux_user_name>"
 ```
 
 <div>
@@ -134,7 +134,7 @@ dotnet run add -s "<linux_user_name>"
   
 **Schema**
 ```console
-depmk add -a
+$ depmk add -a
 ```
 
 <div>
@@ -151,7 +151,7 @@ depmk add -a
    
 **Schema**
 ```console
-depmk alog -sa
+$ depmk alog -sa
 ```
 
 <div>
@@ -164,7 +164,7 @@ depmk alog -sa
    
 **Schema**
 ```console
-depmk alog -s "<project_name>"
+$ depmk alog -s "<project_name>"
 ```
 
 <div>
@@ -177,7 +177,7 @@ depmk alog -s "<project_name>"
   
 **Schema**
 ```console
-depmk clear
+$ depmk clear
 ```
 
 <div>
@@ -190,7 +190,7 @@ depmk clear
   
 **Schema**
 ```console
-depmk cwd
+$ depmk cwd
 ```
 
 <div>
@@ -203,7 +203,7 @@ depmk cwd
    
 **Schema**
 ```console
-depmk del -p "<project_name>"
+$ depmk del -p "<project_name>"
 ```
 
 <div>
@@ -218,7 +218,7 @@ depmk del -p "<project_name>"
    
 **Schema**
 ```console
-dotnet run del -s "<linux_user_name>"
+$ dotnet run del -s "<linux_user_name>"
 ```
 
 <div>
@@ -235,7 +235,7 @@ dotnet run del -s "<linux_user_name>"
    
 **Schema**
 ```console
-depmk del -a
+$ depmk del -a
 ```
 
 <div>
@@ -252,7 +252,7 @@ depmk del -a
  
 **Schema**
 ```console
-depmk exit
+$ depmk exit
 ```
 
 <div>
@@ -265,7 +265,7 @@ depmk exit
  
 **Schema**
 ```console
-depmk set -u "<user_name>"
+$ depmk set -u "<user_name>"
 depmk get -u
 ```
 
@@ -283,7 +283,7 @@ depmk get -u
   
 **Schema**
 ```console
-depmk live
+$ depmk live
 ```
 
 <div>
@@ -296,7 +296,7 @@ depmk live
    
 **Schema**
 ```console
-depmk log -sa
+$ depmk log -sa
 ```
 
 <div>
@@ -309,7 +309,7 @@ depmk log -sa
   
 **Schema**
 ```console
-depmk log -s "<project_name>"
+$ depmk log -s "<project_name>"
 ```
 
 <div>
@@ -322,7 +322,7 @@ depmk log -s "<project_name>"
   
 **Schema**
 ```console
-depmk log -ra
+$ depmk log -ra
 ```
 
 <div>
@@ -335,7 +335,7 @@ depmk log -ra
   
 **Schema**
 ```console
-depmk log -r "<project_name>"
+$ depmk log -r "<project_name>"
 ```
 
 <div>
@@ -348,7 +348,7 @@ depmk log -r "<project_name>"
   
 **Schema**
 ```console
-depmk mon "<project_name>"
+$ depmk mon "<project_name>"
 ```
 
 <div>
@@ -361,7 +361,7 @@ depmk mon "<project_name>"
    
 **Schema**
 ```console
-depmk pr -s
+$ depmk pr -s
 ```
 
 <div>
@@ -374,7 +374,7 @@ depmk pr -s
    
 **Schema**
 ```console
-depmk pr -ra
+$ depmk pr -ra
 ```
 
 <div>
@@ -387,7 +387,7 @@ depmk pr -ra
    
 **Schema**
 ```console
-depmk pr -r "<project_name>"
+$ depmk pr -r "<project_name>"
 ```
 
 <div>
@@ -400,7 +400,7 @@ depmk pr -r "<project_name>"
    
 **Schema**
 ```console
-depmk pr -ka
+$ depmk pr -ka
 ```
 
 <div>
@@ -413,7 +413,7 @@ depmk pr -ka
    
 **Schema**
 ```console
-depmk pr -k "<project_name>"
+$ depmk pr -k "<project_name>"
 ```
 
 <div>
@@ -426,7 +426,7 @@ depmk pr -k "<project_name>"
    
 **Schema**
 ```console
-depmk set -c "<file_path>"
+$ depmk set -c "<file_path>"
 ```
 
 <div>
@@ -440,7 +440,7 @@ depmk set -c "<file_path>"
 
 **Schema**
 ```console
-depmk show -c
+$ depmk show -c
 ```
 
 <div>
