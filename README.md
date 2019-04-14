@@ -207,7 +207,7 @@ depmk del -p "<project_name>"
 ```
 
 <div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-p.gif?raw=true" />
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/del-p.gif?raw=true" />
 </div>
  
 ### del -s
@@ -222,7 +222,7 @@ dotnet run del -s "<linux_user_name>"
 ```
 
 <div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-s.gif?raw=true" />
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/del-s.gif?raw=true" />
  <br />
  <br />
 </div>
@@ -239,7 +239,7 @@ depmk del -a
 ```
 
 <div>
- <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-a.gif?raw=true" />
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/del-a.gif?raw=true" />
  <br />
  <br />
 </div>
