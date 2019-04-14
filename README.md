@@ -372,7 +372,11 @@ depmk remove -a
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/remove-a.gif?raw=true" />
+ <br />
+ <br />
 </div>
+
+ You only need a permission that you can change the .bashrc file. You don't need sudo for this situation.
   
 ### set -c
   
