@@ -115,9 +115,14 @@ $ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
   
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
   
-**Schema**
+**Schema 1**
 ```bash
 $ dotnet run add -s "<linux_user_name>"
+```
+
+**Schema 2**
+```bash
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add -s "<linux_user_name>"
 ```
 
 <div>
@@ -216,9 +221,14 @@ $ depmk del -p "<project_name>"
    
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
    
-**Schema**
+**Schema 1**
 ```bash
 $ dotnet run del -s "<linux_user_name>"
+```
+
+**Schema 2**
+```bash
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del -s "<linux_user_name>"
 ```
 
 <div>
