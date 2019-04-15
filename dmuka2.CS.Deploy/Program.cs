@@ -1051,7 +1051,7 @@ namespace dmuka2.CS.Deploy
 				if (processId != "")
 					ShellHelper.Run("", "kill " + processId, false, false);
 
-				ShellHelper.Run("", "dotnet run --background \"" + JsonConvert.SerializeObject(new
+				ShellHelper.Run("", "dotnet exec " + Path.Combine(CurrentDirectory, "bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll") + " --background \"" + JsonConvert.SerializeObject(new
 				{
 					user_name = ConfigHelper.UserName,
 					project_name = projectName
