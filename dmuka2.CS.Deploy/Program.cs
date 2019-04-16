@@ -599,7 +599,7 @@ namespace dmuka2.CS.Deploy
 					int cursorPosition = Console.CursorTop;
 					bool exitMonitor = false;
 					int consoleWidth = Console.BufferWidth - (Console.BufferWidth % 2);
-					int consoleHeight = Console.BufferHeight - (2 - (Console.BufferWidth % 2));
+					int consoleHeight = Console.BufferHeight - (2 - (Console.BufferHeight % 2));
 
 					int graphWidth = consoleWidth - 2;
 					int graphHeight = consoleHeight - 2;
@@ -731,7 +731,7 @@ namespace dmuka2.CS.Deploy
 									graph[Math.Max(3, Math.Min(usageGraphYMax - 1, usageGraphYMax - (int)((beforeCpus[i] * (usageGraphYMax - usageGraphYMin)) / 100))), i] = '0';
 
 								for (int i = 0; i < beforeRAMs.Count; i++)
-									graph[ramY + 1 + Math.Max(0, Math.Min(usageGraphYMax - 1, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
+									graph[ramY + 1 + Math.Max(0, Math.Min(usageGraphYMax, (usageGraphYMax - (int)((beforeRAMs[i] * (usageGraphYMax - usageGraphYMin)) / maxRam)))), i] = '0';
 
 								if (usage.cpuPercent == null)
 									Thread.Sleep(300);
@@ -753,11 +753,13 @@ namespace dmuka2.CS.Deploy
 					int cursorPosition = Console.CursorTop;
 					bool exitMonitor = false;
 					int consoleWidth = Console.BufferWidth - (Console.BufferWidth % 2);
-					int consoleHeight = Console.BufferHeight - (2 - (Console.BufferWidth % 2));
+					int consoleHeight = Console.BufferHeight - (2 - (Console.BufferHeight % 2));
 
 					int graphWidth = consoleWidth - 2;
 					int graphHeight = consoleHeight - 2;
 					int maxLength = ConfigHelper.Projects.Max(o => o.Length) + 8;
+					if (maxLength == 0)
+						throw new Exception("Projects was not found!");
 
 					int?[] cpuIndex = new int?[graphHeight];
 					char[,] graph = new char[graphHeight, graphWidth];
@@ -1313,7 +1315,7 @@ namespace dmuka2.CS.Deploy
  |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
                                           |_|         |__/ 
 [line][01]
- [color][15,--]Version 1.0.0.1
+ [color][15,--]Version 1.0.0.2
 [line][01]
  [color][15,--]Welcome, if you are here, you want a thing from me?
  So, you can learn what can you do with help command.
