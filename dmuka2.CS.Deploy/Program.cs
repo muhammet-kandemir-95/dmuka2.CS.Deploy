@@ -540,11 +540,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Log was closed...");
 			};
-			commands.Add(new Command("log -sa", "Show all projects log.", () =>
+			commands.Add(new Command("log -sa", "Show all projects daily logs.", () =>
 			{
 				runLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("log -s", "Show log of project/projects.", () =>
+			commands.Add(new Command("log -s", "Show daily logs of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -1313,7 +1313,7 @@ namespace dmuka2.CS.Deploy
  |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
                                           |_|         |__/ 
 [line][01]
- [color][15,--]Version 1.0.0.0
+ [color][15,--]Version 1.0.0.1
 [line][01]
  [color][15,--]Welcome, if you are here, you want a thing from me?
  So, you can learn what can you do with help command.
