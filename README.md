@@ -302,7 +302,7 @@ $ depmk live
   
 ### log -sa
   
- To show all projects' daily logs data, you can use this command.
+ To show all projects' daily logs data, you can use this command. If you want to see previous days' logs, you have to open on project directory that "dmuka2.CS.Deploy/Log". You can get logs of all time from there.
    
 **Schema**
 ```bash
@@ -315,7 +315,7 @@ $ depmk log -sa
   
 ### log -s
   
- To show all projects' daily logs data, this command is available.
+ To show all projects' daily logs data, this command is available. If you want to see previous days' logs, you have to open on project directory that "dmuka2.CS.Deploy/Log". You can get logs of all time from there.
   
 **Schema**
 ```bash
