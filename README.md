@@ -75,8 +75,8 @@
 |_exit_|Close this application safely.|
 |_get -u_|Get user name.|
 |_live_|Open the live screen to watch all projects.|
-|_log -sa_|Show all projects log.|
-|_log -s_|Show log of project/projects.|
+|_log -sa_|Show all projects daily logs.|
+|_log -s_|Show daily logs of project/projects.|
 |_log -r_|Delete all logs of a project.|
 |_log -ra_|Delete logs of all projects.|
 |_mon_|Open the monitor to watch a project.|
@@ -302,7 +302,7 @@ $ depmk live
   
 ### log -sa
   
- To show all projects' status/cpu/ram data live, you can use this command.
+ To show all projects' daily logs data, you can use this command.
    
 **Schema**
 ```bash
@@ -315,7 +315,7 @@ $ depmk log -sa
   
 ### log -s
   
- To show all projects' log data, this command is available.
+ To show all projects' daily logs data, this command is available.
   
 **Schema**
 ```bash
