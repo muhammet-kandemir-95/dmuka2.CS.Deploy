@@ -11,6 +11,11 @@ namespace dmuka2.CS.Deploy
         /// User command name.
         /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// User command long name.
+        /// </summary>
+        public string LongName { get; private set; }
         
         /// <summary>
         /// This is for help.
@@ -24,12 +29,16 @@ namespace dmuka2.CS.Deploy
         #endregion
 
         #region Constructors
-        public Command(string name, string description, Action action)
+        public Command(string name, string longName, string description, Action action)
         {
             this.Name = name;
+            this.LongName = longName;
             this.Description = description;
             this.Action = action;
         }
+
+        public Command(string name, string description, Action action) : this(name, "", description, action)
+		{ }
         #endregion
     }
 }

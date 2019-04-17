@@ -35,6 +35,15 @@ namespace dmuka2.CS.Deploy
 		#endregion
 
 		#region Methods
+		/// <summary>
+		/// To write a text to console with styles. You have to use some schemas below;
+		/// <para></para>
+		/// [line][&lt;type&gt;] = Write a line by console buffer width. For instance "[line][01]", "[line][02]", ...
+		/// <para></para>
+		/// [color][&lt;forecolor&gt;,&lt;backcolor&gt;] = Change the console color. For instance "[color][01,02]Hello [color][15,03]World"
+		/// </summary>
+        /// <param name="text">Console text.</param>
+        /// <param name="arguments">String format arguments.</param>
 		static void write(string text, params object[] arguments)
 		{
 			if (__writeDisable == true)
@@ -73,16 +82,34 @@ namespace dmuka2.CS.Deploy
 			Console.BackgroundColor = previousBackColor;
 		}
 
+		/// <summary>
+		/// To write a line to console with styles. You have to use some schemas below;
+		/// <para></para>
+		/// [line][&lt;type&gt;] = Write a line by console buffer width. For instance "[line][01]", "[line][02]", ...
+		/// <para></para>
+		/// [color][&lt;forecolor&gt;,&lt;backcolor&gt;] = Change the console color. For instance "[color][01,02]Hello [color][15,03]World"
+		/// </summary>
+        /// <param name="text">Console text.</param>
+        /// <param name="arguments">String format arguments.</param>
 		static void writeLine(string text, params object[] arguments)
 		{
 			write(text + Environment.NewLine, arguments);
 		}
 
+		/// <summary>
+		/// To write only a blank line.
+		/// </summary>
 		static void writeLine()
 		{
 			write(Environment.NewLine);
 		}
 
+		/// <summary>
+		/// To catch the error which will be thrown by action.
+		/// <para></para>
+		/// And then ask it to use to see on the current console.
+		/// </summary>
+        /// <param name="action">What will it do?</param>
 		static bool tryCatch(Action action)
 		{
 			try
@@ -110,6 +137,12 @@ namespace dmuka2.CS.Deploy
 			}
 		}
 
+		/// <summary>
+		/// To ask a question which has 2 answer yes or no.
+		/// <para></para>
+		/// The question is "Are you sure?".
+		/// </summary>
+        /// <param name="action">If user will say yes for the question, what will it do.</param>
 		static void areYouSure(Action action)
 		{
 			if (__askDisable == true)
@@ -123,11 +156,17 @@ namespace dmuka2.CS.Deploy
 				action();
 		}
 
+		/// <summary>
+		/// Write the successfull message.
+		/// </summary>
 		static void successful()
 		{
 			writeLine(@"[color][10,--]Successfull");
 		}
 
+		/// <summary>
+		/// Write the bye bye message.
+		/// </summary>
 		static void byeBye()
 		{
 			if (__byeByeEnable == false)
@@ -177,7 +216,8 @@ namespace dmuka2.CS.Deploy
 			List<Command> commands = new List<Command>();
 			commands.Add(new Command("help", "", () =>
 			{
-				var maxLength = commands.Max(o => o.Name.Length);
+				var maxLengthLeft = commands.Max(o => o.Name.Length);
+				var maxLengthRight = commands.Max(o => o.LongName.Length);
 
 				writeLine("[color][03,--]Run a Command/Commands Schema");
 				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <cmd2> <cmd3>...");
@@ -194,8 +234,13 @@ namespace dmuka2.CS.Deploy
 				writeLine("[color][03,--]Commands List");
 
 				foreach (var command in commands.OrderBy(o => o.Name.Split(' ')[0]))
-					if (command.Name != "help")
-						writeLine("[color][11,--]" + command.Name.PadRight(maxLength, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
+					if (command.Name != "help") 
+					{
+						if (command.LongName == "")
+							writeLine("[color][11,--]" + command.Name.PadRight(maxLengthLeft + (maxLengthRight == 0 ? 0 : 3 + maxLengthRight), ' ') + " [color][08,--]= [color][15,--]" + command.Description);
+						else
+							writeLine("[color][11,--]" + command.Name.PadRight(maxLengthLeft, ' ') + " [color][15,--]| [color][11,--]" + command.LongName.PadRight(maxLengthRight, ' ') + " [color][08,--]= [color][15,--]" + command.Description);
+					}
 
 				writeLine();
 				writeLine("[color][03,--]Example 1 - Run a Command");
@@ -233,7 +278,7 @@ namespace dmuka2.CS.Deploy
 			{
 				writeLine("[color][14,--]" + CurrentDirectory);
 			}));
-			commands.Add(new Command("show -c", "Show config file.", () =>
+			commands.Add(new Command("show -c", "show --config", "Show config file.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -242,7 +287,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("set -c", "Set config file.", () =>
+			commands.Add(new Command("set -c", "set --config", "Set config file.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -253,7 +298,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("add -p", "Add a new project to config.", () =>
+			commands.Add(new Command("add -p", "add --project", "Add a new project to config.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -281,7 +326,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("del -p", "Remove a project from config.", () =>
+			commands.Add(new Command("del -p", "del --project", "Remove a project from config.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -296,7 +341,7 @@ namespace dmuka2.CS.Deploy
 				});
 			}));
 			string deployShFilePath = Path.Combine(CurrentDirectory, "deploy.sh");
-			commands.Add(new Command("add -s", "Add deploy.sh to startup by linux user name.", () =>
+			commands.Add(new Command("add -s", "add --startup", "Add deploy.sh to startup by linux user name.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -331,7 +376,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("del -s", "Remove deploy.sh from startup by linux user name.", () =>
+			commands.Add(new Command("del -s", "del --startup", "Remove deploy.sh from startup by linux user name.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -352,7 +397,7 @@ namespace dmuka2.CS.Deploy
 			string aliasCommand =
 					"alias depmk=\"dotnet exec \\\"" + Path.Combine(CurrentDirectory, "bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll") + "\\\" --current-directory \\\"" + CurrentDirectory + "\\\"\"";
 			string bashrcFilePath = Path.Combine(Environment.GetEnvironmentVariable("HOME"), ".bashrc");
-			commands.Add(new Command("add -a", "Add alias to bash as 'depmk' via current directory.", () =>
+			commands.Add(new Command("add -a", "add --alias", "Add alias to bash as 'depmk' via current directory.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -377,7 +422,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("del -a", "Remove alias from .bashrc.", () =>
+			commands.Add(new Command("del -a", "del --alias", "Remove alias from .bashrc.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -388,7 +433,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("sleep -s", "Thread sleep as second.", () =>
+			commands.Add(new Command("sleep -s", "sleep --second", "Thread sleep as second.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -398,7 +443,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("sleep -m", "Thread sleep as minute.", () =>
+			commands.Add(new Command("sleep -m", "sleep --minute", "Thread sleep as minute.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -408,7 +453,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("sleep -h", "Thread sleep as hour.", () =>
+			commands.Add(new Command("sleep -h", "sleep --hour", "Thread sleep as hour.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -418,12 +463,12 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("set -u", "Set user name.", () =>
+			commands.Add(new Command("set -u", "set --user", "Set user name.", () =>
 			{
 				ConfigHelper.SetUserName(getLine("Write user name = "));
 				successful();
 			}));
-			commands.Add(new Command("get -u", "Get user name.", () =>
+			commands.Add(new Command("get -u", "get --user", "Get user name.", () =>
 			{
 				writeLine("[color][13,--]" + ConfigHelper.UserName);
 				successful();
@@ -484,11 +529,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Agent log was closed...");
 			};
-			commands.Add(new Command("alog -sa", "Show agent log of all projects.", () =>
+			commands.Add(new Command("alog -sa", "alog --show-all", "Show agent log of all projects.", () =>
 			{
 				runAgentLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("alog -s", "Show agent log of project/projects.", () =>
+			commands.Add(new Command("alog -s", "alog --show", "Show agent log of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -540,11 +585,11 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][15,--]Log was closed...");
 			};
-			commands.Add(new Command("log -sa", "Show all projects daily logs.", () =>
+			commands.Add(new Command("log -sa", "log --show-all", "Show all projects daily logs.", () =>
 			{
 				runLogProcesses(ConfigHelper.Projects);
 			}));
-			commands.Add(new Command("log -s", "Show daily logs of project/projects.", () =>
+			commands.Add(new Command("log -s", "log --show", "Show daily logs of project/projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -566,7 +611,7 @@ namespace dmuka2.CS.Deploy
 				if (File.Exists(logAgentFilePath))
 					File.Delete(logAgentFilePath);
 			};
-			commands.Add(new Command("log -r", "Remove all logs of a project.", () =>
+			commands.Add(new Command("log -r", "log --remove", "Remove all logs of a project.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -575,7 +620,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("log -ra", "Remove logs of all projects.", () =>
+			commands.Add(new Command("log -ra", "log --remove-all", "Remove logs of all projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -587,7 +632,7 @@ namespace dmuka2.CS.Deploy
 					});
 				});
 			}));
-			commands.Add(new Command("mon", "Open the monitor to watch a project.", () =>
+			commands.Add(new Command("mon", "monitor", "Open the monitor to watch a project.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -903,7 +948,7 @@ namespace dmuka2.CS.Deploy
 					exitMonitor = true;
 				});
 			}));
-			commands.Add(new Command("db -c", "Try to connect to database.", () =>
+			commands.Add(new Command("db -c", "db --connect", "Try to connect to database.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -913,7 +958,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("db -ca", "Try to connect to all databases.", () =>
+			commands.Add(new Command("db -ca", "db --connect-all", "Try to connect to all databases.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -925,7 +970,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("db -r", "Remove all tables from database.", () =>
+			commands.Add(new Command("db -r", "db --remove", "Remove all tables from database.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -935,7 +980,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("db -ra", "Remove all tables from all databases.", () =>
+			commands.Add(new Command("db -ra", "db --remove-all", "Remove all tables from all databases.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -950,7 +995,7 @@ namespace dmuka2.CS.Deploy
 					});
 				});
 			}));
-			commands.Add(new Command("db -m", "Apply migrations on database.", () =>
+			commands.Add(new Command("db -m", "db --migration", "Apply migrations on database.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -963,7 +1008,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("db -ma", "Apply migrations on all databases.", () =>
+			commands.Add(new Command("db -ma", "db --migration-all", "Apply migrations on all databases.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -978,7 +1023,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("pr -s", "Show projects status.", () =>
+			commands.Add(new Command("pr -s", "pr --status", "Show projects status.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -1062,7 +1107,7 @@ namespace dmuka2.CS.Deploy
 
 				Thread.Sleep(1000);
 			};
-			commands.Add(new Command("pr -r", "Restart project.", () =>
+			commands.Add(new Command("pr -r", "pr --restart", "Restart project.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -1073,7 +1118,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("pr -ra", "Restart all projects.", () =>
+			commands.Add(new Command("pr -ra", "pr --restart-all", "Restart all projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -1100,7 +1145,7 @@ namespace dmuka2.CS.Deploy
 
 				ShellHelper.Run("", "kill " + processId, false, false);
 			};
-			commands.Add(new Command("pr -k", "Kill project.", () =>
+			commands.Add(new Command("pr -k", "pr --kill", "Kill project.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -1111,7 +1156,7 @@ namespace dmuka2.CS.Deploy
 					successful();
 				});
 			}));
-			commands.Add(new Command("pr -ka", "Kill all projects.", () =>
+			commands.Add(new Command("pr -ka", "pr --kill-all", "Kill all projects.", () =>
 			{
 				tryCatch(() =>
 				{
@@ -1155,7 +1200,7 @@ namespace dmuka2.CS.Deploy
 				var exists = false;
 				foreach (var command in commands)
 				{
-					if (command.Name == commandName)
+					if (command.Name == commandName || command.LongName == commandName)
 					{
 						exists = true;
 						command.Action();
@@ -1279,7 +1324,7 @@ namespace dmuka2.CS.Deploy
 									argCommand += " ";
 
 								argCommand += args[argIndex];
-								if (commands.Any(o => o.Name == argCommand))
+								if (commands.Any(o => o.Name == argCommand || o.LongName == argCommand))
 								{
 									runCommand(argCommand);
 									break;
@@ -1305,7 +1350,6 @@ namespace dmuka2.CS.Deploy
 				exit = true;
 				__askDisable = true;
 				__writeDisable = true;
-				commands.FirstOrDefault(o => o.Name == "pr -ka").Action();
 			};
 
 			writeLine(@"
@@ -1315,7 +1359,7 @@ namespace dmuka2.CS.Deploy
  |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
                                           |_|         |__/ 
 [line][01]
- [color][15,--]Version 1.0.0.2
+ [color][15,--]Version 1.0.0.3
 [line][01]
  [color][15,--]Welcome, if you are here, you want a thing from me?
  So, you can learn what can you do with help command.
@@ -1331,7 +1375,7 @@ namespace dmuka2.CS.Deploy
 				var exists = false;
 				foreach (var command in commands)
 				{
-					if (command.Name == commandName)
+					if (command.Name == commandName || command.LongName == commandName)
 					{
 						exists = true;
 						command.Action();
