@@ -42,8 +42,8 @@ namespace dmuka2.CS.Deploy
 		/// <para></para>
 		/// [color][&lt;forecolor&gt;,&lt;backcolor&gt;] = Change the console color. For instance "[color][01,02]Hello [color][15,03]World"
 		/// </summary>
-        /// <param name="text">Console text.</param>
-        /// <param name="arguments">String format arguments.</param>
+		/// <param name="text">Console text.</param>
+		/// <param name="arguments">String format arguments.</param>
 		static void write(string text, params object[] arguments)
 		{
 			if (__writeDisable == true)
@@ -89,8 +89,8 @@ namespace dmuka2.CS.Deploy
 		/// <para></para>
 		/// [color][&lt;forecolor&gt;,&lt;backcolor&gt;] = Change the console color. For instance "[color][01,02]Hello [color][15,03]World"
 		/// </summary>
-        /// <param name="text">Console text.</param>
-        /// <param name="arguments">String format arguments.</param>
+		/// <param name="text">Console text.</param>
+		/// <param name="arguments">String format arguments.</param>
 		static void writeLine(string text, params object[] arguments)
 		{
 			write(text + Environment.NewLine, arguments);
@@ -109,7 +109,7 @@ namespace dmuka2.CS.Deploy
 		/// <para></para>
 		/// And then ask it to use to see on the current console.
 		/// </summary>
-        /// <param name="action">What will it do?</param>
+		/// <param name="action">What will it do?</param>
 		static bool tryCatch(Action action)
 		{
 			try
@@ -142,7 +142,7 @@ namespace dmuka2.CS.Deploy
 		/// <para></para>
 		/// The question is "Are you sure?".
 		/// </summary>
-        /// <param name="action">If user will say yes for the question, what will it do.</param>
+		/// <param name="action">If user will say yes for the question, what will it do.</param>
 		static void areYouSure(Action action)
 		{
 			if (__askDisable == true)
@@ -171,7 +171,7 @@ namespace dmuka2.CS.Deploy
 		{
 			if (__byeByeEnable == false)
 				return;
-				
+
 			__byeByeEnable = false;
 
 			writeLine();
@@ -234,7 +234,7 @@ namespace dmuka2.CS.Deploy
 				writeLine("[color][03,--]Commands List");
 
 				foreach (var command in commands.OrderBy(o => o.Name.Split(' ')[0]))
-					if (command.Name != "help") 
+					if (command.Name != "help")
 					{
 						if (command.LongName == "")
 							writeLine("[color][11,--]" + command.Name.PadRight(maxLengthLeft + (maxLengthRight == 0 ? 0 : 3 + maxLengthRight), ' ') + " [color][08,--]= [color][15,--]" + command.Description);
@@ -291,7 +291,11 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					string newConfigPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), getLine("Write config file name = ")));
+					string path = getLine("Write config file name = ");
+					if (path == "")
+						return;
+
+					string newConfigPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), path));
 					ConfigHelper.Config = JsonConvert.DeserializeObject<JToken>(File.ReadAllText(newConfigPath));
 					ConfigHelper.Save();
 
@@ -303,11 +307,18 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string projectName = getLine("Write project name = ");
+					if (projectName == "")
+						return;
+
 					if (ConfigHelper.Projects.Any(o => o == projectName))
 						throw new Exception("Project already is exist!");
 
 					string commandName = getLine("Write your command name = ");
+					if (commandName == "")
+						return;
 					string commandArgs = getLine("Write your command arguments = ");
+					if (commandArgs == "")
+						return;
 					((JObject)ConfigHelper.Config["project"])[projectName] = JObject.FromObject(new
 					{
 						commands = new object[] {
@@ -331,6 +342,9 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string projectName = getLine("Write project name = ");
+					if (projectName == "")
+						return;
+
 					if (ConfigHelper.Projects.Any(o => o == projectName) == false)
 						throw new Exception("Project was not found!");
 
@@ -346,6 +360,9 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string linuxUserName = getLine("Write linux user name = ");
+					if (linuxUserName == "")
+						return;
+
 					string deployStartupCommand =
 							Environment.NewLine +
 							"@reboot " + linuxUserName + " " + deployShFilePath +
@@ -381,6 +398,9 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string linuxUserName = getLine("Write linux user name = ");
+					if (linuxUserName == "")
+						return;
+
 					string deployStartupCommand =
 							Environment.NewLine +
 							"@reboot " + linuxUserName + " " + deployShFilePath +
@@ -437,7 +457,11 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					var second = Convert.ToInt32(getLine("Write second = "));
+					string value = getLine("Write second = ");
+					if (value == "")
+						return;
+
+					var second = Convert.ToInt32(value);
 					writeLine("[color][13,--]Waiting {0} second...", second);
 					Thread.Sleep(second * 1000);
 					successful();
@@ -447,7 +471,11 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					var minute = Convert.ToInt32(getLine("Write minute = "));
+					string value = getLine("Write minute = ");
+					if (value == "")
+						return;
+
+					var minute = Convert.ToInt32(value);
 					writeLine("[color][13,--]Waiting {0} minute...", minute);
 					Thread.Sleep(minute * 1000 * 60);
 					successful();
@@ -457,7 +485,11 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					var hour = Convert.ToInt32(getLine("Write hour = "));
+					string value = getLine("Write hour = ");
+					if (value == "")
+						return;
+
+					var hour = Convert.ToInt32(value);
 					writeLine("[color][13,--]Waiting {0} hour...", hour);
 					Thread.Sleep(hour * 1000 * 60 * 60);
 					successful();
@@ -465,7 +497,11 @@ namespace dmuka2.CS.Deploy
 			}));
 			commands.Add(new Command("set -u", "set --user", "Set user name.", () =>
 			{
-				ConfigHelper.SetUserName(getLine("Write user name = "));
+				var userName = getLine("Write user name = ");
+				if (userName == "")
+					return;
+
+				ConfigHelper.SetUserName(userName);
 				successful();
 			}));
 			commands.Add(new Command("get -u", "get --user", "Get user name.", () =>
@@ -538,8 +574,10 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
+					if (logs.Length == 0)
+						return;
 
-					if (logs.Length == 0 || logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+					if (logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
 						throw new Exception("Not found project!");
 
 					runAgentLogProcesses(logs);
@@ -594,8 +632,10 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					var logs = getLine("Write project/projects name(You can use ';' for multiple project) = ").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(o => o.Trim()).ToArray();
+					if (logs.Length == 0)
+						return;
 
-					if (logs.Length == 0 || logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
+					if (logs.Length != ConfigHelper.Projects.Where(o => logs.Any(a => a == o)).Count())
 						throw new Exception("Not found project!");
 
 					runLogProcesses(logs);
@@ -616,6 +656,9 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string projectName = getLine("Write project name = ");
+					if (projectName == "")
+						return;
+
 					deleteLog(projectName);
 					successful();
 				});
@@ -637,6 +680,9 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string projectName = getLine("Write project name = ");
+					if (projectName == "")
+						return;
+
 					if (ConfigHelper.Projects.Any(o => o == projectName) == false)
 						throw new Exception("Not found project!");
 
@@ -953,6 +999,8 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string databaseName = getLine("Write database name = ");
+					if (databaseName == "")
+						return;
 
 					DatabaseHelper.TryToConnect(databaseName);
 					successful();
@@ -975,6 +1023,8 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string databaseName = getLine("Write database name = ");
+					if (databaseName == "")
+						return;
 
 					DatabaseHelper.RemoveAllTables(databaseName);
 					successful();
@@ -1000,6 +1050,8 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string databaseName = getLine("Write database name = ");
+					if (databaseName == "")
+						return;
 
 					DatabaseHelper.ApplyMigration(databaseName, (migrationName) =>
 					{
@@ -1084,7 +1136,7 @@ namespace dmuka2.CS.Deploy
 				var processId = ProcessSaveHelper.Get(projectName);
 				if (processId != "")
 					ShellHelper.Run("", "kill " + processId, false, false);
-				
+
 				var projectCommands = ConfigHelper.GetProjectCommands(projectName);
 				foreach (var command in projectCommands)
 					if (command.main == false)
@@ -1112,6 +1164,8 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string projectName = getLine("Write project name = ");
+					if (projectName == "")
+						return;
 
 					restartProject(projectName);
 
@@ -1150,6 +1204,8 @@ namespace dmuka2.CS.Deploy
 				tryCatch(() =>
 				{
 					string projectName = getLine("Write project name = ");
+					if (projectName == "")
+						return;
 
 					killProject(projectName);
 
@@ -1248,7 +1304,6 @@ namespace dmuka2.CS.Deploy
 							ConfigHelper.SetUserName(userName);
 							var mainProcess = ConfigHelper.GetProjectCommands(projectName).Where(o => o.main).FirstOrDefault();
 
-							string splitText = "~_/\\_~";
 							string processId = "";
 
 							var previousProcessId = ProcessSaveHelper.Get(projectName);
@@ -1263,12 +1318,11 @@ namespace dmuka2.CS.Deploy
 
 							ShellHelper.Run(
 								mainProcess.path,
-								mainProcess.name + " " + mainProcess.arguments + @" & " +
-								@"echo """ + splitText + @"""$!""" + splitText + @"""", true, true, callbackOutput: (process, text) =>
+								mainProcess.name + " " + mainProcess.arguments, true, true, callbackOutput: (process, text) =>
 								{
-									if (processId == "" && text.Contains(splitText))
+									if (processId == "")
 									{
-										processId = text.Split(new string[] { splitText }, StringSplitOptions.None)[1];
+										processId = process.Id.ToString();
 										ProcessSaveHelper.Set(projectName, processId);
 
 										AgentHelper.AddToQueue(() =>
@@ -1291,7 +1345,7 @@ namespace dmuka2.CS.Deploy
 										AgentHelper.OnLog(projectName, true, text);
 									});
 									LogHelper.Write(projectName, text);
-								});
+								}, useShell: false);
 
 							existReturnArg = true;
 							AgentHelper.StopTheQueue();
@@ -1359,7 +1413,7 @@ namespace dmuka2.CS.Deploy
  |___/|_|  |_|\___/|_|\_\/_/ \_\ |___/\___| .__/_\___/\_, |
                                           |_|         |__/ 
 [line][01]
- [color][15,--]Version 1.0.0.3
+ [color][15,--]Version 1.0.0.4
 [line][01]
  [color][15,--]Welcome, if you are here, you want a thing from me?
  So, you can learn what can you do with help command.
@@ -1372,18 +1426,21 @@ namespace dmuka2.CS.Deploy
 				if (exit)
 					break;
 
-				var exists = false;
-				foreach (var command in commands)
+				if (commandName != "")
 				{
-					if (command.Name == commandName || command.LongName == commandName)
+					var exists = false;
+					foreach (var command in commands)
 					{
-						exists = true;
-						command.Action();
+						if (command.Name == commandName || command.LongName == commandName)
+						{
+							exists = true;
+							command.Action();
+						}
 					}
-				}
 
-				if (exists == false)
-					writeLine("Not found {0} command!", commandName);
+					if (exists == false)
+						writeLine("Not found {0} command!", commandName);
+				}
 
 				if (exit == false)
 					writeLine("[line][03]");

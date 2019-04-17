@@ -5,6 +5,8 @@
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
 </div>
 
+**VERSION 1.0.0.4**
+
 ## What is DEPMK?
  This application helps you to manage your applications working on your linux os. Also, you can see text log which is given by your applications. Thus, when you connect to your linux system via ssh or other ways, you can get what happened on your applications. 
 
@@ -56,41 +58,41 @@
 
 |Command|Short Description|
 |---|---|
-|_add -p_|Add a new project to config.|
-|_add -s_|Add deploy.sh to startup by linux user name.|
-|_add -a_|Add alias to bash as 'depmk' via current directory.|
-|_alog -sa_|Show agent log of all projects.|
-|_alog -s_|Show agent log of project/projects.|
+|_add -p_ , _add --project_|Add a new project to config.|
+|_add -s_ , _add --startup_|Add deploy.sh to startup by linux user name.|
+|_add -a_ , _add --alias_|Add alias to bash as 'depmk' via current directory.|
+|_alog -sa_ , _alos --show-all_|Show agent log of all projects.|
+|_alog -s_ , _alog --show_|Show agent log of project/projects.|
 |_clear_|Clear console.|
 |_cwd_|Write current directory.|
-|_db -c_|Try to connect to database.|
-|_db -ca_|Try to connect to all databases.|
-|_db -r_|Delete all tables from database.|
-|_db -ra_|Delete all tables from all databases.|
-|_db -m_|Apply migrations on database.|
-|_db -ma_|Apply migrations on all databases.|
-|_del -p_|Delete a project from config.|
-|_del -s_|Delete deploy.sh from startup by linux user name.|
-|_del -a_|Delete alias from .bashrc.|
+|_db -c_ , _db --connect_|Try to connect to database.|
+|_db -ca_ , _db --connect-all_|Try to connect to all databases.|
+|_db -r_ , _db --remove_|Remove all tables from database.|
+|_db -ra_ , _db --remove-all_|Remove all tables from all databases.|
+|_db -m_ , _db --migration_|Apply migrations on database.|
+|_db -ma_ , _db --migration-all_|Apply migrations on all databases.|
+|_del -p_ , _del --project_|Delete a project from config.|
+|_del -s_ , _del --startup_|Delete deploy.sh from startup by linux user name.|
+|_del -a_ , _del --alias_|Delete alias from .bashrc.|
 |_exit_|Close this application safely.|
-|_get -u_|Get user name.|
+|_get -u_ , _get --user_|Get user name.|
 |_live_|Open the live screen to watch all projects.|
-|_log -sa_|Show all projects daily logs.|
-|_log -s_|Show daily logs of project/projects.|
-|_log -r_|Delete all logs of a project.|
-|_log -ra_|Delete logs of all projects.|
-|_mon_|Open the monitor to watch a project.|
-|_pr -s_|Show projects status.|
-|_pr -r_|Restart project.|
-|_pr -ra_|Restart all projects.|
-|_pr -k_|Kill project.|
-|_pr -ka_|Kill all projects.|
-|_set -c_|Set config file.|
-|_set -u_|Set user name.|
-|_show -c_|Show config file.|
-|_sleep -s_|Thread sleep as second.|
-|_sleep -m_|Thread sleep as minute.|
-|_sleep -h_|Thread sleep as hour.|
+|_log -sa_ , _log --show-all_|Show all projects daily logs.|
+|_log -s_ , _log --show_|Show daily logs of project/projects.|
+|_log -r_ , _log --remove_|Remove all logs of a project.|
+|_log -ra_ , _log --remove-all_|Remove logs of all projects.|
+|_mon_ , _monitor_|Open the monitor to watch a project.|
+|_pr -s_ , _pr --status_|Show projects status.|
+|_pr -r_ , _pr --restart_|Restart project.|
+|_pr -ra_ , _pr --restart-all_|Restart all projects.|
+|_pr -k_ , _pr --kill_|Kill project.|
+|_pr -ka_ , _pr --kill-all_|Kill all projects.|
+|_set -c_ , _set --config_|Set config file.|
+|_set -u_ , _set --user_|Set user name.|
+|_show -c_ , _show --config_|Show config file.|
+|_sleep -s_ , _sleep --second_|Thread sleep as second.|
+|_sleep -m_ , _sleep --minute_|Thread sleep as minute.|
+|_sleep -h_ , _sleep --hour_|Thread sleep as hour.|
 
 ## Description of Commands
 
