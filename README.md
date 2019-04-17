@@ -96,12 +96,14 @@
 
 ## Description of Commands
 
-### add -p
+### add -p , add --project
  Add a new project to config. For instance, you installed this project to your linux os and you want to add new project on anywhere. At this time, you should use this command for it.
  
 **Schema**
 ```bash
 $ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
+# OR
+$ depmk add --project "<project_name>" "<command_name>" "<command arguments>"
 ```
 
 <div>
@@ -112,7 +114,7 @@ $ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
  
   We have to say that, project_name isn't at config.json until you run this command. Because this command write your project name as json to config.json, and if it is repeated,you will get an error from the project saying "**Project already exist!**" So you shouldn't worry about this command, because you can delete it after adding.
  
-### add -s
+### add -s , add --startup
   If you want that it will be started on reboot, you must run this command. Thus, if your linux os is closed and then opened, your applications will be started auto by **depmk**.
   
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
@@ -120,11 +122,15 @@ $ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
 **Schema 1**
 ```bash
 $ dotnet run add -s "<linux_user_name>"
+# OR
+$ dotnet run add --startup "<linux_user_name>"
 ```
 
 **Schema 2**
 ```bash
 $ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add -s "<linux_user_name>"
+# OR
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add --startup "<linux_user_name>"
 ```
 
 <div>
@@ -135,13 +141,15 @@ $ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add -s "<linux_user
 
  You may get an error saying "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
  
-### add -a
+### add -a , add --alias
  
  Actually, this is the most important thing in this project's commands. Why am I saying this? Because you have to run this command to use **depmk** command in bash. This command will add the **depmk** to _.bashrc_ as alias to the end line and reload on your current terminal to enable run. It also build the project on release mode to run last version of codes. It means if you change anything on this project, you have to run either this command or **install.sh**.
   
 **Schema**
 ```bash
 $ depmk add -a
+# OR
+$ depmk add --alias
 ```
 
 <div>
@@ -152,26 +160,30 @@ $ depmk add -a
  
  You only need a permission that you can change the _.bashrc_ file. You don't need **sudo** for this situation.
   
-### alog -sa
+### alog -sa , alog --show-all
   
  To see all projects' agent logs, you use this command. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you noticed that your project is very slow while running in the background. At this moment, you can get agent logs to see cpu and ram via this command for all projects.
    
 **Schema**
 ```bash
 $ depmk alog -sa
+# OR
+$ depmk alog --show-all
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/alog-sa.gif?raw=true" />
 </div>
  
-### alog -s
+### alog -s , alog --show
   
  To see a project's agent logs, you use this command. What does it mean? For instance, you build this project on your linux os and close the terminal or close the ssh. But you noticed that your project is very slow while running in the background.. At this moment, you can get agent logs to see cpu and ram via this command for a project.
    
 **Schema**
 ```bash
 $ depmk alog -s "<project_name>"
+# OR
+$ depmk alog --show "<project_name>"
 ```
 
 <div>
@@ -204,20 +216,22 @@ $ depmk cwd
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/cwd.gif?raw=true" />
 </div>
  
-### del -p
+### del -p , del --project
   
  To delete a project from the config, you use this command..
    
 **Schema**
 ```bash
 $ depmk del -p "<project_name>"
+# OR
+$ depmk del --project "<project_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/del-p.gif?raw=true" />
 </div>
  
-### del -s
+### del -s , del --startup
   
  To delete from startup by linux username, you can use this command.
    
@@ -226,11 +240,15 @@ $ depmk del -p "<project_name>"
 **Schema 1**
 ```bash
 $ dotnet run del -s "<linux_user_name>"
+# OR
+$ dotnet run del --startup "<linux_user_name>"
 ```
 
 **Schema 2**
 ```bash
 $ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del -s "<linux_user_name>"
+# OR
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del --startup "<linux_user_name>"
 ```
 
 <div>
@@ -241,13 +259,15 @@ $ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del -s "<linux_user
 
  You may get an error saying "_You don't have permission for this operation_" from linux. You should use **sudo** to fix it. If you wonder _why do I have to use sudo?_, we are writing to **/etc/crontab** files that startup shell scripts to run this project via your linux user.
  
-### del -a
+### del -a , del --alias
   
  To delete **depmk** alias from _.bashrc_, you can use this command.
    
 **Schema**
 ```bash
 $ depmk del -a
+# OR
+$ depmk del --alias
 ```
 
 <div>
@@ -271,14 +291,17 @@ $ depmk exit
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/exit.gif?raw=true" />
 </div>
   
-### set -u / get -u
+### set -u , set --user / get -u , get --user
  
  Sometimes you have different project's paths. For these paths, you can use username. If you closely review config.json, you can see default on commands. You can add more usernames there. But if you do it, you must use **set -u** command to catch this data. **get -u** command only shows _What is the current username?_.
  
 **Schema**
 ```bash
 $ depmk set -u "<user_name>"
-depmk get -u
+$ depmk get -u
+# OR
+$ depmk set --user "<user_name>"
+$ depmk get --user
 ```
 
 <div>
@@ -302,157 +325,180 @@ $ depmk live
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/live.gif?raw=true" />
 </div>
   
-### log -sa
+### log -sa , log --show-all
   
  To show all projects' daily logs data, you can use this command. If you want to see previous days' logs, you have to open on project directory that "dmuka2.CS.Deploy/Log". You can get logs of all time from there.
    
 **Schema**
 ```bash
 $ depmk log -sa
+# OR
+$ depmk log --show-all
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-sa.gif?raw=true" />
 </div>
   
-### log -s
+### log -s , log --show
   
  To show all projects' daily logs data, this command is available. If you want to see previous days' logs, you have to open on project directory that "dmuka2.CS.Deploy/Log". You can get logs of all time from there.
   
 **Schema**
 ```bash
 $ depmk log -s "<project_name>"
+# OR
+$ depmk log --show "<project_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-s.gif?raw=true" />
 </div>
  
-### log -ra
+### log -ra , log --remove-all
   
  To delete all logs with agent logs, use this command.
   
 **Schema**
 ```bash
 $ depmk log -ra
+# OR
+$ depmk log --remove-all
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-ra.gif?raw=true" />
 </div>
  
-### log -r
+### log -r , log --remove
   
  To delete a project's logs with agent logs, this command is available.
   
 **Schema**
 ```bash
 $ depmk log -r "<project_name>"
+# OR
+$ depmk log --remove "<project_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/log-r.gif?raw=true" />
 </div>
  
-### mon
+### mon , monitor
   
  To show a project's live cpu and ram on graphics, you can use this commmand.
   
 **Schema**
 ```bash
 $ depmk mon "<project_name>"
+# OR
+$ depmk monitor "<project_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/mon.gif?raw=true" />
 </div>
   
-### pr -s
+### pr -s , pr --status
   
  To show all projects' status/cpu/ram data, you can use this command.
    
 **Schema**
 ```bash
 $ depmk pr -s
+# OR
+$ depmk pr --status
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-s.gif?raw=true" />
 </div>
   
-### pr -ra
+### pr -ra , pr --restart-all
   
  To restart all projects, use this command.
    
 **Schema**
 ```bash
 $ depmk pr -ra
+# OR
+$ depmk pr --restart-all
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-ra.gif?raw=true" />
 </div>
  
-### pr -r
+### pr -r , pr --restart
   
  To restart a project, this command is available.
    
 **Schema**
 ```bash
 $ depmk pr -r "<project_name>"
+# OR
+$ depmk pr --restart "<project_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-r.gif?raw=true" />
 </div>
  
-### pr -ka
+### pr -ka , pr --kill-all
   
  To kill all projects, you can use this command.
    
 **Schema**
 ```bash
 $ depmk pr -ka
+# OR
+$ depmk pr --kill-all
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-ka.gif?raw=true" />
 </div>
  
-### pr -k
+### pr -k , pr --kill
   
  To kill a project, use this command.
    
 **Schema**
 ```bash
 $ depmk pr -k "<project_name>"
+# OR
+$ depmk pr --kill "<project_name>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/pr-k.gif?raw=true" />
 </div>
 
-### set -c
+### set -c , set --config
   
  To set new config by file path on current directory, this command is available.
    
 **Schema**
 ```bash
 $ depmk set -c "<file_path>"
+# OR
+$ depmk set --config "<file_path>"
 ```
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/set-c.gif?raw=true" />
 </div>
   
-### show -c
+### show -c , show --config
   
  To show config file, use this command.
-   
 
 **Schema**
 ```bash
 $ depmk show -c
+# OR
+$ depmk show --config
 ```
 
 <div>
