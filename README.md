@@ -144,6 +144,8 @@ $ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add --startup "<lin
 ### add -a , add --alias
  
  Actually, this is the most important thing in this project's commands. Why am I saying this? Because you have to run this command to use **depmk** command in bash. This command will add the **depmk** to _.bashrc_ as alias to the end line and reload on your current terminal to enable run. It also build the project on release mode to run last version of codes. It means if you change anything on this project, you have to run either this command or **install.sh**.
+
+> You can also use this command to update your project by the source code of project.
   
 **Schema**
 ```bash
