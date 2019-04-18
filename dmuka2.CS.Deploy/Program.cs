@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -1305,8 +1305,6 @@ namespace dmuka2.CS.Deploy
 							ConfigHelper.SetUserName(userName);
 							var mainProcess = ConfigHelper.GetProjectCommands(projectName).Where(o => o.main).FirstOrDefault();
 
-							string processId = "";
-
 							var previousProcessId = ProcessSaveHelper.Get(projectName);
 							if (previousProcessId != "")
 								ShellHelper.Run(
@@ -1321,24 +1319,11 @@ namespace dmuka2.CS.Deploy
 								mainProcess.path,
 								mainProcess.name + " " + mainProcess.arguments, true, true, callbackOutput: (process, text) =>
 								{
-									if (processId == "")
+									AgentHelper.AddToQueue(() =>
 									{
-										processId = process.Id.ToString();
-										ProcessSaveHelper.Set(projectName, processId);
-
-										AgentHelper.AddToQueue(() =>
-										{
-											AgentHelper.OnProcessStart(projectName);
-										});
-									}
-									else
-									{
-										AgentHelper.AddToQueue(() =>
-										{
-											AgentHelper.OnLog(projectName, false, text);
-										});
-										LogHelper.Write(projectName, text);
-									}
+										AgentHelper.OnLog(projectName, false, text);
+									});
+									LogHelper.Write(projectName, text);
 								}, callbackError: (process, text) =>
 								{
 									AgentHelper.AddToQueue(() =>
@@ -1346,7 +1331,15 @@ namespace dmuka2.CS.Deploy
 										AgentHelper.OnLog(projectName, true, text);
 									});
 									LogHelper.Write(projectName, text);
-								}, useShell: false);
+								}, useShell: false, callbackStarted: (process) =>
+								{
+									ProcessSaveHelper.Set(projectName, process.Id.ToString());
+
+									AgentHelper.AddToQueue(() =>
+									{
+										AgentHelper.OnProcessStart(projectName);
+									});
+								});
 
 							existReturnArg = true;
 							AgentHelper.StopTheQueue();
