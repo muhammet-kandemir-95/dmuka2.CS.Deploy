@@ -5,7 +5,7 @@
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
 </div>
 
-**VERSION 1.0.0.4**
+**VERSION 1.0.0.5**
 
 ## What is DEPMK?
  This application helps you to manage your applications working on your linux os. Also, you can see text log which is given by your applications. Thus, when you connect to your linux system via ssh or other ways, you can get what happened on your applications. 
