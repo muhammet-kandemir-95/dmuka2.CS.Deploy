@@ -1314,32 +1314,53 @@ namespace dmuka2.CS.Deploy
 									true);
 
 							AgentHelper.StartTheQueue();
+							AgentHelper.AddToQueue(() =>
+							{
+								var text = "Project is being opened...";
+								AgentHelper.OnLog(projectName, false, text);
+								LogHelper.Write(projectName, text);
+							});
 
-							ShellHelper.Run(
-								mainProcess.path,
-								mainProcess.name + " " + mainProcess.arguments, true, true, callbackOutput: (process, text) =>
-								{
-									AgentHelper.AddToQueue(() =>
+							try
+							{
+								ShellHelper.Run(
+									mainProcess.path,
+									mainProcess.name + " " + mainProcess.arguments, true, true, callbackOutput: (process, text) =>
 									{
-										AgentHelper.OnLog(projectName, false, text);
-									});
-									LogHelper.Write(projectName, text);
-								}, callbackError: (process, text) =>
-								{
-									AgentHelper.AddToQueue(() =>
+										AgentHelper.AddToQueue(() =>
+										{
+											AgentHelper.OnLog(projectName, false, text);
+										});
+										LogHelper.Write(projectName, text);
+									}, callbackError: (process, text) =>
 									{
-										AgentHelper.OnLog(projectName, true, text);
-									});
-									LogHelper.Write(projectName, text);
-								}, useShell: false, callbackStarted: (process) =>
-								{
-									ProcessSaveHelper.Set(projectName, process.Id.ToString());
+										AgentHelper.AddToQueue(() =>
+										{
+											AgentHelper.OnLog(projectName, true, text);
+										});
+										LogHelper.Write(projectName, text);
+									}, useShell: false, callbackStarted: (process) =>
+									{
+										var text = "Project just has been opened.";
+										ProcessSaveHelper.Set(projectName, process.Id.ToString());
 
-									AgentHelper.AddToQueue(() =>
-									{
-										AgentHelper.OnProcessStart(projectName);
+										AgentHelper.AddToQueue(() =>
+										{
+											AgentHelper.OnLog(projectName, false, text);
+										});
+										AgentHelper.AddToQueue(() =>
+										{
+											AgentHelper.OnProcessStart(projectName);
+										});
+										LogHelper.Write(projectName, text);
 									});
-								});
+							}
+							catch (System.Exception ex)
+							{
+								var text = ex.ToString();
+								AgentHelper.OnLog(projectName, true, text);
+								LogHelper.Write(projectName, text);
+							}
 
 							existReturnArg = true;
 							AgentHelper.StopTheQueue();
