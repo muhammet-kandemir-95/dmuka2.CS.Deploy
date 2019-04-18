@@ -9,7 +9,7 @@
 
 > **Version Schema**
 > 
-> "_Changes Algorithms of Programs_"."_Fixed Important Bug_"."_Added New Command_"."_Fixed Bug or Improved Some Features_"
+> "_To Change the Algorithms of Programs_"."_To Fix Important Bug_"."_To Add New Command_"."_To Fix Bug or To Improve Some Features_"
 
 ## What is DEPMK?
  This application helps you to manage your applications working on your linux os. Also, you can see text log which is given by your applications. Thus, when you connect to your linux system via ssh or other ways, you can get what happened on your applications. 
