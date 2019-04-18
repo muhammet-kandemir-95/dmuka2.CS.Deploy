@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -24,7 +24,7 @@ namespace dmuka2.CS.Deploy
 		/// <param name="callbackOutput">Callback output event.</param>
 		/// <param name="callbackError">Callback error event.</param>
 		/// <param name="useShell">If this value is false, command will be divided according to first space and then find file name and arguments and then it will work without shell.</param>
-		public static Process Run(string workingDirectory, string command, bool log, bool wait, Action<Process, string> callbackOutput = null, Action<Process, string> callbackError = null, bool useShell = true)
+		public static Process Run(string workingDirectory, string command, bool log, bool wait, Action<Process, string> callbackOutput = null, Action<Process, string> callbackError = null, bool useShell = true, Action<Process> callbackStarted = null)
 		{
 			callbackOutput = callbackOutput ?? ((a, b) => { });
 			callbackError = callbackError ?? ((a, b) => { });
@@ -74,6 +74,9 @@ namespace dmuka2.CS.Deploy
 			process.OutputDataReceived += (a, b) => callbackOutput(process, b.Data ?? "");
 			process.ErrorDataReceived += (a, b) => callbackError(process, b.Data ?? "");
 			process.Start();
+
+			if (callbackStarted != null)
+				callbackStarted(process);
 
 			if (log == true)
 			{
