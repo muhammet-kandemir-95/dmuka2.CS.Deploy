@@ -330,7 +330,7 @@ ASALocalRun/
 .mfractor/
 
 # dmuka2.CS.Deploy Processes
-Processes/*.txt
+dmuka2.CS.Deploy/Processes/*.txt
 
 # dmuka2.CS.Deploy Migrations
-Database/Migration/*
+dmuka2.CS.Deploy/Database/Migration/*
