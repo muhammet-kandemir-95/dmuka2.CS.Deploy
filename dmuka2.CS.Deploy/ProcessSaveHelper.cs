@@ -16,6 +16,8 @@ namespace dmuka2.CS.Deploy
         static ProcessSaveHelper()
         {
             __processesFilePath = Path.Combine(Program.CurrentDirectory, "Processes");
+			if (Directory.Exists(__processesFilePath) == false)
+				Directory.CreateDirectory(__processesFilePath);
         }
         #endregion
 

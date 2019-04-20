@@ -95,12 +95,26 @@ namespace dmuka2.CS.Deploy
 		/// </summary>
 		/// <param name="name">Database name in config.json.</param>
 		/// <returns></returns>
-		public static (string type, string connectionString) GetDatabase(string name)
+		public static (string type, string connectionString) GetDatabaseConnectionString(string name)
 		{
 			string type = Config.SelectToken("database." + name + ".type").Value<string>();
 			string connectionString = Config.SelectToken("database." + name + ".connection_string." + UserName).Value<string>();
 
 			return (type: type, connectionString: connectionString);
+		}
+
+		/// <summary>
+		/// This method will return a config data.
+		/// <para></para>
+		/// Also, it is working according to "database.&lt;name&gt;" json data in config.json.
+		/// <para></para>
+		/// Also, you will get "migration_path" by user name.
+		/// </summary>
+		/// <param name="name">Database name in config.json.</param>
+		/// <returns></returns>
+		public static string GetDatabaseMigrationPath(string name)
+		{
+			return Path.GetFullPath(Path.Combine(Program.CurrentDirectory, Config.SelectToken("database." + name + ".migration_path." + UserName).Value<string>()));
 		}
 
 		/// <summary>

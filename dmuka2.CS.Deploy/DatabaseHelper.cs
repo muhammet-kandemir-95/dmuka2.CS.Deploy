@@ -1,4 +1,6 @@
 ﻿using Npgsql;
+using MySql;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,14 +19,8 @@ namespace dmuka2.CS.Deploy
         #region Variables
         #region Database Types
         public const string Postgres = "postgres";
+        public const string MySql = "mysql";
         #endregion
-
-        /// <summary>
-        /// This means that "Database/Migration".
-        /// <para></para>
-        /// This will be used to get new migrations.
-        /// </summary>
-        static string __migrationDirectoryPath = null;
 
         /// <summary>
         /// This data store queries which are in "Database/Command/&lt;database_type&gt;/&lt;query_name&gt;.sql" folder.
@@ -48,7 +44,6 @@ namespace dmuka2.CS.Deploy
             // We are reading the config on static constructor.
             // It's mean that if you change anything on the folder, you must restart this application.
             var currentDirectory = Program.CurrentDirectory;
-            __migrationDirectoryPath = Path.Combine(currentDirectory, "Database", "Migration");
             var databaseCommandDirectory = Path.Combine(currentDirectory, "Database", "Command");
             var databasesCommandNameAsDirectory = Directory.GetDirectories(databaseCommandDirectory);
             foreach (var databaseCommandNameAsDirectory in databasesCommandNameAsDirectory)
@@ -71,13 +66,23 @@ namespace dmuka2.CS.Deploy
         /// <param name="databaseName">Which is database name in config.json?</param>
         public static void TryToConnect(string databaseName)
         {
-            var databaseConfig = ConfigHelper.GetDatabase(databaseName);
+            var databaseConnection = ConfigHelper.GetDatabaseConnectionString(databaseName);
 
-            switch (databaseConfig.type)
+            switch (databaseConnection.type)
             {
                 case Postgres:
                     {
-                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConfig.connectionString))
+                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            connection.Close();
+                        }
+                    }
+                    break;
+                case MySql:
+                    {
+                        using (MySqlConnection connection = new MySqlConnection(databaseConnection.connectionString))
                         {
                             connection.Open();
 
@@ -86,7 +91,7 @@ namespace dmuka2.CS.Deploy
                     }
                     break;
                 default:
-                    throw new Exception(databaseConfig.type + " was not supported by deploy!");
+                    throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
         }
 
@@ -96,16 +101,28 @@ namespace dmuka2.CS.Deploy
         /// <param name="databaseName">Which is database name in config.json?</param>
         public static void RemoveAllTables(string databaseName)
         {
-            var databaseConfig = ConfigHelper.GetDatabase(databaseName);
+            var databaseConnection = ConfigHelper.GetDatabaseConnectionString(databaseName);
 
-            switch (databaseConfig.type)
+            switch (databaseConnection.type)
             {
                 case Postgres:
                     {
-                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConfig.connectionString))
+                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConnection.connectionString))
                         {
                             connection.Open();
-                            using (NpgsqlCommand command = new NpgsqlCommand(__queries[databaseConfig.type]["RemoveAllTables"], connection))
+                            using (NpgsqlCommand command = new NpgsqlCommand(__queries[databaseConnection.type]["RemoveAllTables"], connection))
+                                command.ExecuteNonQuery();
+
+                            connection.Close();
+                        }
+                    }
+                    break;
+                case MySql:
+                    {
+                        using (MySqlConnection connection = new MySqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+                            using (MySqlCommand command = new MySqlCommand(__queries[databaseConnection.type]["RemoveAllTables"], connection))
                                 command.ExecuteNonQuery();
 
                             connection.Close();
@@ -113,7 +130,7 @@ namespace dmuka2.CS.Deploy
                     }
                     break;
                 default:
-                    throw new Exception(databaseConfig.type + " was not supported by deploy!");
+                    throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
         }
 
@@ -126,25 +143,43 @@ namespace dmuka2.CS.Deploy
         /// <param name="databaseName">Which is database name in config.json?</param>
         static void createMigrationTable(string databaseName)
         {
-            var databaseConfig = ConfigHelper.GetDatabase(databaseName);
+            var databaseConnection = ConfigHelper.GetDatabaseConnectionString(databaseName);
 
-            switch (databaseConfig.type)
+            switch (databaseConnection.type)
             {
                 case Postgres:
                     {
-                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConfig.connectionString))
+                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConnection.connectionString))
                         {
                             connection.Open();
 
-                            using (NpgsqlCommand command = new NpgsqlCommand(__queries[databaseConfig.type]["CreateMigrationTable"], connection))
+                            using (NpgsqlCommand command = new NpgsqlCommand(__queries[databaseConnection.type]["CreateMigrationTable"], connection))
                                 command.ExecuteNonQuery();
 
                             connection.Close();
                         }
                     }
                     break;
+                case MySql:
+                    {
+                        using (MySqlConnection connection = new MySqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            try
+							{
+								using (MySqlCommand command = new MySqlCommand(__queries[databaseConnection.type]["CreateMigrationTable"], connection))
+                                	command.ExecuteNonQuery();
+							}
+							catch
+							{ }
+
+                            connection.Close();
+                        }
+                    }
+                    break;
                 default:
-                    throw new Exception(databaseConfig.type + " was not supported by deploy!");
+                    throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
         }
 
@@ -157,14 +192,14 @@ namespace dmuka2.CS.Deploy
         /// <returns></returns>
         static string[] getAllMigrationsFromDatabase(string databaseName)
         {
-            var databaseConfig = ConfigHelper.GetDatabase(databaseName);
+            var databaseConnection = ConfigHelper.GetDatabaseConnectionString(databaseName);
             List<string> migrationFileNames = new List<string>();
 
-            switch (databaseConfig.type)
+            switch (databaseConnection.type)
             {
                 case Postgres:
                     {
-                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConfig.connectionString))
+                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConnection.connectionString))
                         {
                             connection.Open();
 
@@ -177,8 +212,23 @@ namespace dmuka2.CS.Deploy
                         }
                     }
                     break;
+                case MySql:
+                    {
+                        using (MySqlConnection connection = new MySqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            using (MySqlCommand migrationReadCommand = new MySqlCommand("SELECT file_name FROM __migrations;", connection))
+                            using (MySqlDataReader migrationReadReader = migrationReadCommand.ExecuteReader())
+                                while (migrationReadReader.Read())
+                                    migrationFileNames.Add(migrationReadReader[0].ToString());
+
+                            connection.Close();
+                        }
+                    }
+                    break;
                 default:
-                    throw new Exception(databaseConfig.type + " was not supported by deploy!");
+                    throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
 
             var resultAsArray = migrationFileNames.ToArray();
@@ -195,11 +245,11 @@ namespace dmuka2.CS.Deploy
         /// <returns></returns>
         static string[] getAllMigrationsFromDisk(string databaseName)
         {
-            var databaseMigrationDirectoryPath = Path.Combine(__migrationDirectoryPath, databaseName);
+            var databaseMigrationDirectoryPath = ConfigHelper.GetDatabaseMigrationPath(databaseName);
             if (Directory.Exists(databaseMigrationDirectoryPath) == false)
                 return new string[0];
 
-            return Directory.GetFiles(Path.Combine(__migrationDirectoryPath, databaseName)).Select(o => Path.GetFileName(o)).ToArray();
+            return Directory.GetFiles(databaseMigrationDirectoryPath).Select(o => Path.GetFileName(o)).ToArray();
         }
 
         /// <summary>
@@ -209,19 +259,21 @@ namespace dmuka2.CS.Deploy
         /// <param name="fileName">Which is migration name in migration directory?</param>
         static void runMigration(string databaseName, string fileName)
         {
-            var databaseConfig = ConfigHelper.GetDatabase(databaseName);
-            switch (databaseConfig.type)
+            var databaseConnection = ConfigHelper.GetDatabaseConnectionString(databaseName);
+            var databaseMigrationDirectoryPath = ConfigHelper.GetDatabaseMigrationPath(databaseName);
+
+            switch (databaseConnection.type)
             {
                 case Postgres:
                     {
-                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConfig.connectionString))
+                        using (NpgsqlConnection connection = new NpgsqlConnection(databaseConnection.connectionString))
                         {
                             connection.Open();
 
-                            using (NpgsqlCommand applyMigrationCommand = new NpgsqlCommand(File.ReadAllText(Path.Combine(__migrationDirectoryPath, databaseName, fileName), Encoding.UTF8), connection))
+                            using (NpgsqlCommand applyMigrationCommand = new NpgsqlCommand(File.ReadAllText(Path.Combine(databaseMigrationDirectoryPath, fileName), Encoding.UTF8), connection))
                                 applyMigrationCommand.ExecuteNonQuery();
 
-                            using (NpgsqlCommand addMigrationCommand = new NpgsqlCommand(__queries[databaseConfig.type]["InsertAMigration"], connection))
+                            using (NpgsqlCommand addMigrationCommand = new NpgsqlCommand(__queries[databaseConnection.type]["InsertAMigration"], connection))
                             {
                                 addMigrationCommand.Parameters.Add(new NpgsqlParameter("@file_name", fileName));
                                 addMigrationCommand.ExecuteNonQuery();
@@ -231,8 +283,27 @@ namespace dmuka2.CS.Deploy
                         }
                     }
                     break;
+                case MySql:
+                    {
+                        using (MySqlConnection connection = new MySqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            using (MySqlCommand applyMigrationCommand = new MySqlCommand(File.ReadAllText(Path.Combine(databaseMigrationDirectoryPath, fileName), Encoding.UTF8), connection))
+                                applyMigrationCommand.ExecuteNonQuery();
+
+                            using (MySqlCommand addMigrationCommand = new MySqlCommand(__queries[databaseConnection.type]["InsertAMigration"], connection))
+                            {
+                                addMigrationCommand.Parameters.Add(new MySqlParameter("@file_name", fileName));
+                                addMigrationCommand.ExecuteNonQuery();
+                            }
+
+                            connection.Close();
+                        }
+                    }
+                    break;
                 default:
-                    throw new Exception(databaseConfig.type + " was not supported by deploy!");
+                    throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
         }
 
@@ -252,10 +323,8 @@ namespace dmuka2.CS.Deploy
             var differentMigrations = diskMigrations
                             .Where(o => databaseMigrations.Any(a => a == o) == false)
                             .ToArray();
-
-            var databaseMigrationDirectoryPath = Path.Combine(__migrationDirectoryPath, databaseName);
             
-            foreach (var migrationFileName in differentMigrations)
+            foreach (var migrationFileName in differentMigrations.OrderBy(o => Path.GetFileNameWithoutExtension(o)))
             {
                 callbackMigrationBeforeRun(migrationFileName);
                 runMigration(databaseName, migrationFileName);

@@ -331,6 +331,3 @@ ASALocalRun/
 
 # dmuka2.CS.Deploy Processes
 dmuka2.CS.Deploy/Processes/*.txt
-
-# dmuka2.CS.Deploy Migrations
-dmuka2.CS.Deploy/Database/Migration/*

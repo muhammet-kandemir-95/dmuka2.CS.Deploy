@@ -1,11 +1,23 @@
 ﻿{
 	"database": {
-	  "Test": {
-		"type": "postgres",
-		"connection_string": {
-		  "default": "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=Test;"
+		"test_postgres": {
+		  "type": "postgres",
+		  "connection_string": {
+			"default": "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=Test;"
+		  },
+		  "migration_path": {
+			  "default": "./Database/Migration/test_postgres"
+		  }
+		},
+		"test_mysql": {
+		  "type": "mysql",
+		  "connection_string": {
+			"default": "Server=localhost;Database=Test;Uid=root;Pwd=1;Allow User Variables=True;"
+		  },
+		  "migration_path": {
+			  "default": "./Database/Migration/test_mysql"
+		  }
 		}
-	  }
 	},
 	"project": {
 	  "test_consoleapp": {
