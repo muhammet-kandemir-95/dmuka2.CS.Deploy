@@ -16,7 +16,9 @@
 
  When you want to see how much cpu and ram your applications are using, default codes write it as agent log to text files. But you can use it to other ui systems(We haven't made it yet) like pm2+ with source code. It is very simple.
  
- Our programs sometimes do not work as well as planned andwe need to see what they are doing at that moment and what causes it. This project ensures live cpu and ram datas via bash terminal with colors to help you understand easily. You don't need any tools to use it.
+ Our programs sometimes do not work as well as planned and we need to see what they are doing at that moment and what causes it. This project ensures live cpu and ram datas via bash terminal with colors to help you understand easily. You don't need any tools to use it.
+ 
+  You can manage your migrations of databases(Postgres, MySql, SQL Server) using this application. Also, if you want to check that _Is database working?_ or _Can I connect to the database?_, you can these with **db** commands.
 
 ## How do I install?
 
@@ -224,7 +226,7 @@ $ depmk cwd
  
 ### db -c , db --connect
  
- To connect a database, you use this command. It only check that can we connect the database.
+ To connect to a database, you use this command. It only check that can we connect to the database.
   
 **Schema**
 ```bash
@@ -239,7 +241,7 @@ $ depmk db --connect "<database_name>"
  
 ### db -ca , db --connect-all
  
- To connect all databases, you use this command. It only check that can we connect the databases.
+ To connect to all databases, you use this command. It only check that can we connect to the databases.
   
 **Schema**
 ```bash
@@ -605,17 +607,36 @@ $ depmk show --config
 
 ```js
 {
-  "database": {
-    // For postgres
-    "TestDb": {
-      "type": "postgres",
-      "connection_string": {
-        "default": "User ID=postgres;Password=123;Host=localhost;Port=5432;Database=TestDb;"
-      }
-    }
-  },
+	"database": {
+		"test_postgres": {
+		  "type": "postgres",
+		  "connection_string": {
+			"default": "User ID=postgres;Password=1;Host=localhost;Port=5432;Database=Test;"
+		  },
+		  "migration_path": {
+			  "default": "./Database/Migration/test_postgres"
+		  }
+		},
+		"test_mysql": {
+		  "type": "mysql",
+		  "connection_string": {
+			"default": "Server=localhost;Database=Test;Uid=root;Pwd=1;Allow User Variables=True;"
+		  },
+		  "migration_path": {
+			  "default": "./Database/Migration/test_mysql"
+		  }
+		},
+		"test_mssql": {
+		  "type": "mssql",
+		  "connection_string": {
+			"default": "Server=localhost\\SQLEXPRESS;Database=Test;User Id=sa;Password=1;"
+		  },
+		  "migration_path": {
+			  "default": "./Database/Migration/test_mssql"
+		  }
+		}
+	},
   "project": {
-    // For dotnet core
     "test_consoleapp": {
       "commands": [
         {
@@ -644,7 +665,6 @@ $ depmk show --config
         }
       ]
     },
-    // For nodejs
     "test_nodejs": {
       "commands": [
         {
