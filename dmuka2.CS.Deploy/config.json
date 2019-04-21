@@ -17,6 +17,15 @@
 		  "migration_path": {
 			  "default": "./Database/Migration/test_mysql"
 		  }
+		},
+		"test_mssql": {
+		  "type": "mssql",
+		  "connection_string": {
+			"default": "Server=localhost\\SQLEXPRESS;Database=Test;User Id=sa;Password=1;"
+		  },
+		  "migration_path": {
+			  "default": "./Database/Migration/test_mssql"
+		  }
 		}
 	},
 	"project": {
