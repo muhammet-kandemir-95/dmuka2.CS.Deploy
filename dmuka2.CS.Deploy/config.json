@@ -21,7 +21,7 @@
 		"test_mssql": {
 		  "type": "mssql",
 		  "connection_string": {
-			"default": "Server=localhost;Database=Test;User Id=sa;Password=1;"
+			"default": "Server=localhost\\SQLEXPRESS;Database=Test;User Id=SA;Password=1;"
 		  },
 		  "migration_path": {
 			  "default": "./Database/Migration/test_mssql"

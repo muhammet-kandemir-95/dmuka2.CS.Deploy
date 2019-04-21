@@ -1283,16 +1283,6 @@ namespace dmuka2.CS.Deploy
 				var arg = args[argIndex];
 				switch (arg)
 				{
-					case "--cmd":
-					case "-c":
-						{
-							checkIncorrectArguments();
-
-							string commandName = args[argIndex + 1];
-							argIndex++;
-							runCommand(commandName);
-						}
-						break;
 					case "--background":
 						{
 							checkIncorrectArguments();

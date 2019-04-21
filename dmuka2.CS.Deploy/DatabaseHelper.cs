@@ -271,7 +271,7 @@ namespace dmuka2.CS.Deploy
                             connection.Open();
 
                             using (SqlCommand migrationReadCommand = new SqlCommand(__queries[databaseConnection.type]["SelectMigrations"], connection))
-                            using (MySqlDataReader migrationReadReader = migrationReadCommand.ExecuteReader())
+                            using (SqlDataReader migrationReadReader = migrationReadCommand.ExecuteReader())
                                 while (migrationReadReader.Read())
                                     migrationFileNames.Add(migrationReadReader[0].ToString());
 
