@@ -4,7 +4,7 @@
   <br/>
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
   <br/>
-  <h2>VERSION 1.0.0.10</h2>
+  <h2>VERSION 1.0.0.11</h2>
 </div>
 
 > **Version Schema**
@@ -105,9 +105,9 @@
  
 **Schema**
 ```bash
-$ depmk add -p "<project_name>" "<command_name>" "<command arguments>"
+$ depmk add -p "<project_name>" "<command_name>" "<command_arguments>"
 # OR
-$ depmk add --project "<project_name>" "<command_name>" "<command arguments>"
+$ depmk add --project "<project_name>" "<command_name>" "<command_arguments>"
 ```
 
 <div>
@@ -220,6 +220,96 @@ $ depmk cwd
 
 <div>
  <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/cwd.gif?raw=true" />
+</div>
+ 
+### db -c , db --connect
+ 
+ To connect a database, you use this command. It only check that can we connect the database.
+  
+**Schema**
+```bash
+$ depmk db -c "<database_name>"
+# OR
+$ depmk db --connect "<database_name>"
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/db-c.gif?raw=true" />
+</div>
+ 
+### db -ca , db --connect-all
+ 
+ To connect all databases, you use this command. It only check that can we connect the databases.
+  
+**Schema**
+```bash
+$ depmk db -ca
+# OR
+$ depmk db --connect-all
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/db-ca.gif?raw=true" />
+</div>
+ 
+### db -r , db --remove
+ 
+ To remove all tables of a database, you use this command. You can think as clear database. But it only remove tables, doesn't change other things like trigger etc. However, you must send with an argument that "_I am sure to remove_".
+  
+**Schema**
+```bash
+$ depmk db -r "<database_name>" "I am sure to remove"
+# OR
+$ depmk db --remove "<database_name>" "I am sure to remove"
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/db-r.gif?raw=true" />
+</div>
+ 
+### db -ra , db --remove-all
+ 
+ To remove all tables of all databases, you use this command. You can think as clear database. But it only remove tables, doesn't change other things like trigger etc. However, you must send with an argument that "_I am sure to remove_".
+  
+**Schema**
+```bash
+$ depmk db -ra "I am sure to remove"
+# OR
+$ depmk db --remove-all "I am sure to remove"
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/db-ra.gif?raw=true" />
+</div>
+ 
+### db -m , db --migration
+ 
+ To commit the migrations of a database, you use this command. You can retive the path using the **config.json**. There is the migration path. But you shouldn't forget that you must save your sql migrations as file on your disk. Program works by file name. First, it gets all files from your migration path and then the file names are sorted by it. Finally, program commits them by order. While the file names are being sorted, file extension doesn't matter.
+  
+**Schema**
+```bash
+$ depmk db -m "<database_name>"
+# OR
+$ depmk db --migration "<database_name>"
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/db-m.gif?raw=true" />
+</div>
+ 
+### db -ma , db --migration-all
+ 
+ To commit the migrations of all databases, you use this command. You can retive the path using the **config.json**. There is the migration path. But you shouldn't forget that you must save your sql migrations as file on your disk. Program works by file name. First, it gets all files from your migration path and then the file names are sorted by it. Finally, program commits them by order. While the file names are being sorted, file extension doesn't matter.
+  
+**Schema**
+```bash
+$ depmk db -ma
+# OR
+$ depmk db --migration-all
+```
+
+<div>
+ <img src="https://github.com/muhammet-kandemir-95/dmuka2.CS.Deploy/blob/master/mdcontent/images/db-ma.gif?raw=true" />
 </div>
  
 ### del -p , del --project

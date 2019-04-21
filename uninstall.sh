@@ -2,7 +2,7 @@
 cd dmuka2.CS.Deploy
 
 # After that, removing alias to .bashrc via cmd.
-dotnet run --cmd "remove -a"
+dotnet run "remove -a"
 
 # Then, we are going to previous directory.
 cd ..

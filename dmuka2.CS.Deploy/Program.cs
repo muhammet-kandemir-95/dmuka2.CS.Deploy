@@ -222,14 +222,10 @@ namespace dmuka2.CS.Deploy
 
 				writeLine("[color][03,--]Run a Command/Commands Schema");
 				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <cmd2> <cmd3>...");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" -c \"<cmd2>\" -c \"<cmd3>\"...");
-				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" --cmd \"<cmd2>\" --cmd \"<cmd3>\"...");
 				writeLine();
 
 				writeLine("[color][03,--]Run a Command/Commands Schema with Parameter");
 				writeLine("[color][01,--]depmk [color][14,--]<cmd1> <parameter1> <cmd2> <parameter1> <cmd3> <parameter1>...");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"<cmd1>\" \"<parameter1>\" -c \"<cmd2>\" \"<parameter1>\" -c \"<cmd3>\" \"<parameter1>\"...");
-				writeLine("[color][01,--]depmk [color][14,--]--cmd \"<cmd1>\" \"<parameter1>\" --cmd \"<cmd2>\" \"<parameter1>\" --cmd \"<cmd3>\" \"<parameter1>\"...");
 				writeLine();
 
 				writeLine("[color][03,--]Commands List");
@@ -247,25 +243,21 @@ namespace dmuka2.CS.Deploy
 				writeLine("[color][03,--]Example 1 - Run a Command");
 				writeLine("[color][01,--]depmk [color][14,--]pr -s");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\"");
-				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -s\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 2 - Run Multiple Command");
 				writeLine("[color][01,--]depmk [color][14,--]pr -s pr -ka");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\" -c \"pr -ka\"");
-				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -s\" -c \"pr -ka\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 3 - Run a Command with Parameter");
 				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\"");
-				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -r\" \"test_consoleapp\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 4 - Run Multiple Command with Parameter");
 				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp pr -ka");
 				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
-				writeLine("[color][01,--]depmk [color][14,--]--cmd \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
 			}));
 			commands.Add(new Command("exit", "Close this application safely.", () =>
 			{
@@ -1003,6 +995,9 @@ namespace dmuka2.CS.Deploy
 					if (databaseName == "")
 						return;
 
+					if (ConfigHelper.Databases.Any(o => o == databaseName) == false)
+						throw new Exception("Was not found the database!");
+
 					DatabaseHelper.TryToConnect(databaseName);
 					successful();
 				});
@@ -1027,6 +1022,16 @@ namespace dmuka2.CS.Deploy
 					if (databaseName == "")
 						return;
 
+					if (ConfigHelper.Databases.Any(o => o == databaseName) == false)
+						throw new Exception("Was not found the database!");
+
+					string message = getLine("Write the message (I am sure to remove) = ");
+					if (message != "I am sure to remove")
+					{
+						writeLine("[color][15,--]You must be sure!");
+						return;
+					}
+
 					DatabaseHelper.RemoveAllTables(databaseName);
 					successful();
 				});
@@ -1035,15 +1040,19 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					areYouSure(() =>
+					string message = getLine("Write the message (I am sure to remove) = ");
+					if (message != "I am sure to remove")
 					{
-						foreach (var databaseName in ConfigHelper.Databases)
-						{
-							writeLine("[color][09,--]Working on [color][14,--]{0} [color][09,--]database...", databaseName);
-							DatabaseHelper.RemoveAllTables(databaseName);
-						}
-						successful();
-					});
+						writeLine("[color][15,--]You must be sure!");
+						return;
+					}
+
+					foreach (var databaseName in ConfigHelper.Databases)
+					{
+						writeLine("[color][09,--]Working on [color][14,--]{0} [color][09,--]database...", databaseName);
+						DatabaseHelper.RemoveAllTables(databaseName);
+					}
+					successful();
 				});
 			}));
 			commands.Add(new Command("db -m", "db --migration", "Apply migrations on database.", () =>
@@ -1053,6 +1062,9 @@ namespace dmuka2.CS.Deploy
 					string databaseName = getLine("Write database name = ");
 					if (databaseName == "")
 						return;
+
+					if (ConfigHelper.Databases.Any(o => o == databaseName) == false)
+						throw new Exception("Was not found the database!");
 
 					DatabaseHelper.ApplyMigration(databaseName, (migrationName) =>
 					{
