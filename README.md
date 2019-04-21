@@ -4,7 +4,7 @@
   <br/>
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
   <br/>
-  <h2>VERSION 1.0.0.7</h2>
+  <h2>VERSION 1.0.0.8</h2>
 </div>
 
 > **Version Schema**

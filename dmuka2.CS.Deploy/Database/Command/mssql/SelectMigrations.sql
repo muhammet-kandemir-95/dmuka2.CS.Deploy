@@ -1,0 +1,1 @@
+﻿SELECT file_name FROM __migrations;

@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using MySql;
 using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +21,7 @@ namespace dmuka2.CS.Deploy
         #region Database Types
         public const string Postgres = "postgres";
         public const string MySql = "mysql";
+        public const string MsSql = "mssql";
         #endregion
 
         /// <summary>
@@ -90,6 +92,16 @@ namespace dmuka2.CS.Deploy
                         }
                     }
                     break;
+                case MsSql:
+                    {
+                        using (SqlConnection connection = new SqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            connection.Close();
+                        }
+                    }
+                    break;
                 default:
                     throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
@@ -123,6 +135,18 @@ namespace dmuka2.CS.Deploy
                         {
                             connection.Open();
                             using (MySqlCommand command = new MySqlCommand(__queries[databaseConnection.type]["RemoveAllTables"], connection))
+                                command.ExecuteNonQuery();
+
+                            connection.Close();
+                        }
+                    }
+                    break;
+                case MsSql:
+                    {
+                        using (SqlConnection connection = new SqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+                            using (SqlCommand command = new SqlCommand(__queries[databaseConnection.type]["RemoveAllTables"], connection))
                                 command.ExecuteNonQuery();
 
                             connection.Close();
@@ -178,6 +202,19 @@ namespace dmuka2.CS.Deploy
                         }
                     }
                     break;
+                case MsSql:
+                    {
+                        using (SqlConnection connection = new SqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            using (SqlCommand command = new SqlCommand(__queries[databaseConnection.type]["CreateMigrationTable"], connection))
+                                command.ExecuteNonQuery();
+
+                            connection.Close();
+                        }
+                    }
+                    break;
                 default:
                     throw new Exception(databaseConnection.type + " was not supported by deploy!");
             }
@@ -203,7 +240,7 @@ namespace dmuka2.CS.Deploy
                         {
                             connection.Open();
 
-                            using (NpgsqlCommand migrationReadCommand = new NpgsqlCommand("SELECT file_name FROM public.__migrations;", connection))
+                            using (NpgsqlCommand migrationReadCommand = new NpgsqlCommand(__queries[databaseConnection.type]["SelectMigrations"], connection))
                             using (NpgsqlDataReader migrationReadReader = migrationReadCommand.ExecuteReader())
                                 while (migrationReadReader.Read())
                                     migrationFileNames.Add(migrationReadReader[0].ToString());
@@ -218,7 +255,22 @@ namespace dmuka2.CS.Deploy
                         {
                             connection.Open();
 
-                            using (MySqlCommand migrationReadCommand = new MySqlCommand("SELECT file_name FROM __migrations;", connection))
+                            using (MySqlCommand migrationReadCommand = new MySqlCommand(__queries[databaseConnection.type]["SelectMigrations"], connection))
+                            using (MySqlDataReader migrationReadReader = migrationReadCommand.ExecuteReader())
+                                while (migrationReadReader.Read())
+                                    migrationFileNames.Add(migrationReadReader[0].ToString());
+
+                            connection.Close();
+                        }
+                    }
+                    break;
+                case MsSql:
+                    {
+                        using (SqlConnection connection = new SqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            using (SqlCommand migrationReadCommand = new SqlCommand(__queries[databaseConnection.type]["SelectMigrations"], connection))
                             using (MySqlDataReader migrationReadReader = migrationReadCommand.ExecuteReader())
                                 while (migrationReadReader.Read())
                                     migrationFileNames.Add(migrationReadReader[0].ToString());
@@ -295,6 +347,25 @@ namespace dmuka2.CS.Deploy
                             using (MySqlCommand addMigrationCommand = new MySqlCommand(__queries[databaseConnection.type]["InsertAMigration"], connection))
                             {
                                 addMigrationCommand.Parameters.Add(new MySqlParameter("@file_name", fileName));
+                                addMigrationCommand.ExecuteNonQuery();
+                            }
+
+                            connection.Close();
+                        }
+                    }
+                    break;
+                case MsSql:
+                    {
+                        using (SqlConnection connection = new SqlConnection(databaseConnection.connectionString))
+                        {
+                            connection.Open();
+
+                            using (SqlCommand applyMigrationCommand = new SqlCommand(File.ReadAllText(Path.Combine(databaseMigrationDirectoryPath, fileName), Encoding.UTF8), connection))
+                                applyMigrationCommand.ExecuteNonQuery();
+
+                            using (SqlCommand addMigrationCommand = new SqlCommand(__queries[databaseConnection.type]["InsertAMigration"], connection))
+                            {
+                                addMigrationCommand.Parameters.Add(new SqlParameter("@file_name", fileName));
                                 addMigrationCommand.ExecuteNonQuery();
                             }
 
