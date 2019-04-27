@@ -690,55 +690,76 @@ namespace dmuka2.CS.Deploy
 					var ramY = ((graphHeight - 1) / 2);
 
 					char[,] graph = new char[graphHeight, graphWidth];
+					List<string> previousLines = new List<string>();
 					for (int y = 0; y < graphHeight; y++)
+					{
+						previousLines.Add("");
 						for (int x = 0; x < graphWidth; x++)
 							graph[y, x] = ' ';
+					}
 					bool projectEnable = true;
 
 					Action draw = () =>
 					{
+						string text = "";
 						for (int y = 1; y <= consoleHeight; y++)
 						{
+							string lineText = "";
 							for (int x = 1; x <= consoleWidth; x++)
 							{
 								if (exitMonitor == true)
 									return;
 
 								if (x == 1 && y == 1)
-									write("[color][01,--]┌");
+									lineText += "[color][01,-1]┌";
 								else if (x == consoleWidth && y == consoleHeight)
-									write("[color][01,--]┘");
+									lineText += "[color][01,-1]┘";
 								else if (x == consoleWidth && y == 1)
-									write("[color][01,--]┐");
+									lineText += "[color][01,-1]┐";
 								else if (x == 1 && y == consoleHeight)
-									write("[color][01,--]└");
+									lineText += "[color][01,-1]└";
 								else if (x == 1 || x == consoleWidth)
-									write("[color][01,--]│");
+									lineText += "[color][01,-1]│";
 								else if (y == 1 || y == consoleHeight)
-									write("[color][01,--]─");
+									lineText += "[color][01,-1]─";
 								else
 								{
 									char graphChar = graph[y - 2, x - 2];
 									string color = "";
 									if (y == 2 || y == ramY + 3)
-										color = projectEnable == true ? "[color][14,--]" : "[color][08,--]";
+										color = projectEnable == true ? "[color][14,-1]" : "[color][08,-1]";
 									else if (y == 3 || y == ramY + 4)
 									{
 										if (x < 6)
-											color = "[color][07,--]";
+											color = "[color][07,-1]";
 										else
-											color = "[color][11,--]";
+											color = "[color][11,-1]";
 									}
 									else if (y == ramY + 2)
-										color = "[color][01,--]";
+										color = "[color][01,-1]";
 									else if (graphChar != ' ')
 										color = "[color][--,15]";
+									else if (graphChar == ' ')
+										color = "[color][--,-1]";
 
-									write(color + graphChar);
+									lineText += color + graphChar;
 								}
 							}
-							writeLine();
+							if (y >= 2 && y <= consoleHeight - 1)
+							{
+								if (previousLines[y - 2] != lineText)
+								{
+									previousLines[y - 2] = lineText;
+									text += lineText;
+								}
+							}
+							else
+							{
+								text += lineText;
+							}
+							text += "[color][--,-1]" + Environment.NewLine;
 						}
+						write(text);
 					};
 					draw();
 
@@ -847,53 +868,72 @@ namespace dmuka2.CS.Deploy
 
 					int?[] cpuIndex = new int?[graphHeight];
 					char[,] graph = new char[graphHeight, graphWidth];
+					List<string> previousLines = new List<string>();
 					for (int y = 0; y < graphHeight; y++)
+					{
+						previousLines.Add("");
 						for (int x = 0; x < graphWidth; x++)
 							graph[y, x] = ' ';
+					}
 
 					Action draw = () =>
 					{
+						string text = "";
 						for (int y = 1; y <= consoleHeight; y++)
 						{
+							string lineText = "";
 							for (int x = 1; x <= consoleWidth; x++)
 							{
 								if (exitMonitor == true)
 									return;
 
 								if (x == 1 && y == 1)
-									write("[color][01,--]┌");
+									lineText += "[color][01,-1]┌";
 								else if (x == consoleWidth && y == consoleHeight)
-									write("[color][01,--]┘");
+									lineText += "[color][01,-1]┘";
 								else if (x == consoleWidth && y == 1)
-									write("[color][01,--]┐");
+									lineText += "[color][01,-1]┐";
 								else if (x == 1 && y == consoleHeight)
-									write("[color][01,--]└");
+									lineText += "[color][01,-1]└";
 								else if (x == 1 || x == consoleWidth)
-									write("[color][01,--]│");
+									lineText += "[color][01,-1]│";
 								else if (y == 1 || y == consoleHeight)
-									write("[color][01,--]─");
+									lineText += "[color][01,-1]─";
 								else
 								{
 									char graphChar = graph[y - 2, x - 2];
 									string color = "";
 									if (x < maxLength + 2 - 8)
-										color = "[color][14,--]";
+										color = "[color][14,-1]";
 									else if (x < maxLength + 2 && cpuIndex[y - 2] == null)
-										color = "[color][12,--]";
+										color = "[color][12,-1]";
 									else if (x < maxLength + 2 && cpuIndex[y - 2] != null)
-										color = "[color][10,--]";
+										color = "[color][10,-1]";
 									else if (cpuIndex[y - 2] == null)
-										color = "[color][08,--]";
+										color = "[color][08,-1]";
 									else if (x < cpuIndex[y - 2] + maxLength + 3)
-										color = "[color][15,--]";
+										color = "[color][15,-1]";
 									else
-										color = "[color][03,--]";
+										color = "[color][03,-1]";
 
-									write(color + graphChar);
+									lineText += color + graphChar;
 								}
 							}
-							writeLine();
+							if (y >= 2 && y <= consoleHeight - 1)
+							{
+								if (previousLines[y - 2] != lineText)
+								{
+									previousLines[y - 2] = lineText;
+									text += lineText;
+								}
+							}
+							else
+							{
+								text += lineText;
+							}
+							text += "[color][--,-1]" + Environment.NewLine;
 						}
+						write(text);
 					};
 					draw();
 
