@@ -226,7 +226,7 @@ $ depmk cwd
  
 ### db -c , db --connect
  
- To connect to a database, you use this command. It only check that can we connect to the database.
+ To connect to a database, you use this command. It only checks that can we connect to the database.
   
 **Schema**
 ```bash
@@ -241,7 +241,7 @@ $ depmk db --connect "<database_name>"
  
 ### db -ca , db --connect-all
  
- To connect to all databases, you use this command. It only check that can we connect to the databases.
+ To connect to all databases, you use this command. It only checks that can we connect to the databases.
   
 **Schema**
 ```bash
@@ -256,7 +256,7 @@ $ depmk db --connect-all
  
 ### db -r , db --remove
  
- To remove all tables of a database, you use this command. You can think as clear database. But it only remove tables, doesn't change other things like trigger etc. However, you must send with an argument that "_I am sure to remove_".
+ To remove all tables of a database, you use this command. You can think as clear database. But it only removes tables, doesn't change other things like trigger etc. However, you must send with an argument that "_I am sure to remove_".
   
 **Schema**
 ```bash
@@ -271,7 +271,7 @@ $ depmk db --remove "<database_name>" "I am sure to remove"
  
 ### db -ra , db --remove-all
  
- To remove all tables of all databases, you use this command. You can think as clear database. But it only remove tables, doesn't change other things like trigger etc. However, you must send with an argument that "_I am sure to remove_".
+ To remove all tables of all databases, you use this command. You can think as clear database. But it only removes tables, doesn't change other things like trigger etc. However, you must send with an argument that "_I am sure to remove_".
   
 **Schema**
 ```bash
@@ -286,7 +286,7 @@ $ depmk db --remove-all "I am sure to remove"
  
 ### db -m , db --migration
  
- To commit the migrations of a database, you use this command. You can retive the path using the **config.json**. There is the migration path. But you shouldn't forget that you must save your sql migrations as file on your disk. Program works by file name. First, it gets all files from your migration path and then the file names are sorted by it. Finally, program commits them by order. While the file names are being sorted, file extension doesn't matter.
+ To commit the migrations of a database, you use this command. You can see the path on the **config.json**. There is the migration path. But you shouldn't forget that you must save your sql migrations as file on your disk. Program works by file name. First, it gets all files from your migration path and then the file names are sorted by it. Finally, program commits them by order. While the file names are being sorted, file extension doesn't matter.
   
 **Schema**
 ```bash
@@ -301,7 +301,7 @@ $ depmk db --migration "<database_name>"
  
 ### db -ma , db --migration-all
  
- To commit the migrations of all databases, you use this command. You can retive the path using the **config.json**. There is the migration path. But you shouldn't forget that you must save your sql migrations as file on your disk. Program works by file name. First, it gets all files from your migration path and then the file names are sorted by it. Finally, program commits them by order. While the file names are being sorted, file extension doesn't matter.
+ To commit the migrations of all databases, you use this command. You can see the path on the **config.json**. There is the migration path. But you shouldn't forget that you must save your sql migrations as file on your disk. Program works by file name. First, it gets all files from your migration path and then the file names are sorted by it. Finally, program commits them by order. While the file names are being sorted, file extension doesn't matter.
   
 **Schema**
 ```bash
