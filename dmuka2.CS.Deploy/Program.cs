@@ -687,12 +687,12 @@ namespace dmuka2.CS.Deploy
 
 					char[,] graph = new char[graphHeight, graphWidth];
 					List<string> previousLines = new List<string>();
-					for (int y = 0; y < graphHeight; y++)
-					{
+					for (int i = 0; i < consoleHeight; i++)
 						previousLines.Add("");
+
+					for (int y = 0; y < graphHeight; y++)
 						for (int x = 0; x < graphWidth; x++)
 							graph[y, x] = ' ';
-					}
 					bool projectEnable = true;
 
 					Action draw = () =>
@@ -741,16 +741,10 @@ namespace dmuka2.CS.Deploy
 									lineText += color + graphChar;
 								}
 							}
-							if (y >= 2 && y <= consoleHeight - 1)
+
+							if (previousLines[y - 1] != lineText)
 							{
-								if (previousLines[y - 2] != lineText)
-								{
-									previousLines[y - 2] = lineText;
-									text += lineText;
-								}
-							}
-							else
-							{
+								previousLines[y - 1] = lineText;
 								text += lineText;
 							}
 							text += "[color][--,-1]" + Environment.NewLine;
@@ -865,12 +859,12 @@ namespace dmuka2.CS.Deploy
 					int?[] cpuIndex = new int?[graphHeight];
 					char[,] graph = new char[graphHeight, graphWidth];
 					List<string> previousLines = new List<string>();
-					for (int y = 0; y < graphHeight; y++)
-					{
+					for (int i = 0; i < consoleHeight; i++)
 						previousLines.Add("");
+
+					for (int y = 0; y < graphHeight; y++)
 						for (int x = 0; x < graphWidth; x++)
 							graph[y, x] = ' ';
-					}
 
 					Action draw = () =>
 					{
@@ -915,16 +909,10 @@ namespace dmuka2.CS.Deploy
 									lineText += color + graphChar;
 								}
 							}
-							if (y >= 2 && y <= consoleHeight - 1)
+
+							if (previousLines[y - 1] != lineText)
 							{
-								if (previousLines[y - 2] != lineText)
-								{
-									previousLines[y - 2] = lineText;
-									text += lineText;
-								}
-							}
-							else
-							{
+								previousLines[y - 1] = lineText;
 								text += lineText;
 							}
 							text += "[color][--,-1]" + Environment.NewLine;
