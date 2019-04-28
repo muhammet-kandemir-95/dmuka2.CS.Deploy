@@ -242,22 +242,18 @@ namespace dmuka2.CS.Deploy
 				writeLine();
 				writeLine("[color][03,--]Example 1 - Run a Command");
 				writeLine("[color][01,--]depmk [color][14,--]pr -s");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 2 - Run Multiple Command");
 				writeLine("[color][01,--]depmk [color][14,--]pr -s pr -ka");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -s\" -c \"pr -ka\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 3 - Run a Command with Parameter");
 				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\"");
 				writeLine();
 
 				writeLine("[color][03,--]Example 4 - Run Multiple Command with Parameter");
 				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp pr -ka");
-				writeLine("[color][01,--]depmk [color][14,--]-c \"pr -r\" \"test_consoleapp\" -c \"pr -ka\"");
 			}));
 			commands.Add(new Command("exit", "Close this application safely.", () =>
 			{
@@ -1209,7 +1205,6 @@ namespace dmuka2.CS.Deploy
 					project_name = projectName
 				}).Replace("\"", "\\\"") + "\" --configuration Release &", false, false, useShell: false);
 
-
 				Thread.Sleep(1000);
 			};
 			commands.Add(new Command("pr -r", "pr --restart", "Restart project.", () =>
@@ -1222,7 +1217,7 @@ namespace dmuka2.CS.Deploy
 
 					restartProject(projectName);
 
-					successful();
+					commands.FirstOrDefault(o => o.Name == "pr -s").Action();
 				});
 			}));
 			commands.Add(new Command("pr -ra", "pr --restart-all", "Restart all projects.", () =>
@@ -1237,7 +1232,7 @@ namespace dmuka2.CS.Deploy
 							restartProject(projectName);
 						}
 
-						successful();
+						commands.FirstOrDefault(o => o.Name == "pr -s").Action();
 					});
 				});
 			}));
@@ -1262,7 +1257,8 @@ namespace dmuka2.CS.Deploy
 
 					killProject(projectName);
 
-					successful();
+					Thread.Sleep(1000);
+					commands.FirstOrDefault(o => o.Name == "pr -s").Action();
 				});
 			}));
 			commands.Add(new Command("pr -ka", "pr --kill-all", "Kill all projects.", () =>
@@ -1277,7 +1273,8 @@ namespace dmuka2.CS.Deploy
 							killProject(projectName);
 						}
 
-						successful();
+						Thread.Sleep(1000);
+						commands.FirstOrDefault(o => o.Name == "pr -s").Action();
 					});
 				});
 			}));
@@ -1383,7 +1380,7 @@ namespace dmuka2.CS.Deploy
 										LogHelper.Write(projectName, text);
 									}, useShell: false, callbackStarted: (process) =>
 									{
-										var text = "Project just has been opened.";
+										var text = "Project has just been opened.";
 										ProcessSaveHelper.Set(projectName, process.Id.ToString());
 
 										AgentHelper.AddToQueue(() =>
