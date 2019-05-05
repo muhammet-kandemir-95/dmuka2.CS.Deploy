@@ -64,7 +64,7 @@ namespace dmuka2.CS.Deploy
                         catch { }
                     }
                     else
-                        Thread.Sleep(1);
+                        Thread.Sleep(1000);
                 }
             }).Start();
         }

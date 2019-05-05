@@ -4,7 +4,7 @@
   <br/>
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
   <br/>
-  <h2>VERSION 1.0.0.14</h2>
+  <h2>VERSION 1.0.1.0</h2>
 </div>
 
 > **Version Schema**
@@ -99,6 +99,7 @@
 |_sleep -s_ , _sleep --second_|Thread sleep as second.|
 |_sleep -m_ , _sleep --minute_|Thread sleep as minute.|
 |_sleep -h_ , _sleep --hour_|Thread sleep as hour.|
+|_version_|Show the version of project.|
 
 ## Description of Commands
 

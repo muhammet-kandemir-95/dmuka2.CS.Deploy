@@ -255,6 +255,12 @@ namespace dmuka2.CS.Deploy
 				writeLine("[color][03,--]Example 4 - Run Multiple Command with Parameter");
 				writeLine("[color][01,--]depmk [color][14,--]pr -r test_consoleapp pr -ka");
 			}));
+			commands.Add(new Command("version", "Show the version of project.", () =>
+			{
+				writeLine("[line][01]");
+				writeLine("[color][15,--]DEPMK Version [color][07,--]= [color][02,--]" + Assembly.GetExecutingAssembly().GetName().Version);
+				writeLine("[line][01]");
+			}));
 			commands.Add(new Command("exit", "Close this application safely.", () =>
 			{
 				exit = true;
