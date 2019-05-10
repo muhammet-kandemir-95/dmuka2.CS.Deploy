@@ -30,6 +30,12 @@ namespace dmuka2.CS.Deploy
 		static bool __byeByeEnable = true;
 
 		/// <summary>
+		/// We must write the logs with orders.
+		/// This variable ensure that.
+		/// </summary>
+		static object __lockWriteLine = true;
+
+		/// <summary>
 		/// Current Directory
 		/// </summary>
 		internal static string CurrentDirectory = "";
@@ -50,37 +56,40 @@ namespace dmuka2.CS.Deploy
 			if (__writeDisable == true)
 				return;
 
-			text = text
-					.Replace("[line][01]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '─'))
-					.Replace("[line][02]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '═'))
-					.Replace("[line][03]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '.'));
-
-			for (int i = 0; i < arguments.Length; i++)
-				text = text.Replace("{" + i + "}", arguments[i].ToString());
-
-			var split = text.Split(new string[] { "[color]" }, StringSplitOptions.None);
-			var previousForeColor = Console.ForegroundColor;
-			var previousBackColor = Console.BackgroundColor;
-
-			for (int i = 0; i < split.Length; i++)
+			lock (__lockWriteLine)
 			{
-				var item = split[i];
-				if (i != 0)
-				{
-					var colors = item.Substring(0, "[--,--]".Length);
-					item = item.Substring("[--,--]".Length);
+				text = text
+						.Replace("[line][01]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '─'))
+						.Replace("[line][02]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '═'))
+						.Replace("[line][03]", "[color][01,--]" + "".PadRight(Console.BufferWidth, '.'));
 
-					var foreColor = colors.Split(',')[0].Replace("[", "");
-					var backColor = colors.Split(',')[1].Replace("]", "");
-					if (foreColor != "--")
-						Console.ForegroundColor = (ConsoleColor)Convert.ToInt32(foreColor);
-					if (backColor != "--")
-						Console.BackgroundColor = (ConsoleColor)Convert.ToInt32(backColor);
+				for (int i = 0; i < arguments.Length; i++)
+					text = text.Replace("{" + i + "}", arguments[i].ToString());
+
+				var split = text.Split(new string[] { "[color]" }, StringSplitOptions.None);
+				var previousForeColor = Console.ForegroundColor;
+				var previousBackColor = Console.BackgroundColor;
+
+				for (int i = 0; i < split.Length; i++)
+				{
+					var item = split[i];
+					if (i != 0)
+					{
+						var colors = item.Substring(0, "[--,--]".Length);
+						item = item.Substring("[--,--]".Length);
+
+						var foreColor = colors.Split(',')[0].Replace("[", "");
+						var backColor = colors.Split(',')[1].Replace("]", "");
+						if (foreColor != "--")
+							Console.ForegroundColor = (ConsoleColor)Convert.ToInt32(foreColor);
+						if (backColor != "--")
+							Console.BackgroundColor = (ConsoleColor)Convert.ToInt32(backColor);
+					}
+					Console.Write(item);
 				}
-				Console.Write(item);
+				Console.ForegroundColor = previousForeColor;
+				Console.BackgroundColor = previousBackColor;
 			}
-			Console.ForegroundColor = previousForeColor;
-			Console.BackgroundColor = previousBackColor;
 		}
 
 		/// <summary>
