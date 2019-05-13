@@ -373,7 +373,7 @@ namespace dmuka2.CS.Deploy
 							Environment.NewLine;
 
 					File.WriteAllText(deployShFilePath,
-						"dotnet exec \"" + Path.Combine(CurrentDirectory, "bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll") + "\" --current-directory \"" + CurrentDirectory + "\"");
+						"dotnet exec \"" + Path.Combine(CurrentDirectory, "bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll") + "\" --current-directory \"" + CurrentDirectory + "\" pr --restart-all");
 
 					ShellHelper.Run(
 						"",
