@@ -363,6 +363,10 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
+					string linuxUserName = getLine("Write linux user name = ");
+					if (linuxUserName == "")
+						return;
+
 					string deployStartupCommand =
 							Environment.NewLine +
 							"@reboot " + deployShFilePath +
@@ -383,12 +387,12 @@ namespace dmuka2.CS.Deploy
 						{
 							writeLine(text);
 						});
-					string crontabContent = File.ReadAllText("/etc/crontab");
+					string crontabContent = File.ReadAllText("/var/spool/cron/crontabs/" + linuxUserName);
 
 					crontabContent = crontabContent.Replace(deployStartupCommand, "");
 					crontabContent += deployStartupCommand;
 
-					File.WriteAllText("/etc/crontab", crontabContent);
+					File.WriteAllText("/var/spool/cron/crontabs/" + linuxUserName, crontabContent);
 
 					successful();
 				});
@@ -397,16 +401,20 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
+					string linuxUserName = getLine("Write linux user name = ");
+					if (linuxUserName == "")
+						return;
+
 					string deployStartupCommand =
 							Environment.NewLine +
 							"@reboot " + deployShFilePath +
 							Environment.NewLine;
 
-					string crontabContent = File.ReadAllText("/etc/crontab");
+					string crontabContent = File.ReadAllText("/var/spool/cron/crontabs/" + linuxUserName);
 
 					crontabContent = crontabContent.Replace(deployStartupCommand, "");
 
-					File.WriteAllText("/etc/crontab", crontabContent);
+					File.WriteAllText("/var/spool/cron/crontabs/" + linuxUserName, crontabContent);
 					successful();
 				});
 			}));
