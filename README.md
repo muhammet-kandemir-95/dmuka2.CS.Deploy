@@ -4,7 +4,7 @@
   <br/>
   <img width="126px" src="https://raw.githubusercontent.com/muhammet-kandemir-95/dmuka2.CS.Deploy/master/mdcontent/images/version.png" alt="version" />
   <br/>
-  <h2>VERSION 1.0.1.2</h2>
+  <h2>VERSION 1.0.1.3</h2>
 </div>
 
 > **Version Schema**
@@ -65,7 +65,7 @@
 |Command|Short Description|
 |---|---|
 |_add -p_ , _add --project_|Add a new project to config.|
-|_add -s_ , _add --startup_|Add deploy.sh to startup by linux user name.|
+|_add -s_ , _add --startup_|Add deploy.sh to startup.|
 |_add -a_ , _add --alias_|Add alias to bash as 'depmk' via current directory.|
 |_alog -sa_ , _alos --show-all_|Show agent log of all projects.|
 |_alog -s_ , _alog --show_|Show agent log of project/projects.|
@@ -78,7 +78,7 @@
 |_db -m_ , _db --migration_|Apply migrations on database.|
 |_db -ma_ , _db --migration-all_|Apply migrations on all databases.|
 |_del -p_ , _del --project_|Delete a project from config.|
-|_del -s_ , _del --startup_|Delete deploy.sh from startup by linux user name.|
+|_del -s_ , _del --startup_|Delete deploy.sh from startup.|
 |_del -a_ , _del --alias_|Delete alias from .bashrc.|
 |_exit_|Close this application safely.|
 |_get -u_ , _get --user_|Get user name.|
@@ -128,16 +128,16 @@ $ depmk add --project "<project_name>" "<command_name>" "<command_arguments>"
   
 **Schema 1**
 ```bash
-$ dotnet run add -s "<linux_user_name>"
+$ dotnet run add -s
 # OR
-$ dotnet run add --startup "<linux_user_name>"
+$ dotnet run add --startup
 ```
 
 **Schema 2**
 ```bash
-$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add -s "<linux_user_name>"
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add -s
 # OR
-$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add --startup "<linux_user_name>"
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll add --startup
 ```
 
 <div>
@@ -332,22 +332,22 @@ $ depmk del --project "<project_name>"
  
 ### del -s , del --startup
   
- To delete from startup by linux username, you can use this command.
+ To delete from startup, you can use this command.
    
   You have to go to project directory. Because alias of **depmk** couldn't be added to _.bashrc_ which root has. So you go to project directory and run command by schema.
    
 **Schema 1**
 ```bash
-$ dotnet run del -s "<linux_user_name>"
+$ dotnet run del -s
 # OR
-$ dotnet run del --startup "<linux_user_name>"
+$ dotnet run del --startup
 ```
 
 **Schema 2**
 ```bash
-$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del -s "<linux_user_name>"
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del -s
 # OR
-$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del --startup "<linux_user_name>"
+$ dotnet exec bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll del --startup
 ```
 
 <div>
