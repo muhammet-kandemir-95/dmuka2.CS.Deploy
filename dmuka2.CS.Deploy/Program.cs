@@ -363,17 +363,13 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					string linuxUserName = getLine("Write linux user name = ");
-					if (linuxUserName == "")
-						return;
-
 					string deployStartupCommand =
 							Environment.NewLine +
-							"@reboot " + linuxUserName + " " + deployShFilePath +
+							"@reboot " + deployShFilePath +
 							Environment.NewLine;
 
 					File.WriteAllText(deployShFilePath,
-						"dotnet exec \"" + Path.Combine(CurrentDirectory, "bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll") + "\" --current-directory \"" + CurrentDirectory + "\" pr --restart-all");
+						"dotnet exec \"" + Path.Combine(CurrentDirectory, "bin/Release/netcoreapp2.1/dmuka2.CS.Deploy.dll") + "\" --current-directory \"" + CurrentDirectory + "\"");
 
 					ShellHelper.Run(
 						"",
@@ -401,13 +397,9 @@ namespace dmuka2.CS.Deploy
 			{
 				tryCatch(() =>
 				{
-					string linuxUserName = getLine("Write linux user name = ");
-					if (linuxUserName == "")
-						return;
-
 					string deployStartupCommand =
 							Environment.NewLine +
-							"@reboot " + linuxUserName + " " + deployShFilePath +
+							"@reboot " + deployShFilePath +
 							Environment.NewLine;
 
 					string crontabContent = File.ReadAllText("/etc/crontab");
